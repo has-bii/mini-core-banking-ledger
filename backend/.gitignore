@@ -1,0 +1,14 @@
+# Local environment files (keep the template)
+.env
+.env.*
+!.env.example
+
+# Build and test output
+/bin/
+/dist/
+*.test
+*.out
+/coverage/
+
+# OS files
+.DS_Store
