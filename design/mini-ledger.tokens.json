@@ -1,0 +1,909 @@
+{
+  "name": "MiniLedger",
+  "version": "1.0.0",
+  "theme": "light",
+  "baseViewport": {
+    "width": 390,
+    "height": 844,
+    "minWidth": 360
+  },
+  "tokens": {
+    "background": {
+      "type": "color",
+      "value": "#F6F7F9"
+    },
+    "foreground": {
+      "type": "color",
+      "value": "#0F172A"
+    },
+    "card": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "card-foreground": {
+      "type": "color",
+      "value": "#0F172A"
+    },
+    "popover": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "popover-foreground": {
+      "type": "color",
+      "value": "#0F172A"
+    },
+    "primary": {
+      "type": "color",
+      "value": "#4F46E5"
+    },
+    "primary-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "secondary": {
+      "type": "color",
+      "value": "#EEF2FF"
+    },
+    "secondary-foreground": {
+      "type": "color",
+      "value": "#3730A3"
+    },
+    "muted": {
+      "type": "color",
+      "value": "#EEF0F4"
+    },
+    "muted-foreground": {
+      "type": "color",
+      "value": "#64748B"
+    },
+    "accent": {
+      "type": "color",
+      "value": "#E0E7FF"
+    },
+    "accent-foreground": {
+      "type": "color",
+      "value": "#3730A3"
+    },
+    "destructive": {
+      "type": "color",
+      "value": "#E11D48"
+    },
+    "destructive-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "border": {
+      "type": "color",
+      "value": "#E2E8F0"
+    },
+    "input": {
+      "type": "color",
+      "value": "#E2E8F0"
+    },
+    "ring": {
+      "type": "color",
+      "value": "#4F46E5"
+    },
+    "credit": {
+      "type": "color",
+      "value": "#16A34A"
+    },
+    "debit": {
+      "type": "color",
+      "value": "#E11D48"
+    },
+    "warning": {
+      "type": "color",
+      "value": "#D97706"
+    },
+    "info": {
+      "type": "color",
+      "value": "#2563EB"
+    },
+    "warning-foreground": {
+      "type": "color",
+      "value": "#92400E"
+    },
+    "info-foreground": {
+      "type": "color",
+      "value": "#1D4ED8"
+    },
+    "overlay": {
+      "type": "color",
+      "value": "#0F172A66"
+    },
+    "transparent": {
+      "type": "color",
+      "value": "#FFFFFF00"
+    },
+    "shadow-color": {
+      "type": "color",
+      "value": "#0F172A0D"
+    },
+    "spacing/0": {
+      "type": "number",
+      "value": 0
+    },
+    "spacing/4": {
+      "type": "number",
+      "value": 4
+    },
+    "spacing/8": {
+      "type": "number",
+      "value": 8
+    },
+    "spacing/12": {
+      "type": "number",
+      "value": 12
+    },
+    "spacing/16": {
+      "type": "number",
+      "value": 16
+    },
+    "spacing/20": {
+      "type": "number",
+      "value": 20
+    },
+    "spacing/24": {
+      "type": "number",
+      "value": 24
+    },
+    "spacing/32": {
+      "type": "number",
+      "value": 32
+    },
+    "spacing/48": {
+      "type": "number",
+      "value": 48
+    },
+    "radius/sm": {
+      "type": "number",
+      "value": 8
+    },
+    "radius/md": {
+      "type": "number",
+      "value": 12
+    },
+    "radius/lg": {
+      "type": "number",
+      "value": 16
+    },
+    "radius/none": {
+      "type": "number",
+      "value": 0
+    },
+    "text/display": {
+      "type": "number",
+      "value": 40
+    },
+    "text/h1": {
+      "type": "number",
+      "value": 32
+    },
+    "text/h2": {
+      "type": "number",
+      "value": 24
+    },
+    "text/h3": {
+      "type": "number",
+      "value": 20
+    },
+    "leading/display": {
+      "type": "number",
+      "value": 1.2
+    },
+    "font/sans": {
+      "type": "string",
+      "value": "Plus Jakarta Sans"
+    },
+    "weight/400": {
+      "type": "string",
+      "value": "400"
+    },
+    "weight/500": {
+      "type": "string",
+      "value": "500"
+    },
+    "weight/600": {
+      "type": "string",
+      "value": "600"
+    },
+    "opacity/disabled": {
+      "type": "number",
+      "value": 0.48
+    },
+    "size/32": {
+      "type": "number",
+      "value": 32
+    },
+    "size/8": {
+      "type": "number",
+      "value": 8
+    },
+    "size/16": {
+      "type": "number",
+      "value": 16
+    },
+    "size/48": {
+      "type": "number",
+      "value": 48
+    },
+    "size/4": {
+      "type": "number",
+      "value": 4
+    },
+    "size/24": {
+      "type": "number",
+      "value": 24
+    },
+    "size/64": {
+      "type": "number",
+      "value": 64
+    },
+    "size/28": {
+      "type": "number",
+      "value": 28
+    },
+    "size/56": {
+      "type": "number",
+      "value": 56
+    },
+    "size/112": {
+      "type": "number",
+      "value": 112
+    },
+    "size/224": {
+      "type": "number",
+      "value": 224
+    },
+    "size/0": {
+      "type": "number",
+      "value": 0
+    },
+    "size/12": {
+      "type": "number",
+      "value": 12
+    },
+    "size/160": {
+      "type": "number",
+      "value": 160
+    },
+    "size/40": {
+      "type": "number",
+      "value": 40
+    },
+    "size/1": {
+      "type": "number",
+      "value": 1
+    },
+    "size/44": {
+      "type": "number",
+      "value": 44
+    },
+    "size/720": {
+      "type": "number",
+      "value": 720
+    },
+    "size/240": {
+      "type": "number",
+      "value": 240
+    },
+    "size/20": {
+      "type": "number",
+      "value": 20
+    },
+    "size/72": {
+      "type": "number",
+      "value": 72
+    },
+    "size/480": {
+      "type": "number",
+      "value": 480
+    },
+    "size/96": {
+      "type": "number",
+      "value": 96
+    },
+    "size/192": {
+      "type": "number",
+      "value": 192
+    },
+    "size/360": {
+      "type": "number",
+      "value": 360
+    },
+    "size/128": {
+      "type": "number",
+      "value": 128
+    },
+    "size/144": {
+      "type": "number",
+      "value": 144
+    },
+    "size/200": {
+      "type": "number",
+      "value": 200
+    },
+    "size/80": {
+      "type": "number",
+      "value": 80
+    },
+    "size/176": {
+      "type": "number",
+      "value": 176
+    },
+    "radius": {
+      "type": "number",
+      "value": 12
+    },
+    "font/numerals": {
+      "type": "string",
+      "value": "tabular-nums"
+    },
+    "touch/min": {
+      "type": "number",
+      "value": 44
+    },
+    "control/sm": {
+      "type": "number",
+      "value": 44
+    },
+    "control/lg": {
+      "type": "number",
+      "value": 56
+    },
+    "control/icon": {
+      "type": "number",
+      "value": 48
+    },
+    "credit-tint": {
+      "type": "color",
+      "value": "#F0FDF4"
+    },
+    "credit-foreground": {
+      "type": "color",
+      "value": "#166534"
+    },
+    "debit-tint": {
+      "type": "color",
+      "value": "#FFF1F2"
+    },
+    "debit-foreground": {
+      "type": "color",
+      "value": "#BE123C"
+    },
+    "warning-tint": {
+      "type": "color",
+      "value": "#FFFBEB"
+    },
+    "info-tint": {
+      "type": "color",
+      "value": "#EFF6FF"
+    },
+    "primary-pressed": {
+      "type": "color",
+      "value": "#4338CA"
+    },
+    "secondary-pressed": {
+      "type": "color",
+      "value": "#E0E7FF"
+    },
+    "destructive-pressed": {
+      "type": "color",
+      "value": "#BE123C"
+    },
+    "disabled": {
+      "type": "color",
+      "value": "#EEF0F4"
+    },
+    "disabled-foreground": {
+      "type": "color",
+      "value": "#64748B"
+    },
+    "shadow-lg-color": {
+      "type": "color",
+      "value": "#0F172A14"
+    },
+    "size/2": {
+      "type": "number",
+      "value": 2
+    },
+    "size/34": {
+      "type": "number",
+      "value": 34
+    },
+    "size/47": {
+      "type": "number",
+      "value": 47
+    },
+    "size/280": {
+      "type": "number",
+      "value": 280
+    },
+    "size/300": {
+      "type": "number",
+      "value": 300
+    },
+    "size/308": {
+      "type": "number",
+      "value": 308
+    },
+    "size/328": {
+      "type": "number",
+      "value": 328
+    },
+    "size/358": {
+      "type": "number",
+      "value": 358
+    },
+    "size/390": {
+      "type": "number",
+      "value": 390
+    },
+    "size/420": {
+      "type": "number",
+      "value": 420
+    },
+    "size/520": {
+      "type": "number",
+      "value": 520
+    },
+    "size/560": {
+      "type": "number",
+      "value": 560
+    },
+    "size/760": {
+      "type": "number",
+      "value": 760
+    },
+    "size/844": {
+      "type": "number",
+      "value": 844
+    },
+    "size/1040": {
+      "type": "number",
+      "value": 1040
+    },
+    "size/1160": {
+      "type": "number",
+      "value": 1160
+    },
+    "spacing/40": {
+      "type": "number",
+      "value": 40
+    },
+    "spacing/64": {
+      "type": "number",
+      "value": 64
+    },
+    "radius/pill": {
+      "type": "number",
+      "value": 999
+    },
+    "control/default": {
+      "type": "number",
+      "value": 48
+    },
+    "mobile/width": {
+      "type": "number",
+      "value": 390
+    },
+    "mobile/min-width": {
+      "type": "number",
+      "value": 360
+    },
+    "mobile/height": {
+      "type": "number",
+      "value": 844
+    },
+    "mobile/padding": {
+      "type": "number",
+      "value": 16
+    },
+    "safe-area/top": {
+      "type": "number",
+      "value": 47
+    },
+    "safe-area/bottom": {
+      "type": "number",
+      "value": 34
+    },
+    "stroke/default": {
+      "type": "number",
+      "value": 1
+    },
+    "stroke/focus": {
+      "type": "number",
+      "value": 2
+    },
+    "elevation/sm/y": {
+      "type": "number",
+      "value": 2
+    },
+    "elevation/sm/blur": {
+      "type": "number",
+      "value": 6
+    },
+    "elevation/md/y": {
+      "type": "number",
+      "value": 4
+    },
+    "elevation/md/blur": {
+      "type": "number",
+      "value": 12
+    },
+    "elevation/lg/y": {
+      "type": "number",
+      "value": 8
+    },
+    "elevation/lg/blur": {
+      "type": "number",
+      "value": 24
+    },
+    "leading/heading": {
+      "type": "number",
+      "value": 1.3
+    },
+    "leading/body": {
+      "type": "number",
+      "value": 1.5
+    },
+    "leading/caption": {
+      "type": "number",
+      "value": 1.4
+    },
+    "tracking/display": {
+      "type": "number",
+      "value": -0.8
+    },
+    "tracking/kicker": {
+      "type": "number",
+      "value": 1.2
+    },
+    "text/body": {
+      "type": "number",
+      "value": 16
+    },
+    "text/body-sm": {
+      "type": "number",
+      "value": 14
+    },
+    "text/caption": {
+      "type": "number",
+      "value": 12
+    },
+    "text/amount-lg": {
+      "type": "number",
+      "value": 32
+    },
+    "text/amount-md": {
+      "type": "number",
+      "value": 20
+    },
+    "weight/700": {
+      "type": "string",
+      "value": "700"
+    },
+    "weight/800": {
+      "type": "string",
+      "value": "800"
+    },
+    "subtle-foreground": {
+      "type": "color",
+      "value": "#5B6B80"
+    }
+  },
+  "cssVariableNames": {
+    "background": "--background",
+    "foreground": "--foreground",
+    "card": "--card",
+    "card-foreground": "--card-foreground",
+    "popover": "--popover",
+    "popover-foreground": "--popover-foreground",
+    "primary": "--primary",
+    "primary-foreground": "--primary-foreground",
+    "secondary": "--secondary",
+    "secondary-foreground": "--secondary-foreground",
+    "muted": "--muted",
+    "muted-foreground": "--muted-foreground",
+    "accent": "--accent",
+    "accent-foreground": "--accent-foreground",
+    "destructive": "--destructive",
+    "destructive-foreground": "--destructive-foreground",
+    "border": "--border",
+    "input": "--input",
+    "ring": "--ring",
+    "credit": "--credit",
+    "debit": "--debit",
+    "warning": "--warning",
+    "info": "--info",
+    "warning-foreground": "--warning-foreground",
+    "info-foreground": "--info-foreground",
+    "overlay": "--overlay",
+    "transparent": "--transparent",
+    "shadow-color": "--shadow-color",
+    "spacing/0": "--ml-spacing-0",
+    "spacing/4": "--ml-spacing-4",
+    "spacing/8": "--ml-spacing-8",
+    "spacing/12": "--ml-spacing-12",
+    "spacing/16": "--ml-spacing-16",
+    "spacing/20": "--ml-spacing-20",
+    "spacing/24": "--ml-spacing-24",
+    "spacing/32": "--ml-spacing-32",
+    "spacing/48": "--ml-spacing-48",
+    "radius/sm": "--ml-radius-sm",
+    "radius/md": "--ml-radius-md",
+    "radius/lg": "--ml-radius-lg",
+    "radius/none": "--ml-radius-none",
+    "text/display": "--ml-text-display",
+    "text/h1": "--ml-text-h1",
+    "text/h2": "--ml-text-h2",
+    "text/h3": "--ml-text-h3",
+    "leading/display": "--ml-leading-display",
+    "font/sans": "--ml-font-sans",
+    "weight/400": "--ml-weight-400",
+    "weight/500": "--ml-weight-500",
+    "weight/600": "--ml-weight-600",
+    "opacity/disabled": "--ml-opacity-disabled",
+    "size/32": "--ml-size-32",
+    "size/8": "--ml-size-8",
+    "size/16": "--ml-size-16",
+    "size/48": "--ml-size-48",
+    "size/4": "--ml-size-4",
+    "size/24": "--ml-size-24",
+    "size/64": "--ml-size-64",
+    "size/28": "--ml-size-28",
+    "size/56": "--ml-size-56",
+    "size/112": "--ml-size-112",
+    "size/224": "--ml-size-224",
+    "size/0": "--ml-size-0",
+    "size/12": "--ml-size-12",
+    "size/160": "--ml-size-160",
+    "size/40": "--ml-size-40",
+    "size/1": "--ml-size-1",
+    "size/44": "--ml-size-44",
+    "size/720": "--ml-size-720",
+    "size/240": "--ml-size-240",
+    "size/20": "--ml-size-20",
+    "size/72": "--ml-size-72",
+    "size/480": "--ml-size-480",
+    "size/96": "--ml-size-96",
+    "size/192": "--ml-size-192",
+    "size/360": "--ml-size-360",
+    "size/128": "--ml-size-128",
+    "size/144": "--ml-size-144",
+    "size/200": "--ml-size-200",
+    "size/80": "--ml-size-80",
+    "size/176": "--ml-size-176",
+    "radius": "--radius",
+    "font/numerals": "--ml-font-numerals",
+    "touch/min": "--ml-touch-min",
+    "control/sm": "--ml-control-sm",
+    "control/lg": "--ml-control-lg",
+    "control/icon": "--ml-control-icon",
+    "credit-tint": "--credit-tint",
+    "credit-foreground": "--credit-foreground",
+    "debit-tint": "--debit-tint",
+    "debit-foreground": "--debit-foreground",
+    "warning-tint": "--warning-tint",
+    "info-tint": "--info-tint",
+    "primary-pressed": "--primary-pressed",
+    "secondary-pressed": "--secondary-pressed",
+    "destructive-pressed": "--destructive-pressed",
+    "disabled": "--disabled",
+    "disabled-foreground": "--disabled-foreground",
+    "shadow-lg-color": "--shadow-lg-color",
+    "size/2": "--ml-size-2",
+    "size/34": "--ml-size-34",
+    "size/47": "--ml-size-47",
+    "size/280": "--ml-size-280",
+    "size/300": "--ml-size-300",
+    "size/308": "--ml-size-308",
+    "size/328": "--ml-size-328",
+    "size/358": "--ml-size-358",
+    "size/390": "--ml-size-390",
+    "size/420": "--ml-size-420",
+    "size/520": "--ml-size-520",
+    "size/560": "--ml-size-560",
+    "size/760": "--ml-size-760",
+    "size/844": "--ml-size-844",
+    "size/1040": "--ml-size-1040",
+    "size/1160": "--ml-size-1160",
+    "spacing/40": "--ml-spacing-40",
+    "spacing/64": "--ml-spacing-64",
+    "radius/pill": "--ml-radius-pill",
+    "control/default": "--ml-control-default",
+    "mobile/width": "--ml-mobile-width",
+    "mobile/min-width": "--ml-mobile-min-width",
+    "mobile/height": "--ml-mobile-height",
+    "mobile/padding": "--ml-mobile-padding",
+    "safe-area/top": "--ml-safe-area-top",
+    "safe-area/bottom": "--ml-safe-area-bottom",
+    "stroke/default": "--ml-stroke-default",
+    "stroke/focus": "--ml-stroke-focus",
+    "elevation/sm/y": "--ml-elevation-sm-y",
+    "elevation/sm/blur": "--ml-elevation-sm-blur",
+    "elevation/md/y": "--ml-elevation-md-y",
+    "elevation/md/blur": "--ml-elevation-md-blur",
+    "elevation/lg/y": "--ml-elevation-lg-y",
+    "elevation/lg/blur": "--ml-elevation-lg-blur",
+    "leading/heading": "--ml-leading-heading",
+    "leading/body": "--ml-leading-body",
+    "leading/caption": "--ml-leading-caption",
+    "tracking/display": "--ml-tracking-display",
+    "tracking/kicker": "--ml-tracking-kicker",
+    "text/body": "--ml-text-body",
+    "text/body-sm": "--ml-text-body-sm",
+    "text/caption": "--ml-text-caption",
+    "text/amount-lg": "--ml-text-amount-lg",
+    "text/amount-md": "--ml-text-amount-md",
+    "weight/700": "--ml-weight-700",
+    "weight/800": "--ml-weight-800",
+    "subtle-foreground": "--subtle-foreground"
+  },
+  "componentRegistry": {
+    "foundation": "ZPMjM",
+    "actions": "kNvff",
+    "button/default/default/default": "CNVek",
+    "button/default/default/pressed": "TmrHr",
+    "button/default/default/focus": "Ci8t7",
+    "button/default/default/disabled": "xE3hg",
+    "button/default/default/error": "acWq3",
+    "button/secondary/default/default": "DB9xs",
+    "button/secondary/default/pressed": "ncShs",
+    "button/secondary/default/focus": "mkMlt",
+    "button/secondary/default/disabled": "oGzW9",
+    "button/secondary/default/error": "EcpI0",
+    "button/outline/default/default": "l8gjuV",
+    "button/outline/default/pressed": "E3h8p",
+    "button/outline/default/focus": "L5y9DP",
+    "button/outline/default/disabled": "Yi4BQ",
+    "button/outline/default/error": "LTh0N",
+    "button/ghost/default/default": "uWTGt",
+    "button/ghost/default/pressed": "WjWsh",
+    "button/ghost/default/focus": "b6ukq",
+    "button/ghost/default/disabled": "zhwUw",
+    "button/ghost/default/error": "F7cdA4",
+    "button/destructive/default/default": "nLnYN",
+    "button/destructive/default/pressed": "hmmZZ",
+    "button/destructive/default/focus": "oevwS",
+    "button/destructive/default/disabled": "k3KLg9",
+    "button/destructive/default/error": "yZjgw",
+    "button/default/sm/default": "fhEYu",
+    "button/default/lg/default": "nUsiT",
+    "button/default/icon/default": "y1zwC",
+    "button/secondary/sm/default": "bZ6H3",
+    "button/secondary/lg/default": "Oy4vM",
+    "button/secondary/icon/default": "lMJqB",
+    "button/outline/sm/default": "OeUSw",
+    "button/outline/lg/default": "e6Las",
+    "button/outline/icon/default": "OuokH",
+    "button/ghost/sm/default": "ZoXtg",
+    "button/ghost/lg/default": "RMWtt",
+    "button/ghost/icon/default": "EtkGd",
+    "button/destructive/sm/default": "SKHsT",
+    "button/destructive/lg/default": "H4rLlC",
+    "button/destructive/icon/default": "v9LQgU",
+    "button/default/loading": "Kp72d",
+    "alert/action-error": "QRL2o",
+    "forms": "POpxl",
+    "label/default": "qFuao",
+    "input/default": "X57jx",
+    "textarea/default": "buYqj",
+    "select/default": "uhZHT",
+    "input/pressed": "VyVsE",
+    "textarea/pressed": "l0btb",
+    "select/pressed": "ZA3Fd",
+    "input/focus": "YXspD",
+    "textarea/focus": "wVXVI",
+    "select/focus": "p0lVRo",
+    "input/disabled": "F3r7Ld",
+    "textarea/disabled": "ZrLNa",
+    "select/disabled": "T1DmZN",
+    "input/error": "R87Ib8",
+    "textarea/error": "ROWDa",
+    "select/error": "a7S2g",
+    "form-field/default": "VYdr5",
+    "form-field/error": "XMG4W",
+    "form-field/disabled": "P9z8rC",
+    "checkbox/off": "JdEoQ",
+    "checkbox/on": "g7SSN",
+    "checkbox/pressed": "U7ERHo",
+    "checkbox/focus": "NhgDQ",
+    "checkbox/disabled": "BheDr",
+    "checkbox/error": "m91e4M",
+    "switch/off": "QQbxi",
+    "switch/on": "rIJrW",
+    "switch/pressed": "OY0HE",
+    "switch/focus": "qKYVm",
+    "switch/disabled": "y25eK",
+    "switch/error": "dqcLe",
+    "checkbox/indeterminate": "vR6lj",
+    "tabs/default": "zLD0E",
+    "tabs/pressed": "pUAk4",
+    "tabs/focus": "ts3z6",
+    "feedback": "e1IMUG",
+    "badge/default": "HpsjV",
+    "badge/secondary": "Ah16e",
+    "badge/outline": "TZfws",
+    "badge/destructive": "aGrsc",
+    "status/pending": "j3bz9l",
+    "status/posted": "M4GbZ",
+    "status/reversed": "iIWL7",
+    "status/failed": "UAzeO",
+    "card/default": "p37Dm",
+    "avatar/44": "wfBhG",
+    "avatar/56": "ZPVvT",
+    "separator/horizontal": "rt2wI",
+    "skeleton/list-row": "SEu7q",
+    "alert/info": "fnMHW",
+    "alert/success": "c71Vu",
+    "alert/warning": "itiOD",
+    "alert/error": "xEv4W",
+    "progress/default": "L1OnY",
+    "progress/complete": "YruTE",
+    "progress/error": "hi4Lg",
+    "sonner/success": "fCMDr",
+    "sonner/error": "q7uHS",
+    "sonner/info": "ZyzT4",
+    "ledger": "xMNVC",
+    "amount/credit/lg": "SLeBK",
+    "amount/debit/lg": "G3Kth",
+    "amount/neutral/lg": "em9sl",
+    "amount/credit/md": "bknaz",
+    "amount/debit/md": "U2QJ3z",
+    "amount/unavailable/md": "HynS8",
+    "currency-input/default": "Woux6",
+    "currency-input/focus": "QpnFJ",
+    "currency-input/error": "BMq89",
+    "account-card/default": "tlx5V",
+    "transaction/credit": "xSutM",
+    "transaction/debit": "dC65q",
+    "transaction/reversed": "OkPDZ",
+    "journal-line/debit": "Xn8IW",
+    "journal-line/credit": "RvoMC",
+    "difference/balanced": "Zrd7H",
+    "difference/unbalanced": "aGtoo",
+    "audit-item/created": "DP0Bt",
+    "audit-item/posted": "OeOyd",
+    "audit-item/reversed": "G2bgSW",
+    "mobile": "JOOw5",
+    "app-bar/default": "T0rdO",
+    "bottom-tabs/4": "qDyrw",
+    "bottom-tabs/5": "tVKjJ",
+    "filter-chip/default": "OBBZe",
+    "filter-chip/selected": "c6IpQ",
+    "filter-chip/pressed": "v9FjmX",
+    "filter-chip/focus": "K13YN",
+    "filter-chip/disabled": "T2iP89",
+    "filter-chip/error": "ojzlI",
+    "empty/initial": "ns2GX",
+    "empty/filtered": "OH6Ks",
+    "mobileDateSection": "lxfi8",
+    "date-picker/default": "vMSdW",
+    "drawer/date-picker": "W6Jwq",
+    "calendar/default": "jfPrP",
+    "drawer/confirmation": "frVSq",
+    "calendar-day/default": "d1bl0",
+    "calendar-day/selected": "WdozK",
+    "calendar-day/pressed": "kxKrF",
+    "calendar-day/focus": "IYWiK",
+    "calendar-day/disabled": "MBfzk",
+    "calendar-day/error": "VkkMM",
+    "date-picker/focus": "K8c9x",
+    "date-picker/disabled": "kR52Y",
+    "date-picker/error": "zuhpr",
+    "handoff": "Q8c95W",
+    "currency-input/pressed": "qgqod",
+    "currency-input/disabled": "kOPeU",
+    "date-picker/pressed": "k8pj3A",
+    "tabs/disabled": "hws3n",
+    "tabs/error": "rjtMx",
+    "transaction/pressed": "Y6aNyd",
+    "transaction/focus": "ir1qm",
+    "transaction/disabled": "nXDoO",
+    "account-card/error": "uOoQM",
+    "transaction/failed": "fyhsz",
+    "select/drawer": "zul7v"
+  }
+}
