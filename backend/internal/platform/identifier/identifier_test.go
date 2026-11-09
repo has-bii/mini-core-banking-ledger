@@ -1,6 +1,10 @@
-package identifier
+package identifier_test
 
-import "testing"
+import (
+	"testing"
+
+	"backend/internal/platform/identifier"
+)
 
 func TestIsValidEmail(t *testing.T) {
 	for _, tt := range []struct {
@@ -16,7 +20,7 @@ func TestIsValidEmail(t *testing.T) {
 		{" alice@example.com ", false},
 	} {
 		t.Run(tt.value, func(t *testing.T) {
-			if got := IsValidEmail(tt.value); got != tt.want {
+			if got := identifier.IsValidEmail(tt.value); got != tt.want {
 				t.Errorf("IsValidEmail(%q) = %v, want %v", tt.value, got, tt.want)
 			}
 		})
@@ -36,7 +40,7 @@ func TestValidUUID(t *testing.T) {
 		{"550e8400-e29b-41d4-a716-44665544000", false},
 	} {
 		t.Run(tt.value, func(t *testing.T) {
-			if got := ValidUUID(tt.value); got != tt.want {
+			if got := identifier.ValidUUID(tt.value); got != tt.want {
 				t.Errorf("ValidUUID(%q) = %v, want %v", tt.value, got, tt.want)
 			}
 		})

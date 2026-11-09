@@ -1,15 +1,17 @@
-package httpx
+package httpx_test
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"backend/internal/platform/httpx"
 )
 
 func TestCORS(t *testing.T) {
 	const allowed = "http://localhost:3000"
-	cors, err := CORS(allowed)
+	cors, err := httpx.CORS(allowed)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +72,7 @@ func TestCORS(t *testing.T) {
 
 func TestCORSRejectsInvalidOrigin(t *testing.T) {
 	for _, origin := range []string{"", "*", "null", "localhost:3000", "http://localhost:3000/", "http://localhost:3000?query=yes"} {
-		if _, err := CORS(origin); err == nil {
+		if _, err := httpx.CORS(origin); err == nil {
 			t.Errorf("CORS(%q) should fail", origin)
 		}
 	}
