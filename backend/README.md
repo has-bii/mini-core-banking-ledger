@@ -51,13 +51,26 @@ Edit the generated file in `migrations/`, adding the schema changes under `-- +g
 
 ## Testing
 
-Unit tests use Go's standard library and handwritten fakes; no PostgreSQL, `.env`, or extra test dependencies are required. Tests live beside the code in `*_test.go` files and cover auth validation, login/current-user behavior, registration preflight checks, session token handling, and email/UUID identifiers. Database integration and HTTP handler tests are not included.
+Unit tests use Go's standard library and handwritten fakes; no PostgreSQL, `.env`, or extra test dependencies are required. Tests live beside the code in `*_test.go` files and cover auth validation, login/current-user behavior, registration preflight checks, session token handling, and email/UUID identifiers. HTTP-to-PostgreSQL integration tests live in `internal/app/app_integration_test.go` behind the `integration` build tag.
 
 
 ```sh
 go test -race ./...
 go vet ./...
 ```
+
+### Integration tests
+
+Use a dedicated test database. The tests read `DATABASE_URL` directly from `backend/.env.test`, ignoring the shell's `DATABASE_URL`; they never load `.env`. Ensure `.env.test` points at the test database and its `GOOSE_DBSTRING` matches `DATABASE_URL`.
+
+With PostgreSQL running, apply migrations and run from `backend/`:
+
+```sh
+goose -env .env.test up
+go test -tags=integration -count=1 ./...
+```
+
+The suite exercises registration, duplicate registration, wrong passwords, login/session cookies, and authenticated/unauthenticated current-user requests through the real HTTP handler and PostgreSQL. It uses unique user emails and deletes only its own users afterward (accounts and sessions cascade). Missing configuration, an unavailable database, or unapplied migrations fail the integration run rather than silently skipping it. Interrupted runs may leave test rows behind. Normal `go test ./...` remains database-free.
 
 ## Login and sessions
 
