@@ -2,6 +2,7 @@ package auth
 
 import (
 	"backend/internal/modules/account"
+	"backend/internal/modules/session"
 	"backend/internal/modules/user"
 	"backend/internal/platform/database"
 	"context"
@@ -13,16 +14,32 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var ErrInvalidCredentials = errors.New("invalid email or password")
+
+type userStore interface {
+	FindByEmail(context.Context, string) (user.User, error)
+}
+
+type accountStore interface {
+	FindByUserID(context.Context, string) (account.Account, error)
+}
+
+type sessionService interface {
+	Create(context.Context, string) (session.Session, string, error)
+}
+
 type Service struct {
-	pool  *pgxpool.Pool
-	users *user.Store
+	pool     *pgxpool.Pool
+	users    userStore
+	accounts accountStore
+	sessions sessionService
 }
 
-func NewService(pool *pgxpool.Pool) *Service {
-	return &Service{pool: pool, users: user.NewStore(pool)}
+func NewService(pool *pgxpool.Pool, sessions *session.Service) *Service {
+	return &Service{pool: pool, users: user.NewStore(pool), accounts: account.NewStore(pool), sessions: sessions}
 }
 
-func (s *Service) Register(ctx context.Context, payload RegisterPayload) (user.User, error) {
+func (s *Service) Register(ctx context.Context, payload RegisterDTO) (user.User, error) {
 	_, err := s.users.FindByEmail(ctx, payload.Email)
 	if err == nil {
 		return user.User{}, user.ErrEmailTaken
@@ -51,6 +68,46 @@ func (s *Service) Register(ctx context.Context, payload RegisterPayload) (user.U
 	}
 
 	return u, nil
+}
+
+// A valid cost-10 hash keeps unknown-user checks comparable to password checks.
+const dummyPasswordHash = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy"
+
+func (s *Service) Login(ctx context.Context, payload LoginDTO) (user.User, session.Session, string, error) {
+	u, err := s.users.FindByEmail(ctx, payload.Email)
+	if errors.Is(err, user.ErrNotFound) {
+		_ = comparePassword(dummyPasswordHash, payload.Password)
+		return user.User{}, session.Session{}, "", ErrInvalidCredentials
+	}
+	if err != nil {
+		return user.User{}, session.Session{}, "", fmt.Errorf("find login user: %w", err)
+	}
+
+	a, err := s.accounts.FindByUserID(ctx, u.ID)
+	if errors.Is(err, account.ErrNotFound) {
+		_ = comparePassword(dummyPasswordHash, payload.Password)
+		return user.User{}, session.Session{}, "", ErrInvalidCredentials
+	}
+	if err != nil {
+		return user.User{}, session.Session{}, "", fmt.Errorf("find login account: %w", err)
+	}
+	if a.Password == nil {
+		_ = comparePassword(dummyPasswordHash, payload.Password)
+		return user.User{}, session.Session{}, "", ErrInvalidCredentials
+	}
+	if err := comparePassword(*a.Password, payload.Password); err != nil {
+		return user.User{}, session.Session{}, "", ErrInvalidCredentials
+	}
+
+	created, token, err := s.sessions.Create(ctx, u.ID)
+	if err != nil {
+		return user.User{}, session.Session{}, "", fmt.Errorf("create login session: %w", err)
+	}
+	return u, created, token, nil
+}
+
+func comparePassword(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
 func hashPassword(v string) (string, error) {

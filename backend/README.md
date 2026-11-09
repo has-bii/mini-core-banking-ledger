@@ -49,6 +49,29 @@ goose -env .env create add_accounts sql
 
 Edit the generated file in `migrations/`, adding the schema changes under `-- +goose Up` and their rollback under `-- +goose Down`. Apply it to the appropriate database using the commands above.
 
+## Testing
+
+Fast tests use the Go standard library and do not require PostgreSQL:
+
+```sh
+go test -race ./...
+go vet ./...
+```
+
+## Login and sessions
+
+`POST /auth/login` accepts an email and password:
+
+```sh
+curl -i -c cookies.txt http://localhost:8080/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"alice@example.com","password":"password123"}'
+```
+
+A successful login returns the user and sets a host-only `session` cookie with `HttpOnly`, `SameSite=Lax`, `Path=/`, and a 24-hour lifetime. `Secure` is enabled outside `dev` and `test`; staging and production must use HTTPS. The raw token is never returned in JSON or stored in the database: the existing `sessions.token` column holds its SHA-256 hash. Invalid credentials return `401`; invalid input returns `400`.
+
+The session service supports token lookup (rejecting expired sessions) and revocation. Authentication middleware, logout endpoints, automatic expired-row cleanup, and login rate limiting are not included yet. The app's existing cross-origin protection applies to login too.
+
 ## Architecture
 
 See [backend architecture guidelines](docs/architecture.md) for layer responsibilities, transaction ownership, and validation rules.

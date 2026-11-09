@@ -8,14 +8,20 @@ import (
 )
 
 func WriteJSON(w http.ResponseWriter, status int, v any) {
+	writeJSON(w, status, map[string]any{"data": v})
+}
+
+func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	// Headers are committed; a write failure cannot be replaced with another response.
 	_ = json.NewEncoder(w).Encode(v)
 }
 
-func WriteError(w http.ResponseWriter, status int, msg string) {
-	WriteJSON(w, status, map[string]string{"error": msg})
+func WriteError(w http.ResponseWriter, status int, code, msg string) {
+	writeJSON(w, status, map[string]any{
+		"error": map[string]string{"code": code, "message": msg},
+	})
 }
 
 func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {

@@ -1,36 +1,75 @@
 package auth
 
 import (
+	"backend/internal/modules/session"
 	"backend/internal/modules/user"
 	"backend/internal/platform/httpx"
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
 )
 
-type Handler struct {
-	svc *Service
-	log *slog.Logger
+type authService interface {
+	Register(context.Context, RegisterDTO) (user.User, error)
+	Login(context.Context, LoginDTO) (user.User, session.Session, string, error)
 }
 
-func NewHandler(svc *Service, log *slog.Logger) *Handler {
-	return &Handler{svc: svc, log: log}
+type Handler struct {
+	svc          authService
+	log          *slog.Logger
+	secureCookie bool
+}
+
+func NewHandler(svc authService, log *slog.Logger, secureCookie bool) *Handler {
+	return &Handler{svc: svc, log: log, secureCookie: secureCookie}
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/register", h.register)
+	mux.HandleFunc("POST /auth/login", h.login)
+}
+
+func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+	var payload LoginDTO
+	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
+		httpx.WriteError(w, http.StatusBadRequest, "INVALID_JSON", "Invalid JSON body")
+		return
+	}
+	if errs := payload.Validate(); len(errs) > 0 {
+		httpx.WriteError(w, http.StatusBadRequest, "VALIDATION_ERROR", errors.Join(errs...).Error())
+		return
+	}
+
+	u, created, token, err := h.svc.Login(r.Context(), payload)
+	if err != nil {
+		if errors.Is(err, ErrInvalidCredentials) {
+			httpx.WriteError(w, http.StatusUnauthorized, "INVALID_CREDENTIALS", ErrInvalidCredentials.Error())
+		} else {
+			h.log.Error("login failed", "err", err)
+			httpx.WriteError(w, http.StatusInternalServerError, "INTERNAL_ERROR", "internal error")
+		}
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name: "session", Value: token, Path: "/",
+		HttpOnly: true, Secure: h.secureCookie, SameSite: http.SameSiteLaxMode,
+		Expires: created.ExpiresAt, MaxAge: int(session.Lifetime.Seconds()),
+	})
+	httpx.WriteJSON(w, http.StatusOK, u)
 }
 
 func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
-	var payload RegisterPayload
+	var payload RegisterDTO
 
 	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
-		httpx.WriteError(w, http.StatusBadRequest, "Invalid JSON body")
+		httpx.WriteError(w, http.StatusBadRequest, "INVALID_JSON", "Invalid JSON body")
 		return
 	}
-	payload, errs := payload.Validate()
-	if len(errs) > 0 {
-		httpx.WriteError(w, http.StatusBadRequest, errors.Join(errs...).Error())
+	if errs := payload.Validate(); len(errs) > 0 {
+		httpx.WriteError(w, http.StatusBadRequest, "VALIDATION_ERROR", errors.Join(errs...).Error())
 		return
 	}
 
@@ -38,10 +77,10 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch {
 		case errors.Is(err, user.ErrEmailTaken):
-			httpx.WriteError(w, http.StatusConflict, err.Error())
+			httpx.WriteError(w, http.StatusConflict, "EMAIL_TAKEN", err.Error())
 		default:
 			h.log.Error("registration failed", "err", err)
-			httpx.WriteError(w, http.StatusInternalServerError, "internal error")
+			httpx.WriteError(w, http.StatusInternalServerError, "INTERNAL_ERROR", "internal error")
 		}
 		return
 	}
