@@ -18,7 +18,6 @@ func Load() (Config, error) {
 	if err := godotenv.Load(); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return Config{}, fmt.Errorf("load .env: %w", err)
 	}
-
 	var errs []error
 
 	cfg := Config{
@@ -38,6 +37,12 @@ func Load() (Config, error) {
 	case "dev", "staging", "prod":
 	default:
 		errs = append(errs, fmt.Errorf("APP_ENV must be dev, staging, or prod; got %q", cfg.Env))
+	}
+
+	switch cfg.LogLevel {
+	case "debug", "info", "warn", "error":
+	default:
+		errs = append(errs, fmt.Errorf("LOG_LEVEL must be debug, info, warn, or error; got %q", cfg.LogLevel))
 	}
 
 	if err := errors.Join(errs...); err != nil {
@@ -63,6 +68,10 @@ func getDuration(key string, fallback time.Duration, errs *[]error) time.Duratio
 	parsedValue, err := time.ParseDuration(value)
 	if err != nil {
 		*errs = append(*errs, fmt.Errorf("%s: %w", key, err))
+		return fallback
+	}
+	if parsedValue <= 0 {
+		*errs = append(*errs, fmt.Errorf("%s must be positive", key))
 		return fallback
 	}
 	return parsedValue

@@ -1,28 +1,70 @@
 package main
 
 import (
-	"backend/internal/config"
-	"fmt"
+	"context"
+	"errors"
 	"log/slog"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+
+	"backend/internal/app"
+	"backend/internal/config"
+	"backend/internal/platform/database"
+	"backend/internal/platform/logger"
 )
 
-func main()  {
+func main() {
 	if err := run(); err != nil {
 		slog.Error("fatal", "err", err)
 		os.Exit(1)
 	}
-	fmt.Println("Shutting down...")
-	os.Exit(1)
 }
 
 func run() error {
 	cfg, err := config.Load()
 	if err != nil {
-		return  err
+		return err
 	}
 
-	fmt.Printf("APP_ENV: %q\nHTTP_ADDR: %q\nDATABASE_URL: %q\nLOG_LEVEL: %q\nHTTP_READ_TIMEOUT: %q\nSHUTDOWN_TIMEOUT: %q\n", cfg.Env, cfg.Addr, cfg.DatabaseURL, cfg.LogLevel, cfg.ReadTimeout, cfg.ShutdownTimeout)
+	log := logger.New(cfg.Env, cfg.LogLevel)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
-	return  nil
+	pool, err := database.Open(ctx, cfg.DatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer pool.Close()
+
+	handler := app.New(cfg.Env, pool, log)
+	server := &http.Server{
+		Addr:              cfg.Addr,
+		Handler:           handler,
+		ReadHeaderTimeout: cfg.ReadTimeout,
+		ReadTimeout:       cfg.ReadTimeout,
+		WriteTimeout:      cfg.ReadTimeout,
+		IdleTimeout:       cfg.ShutdownTimeout,
+	}
+
+	defer server.Close()
+
+	errs := make(chan error, 1)
+	go func() {
+		log.Info("listening", "addr", cfg.Addr)
+		errs <- server.ListenAndServe()
+	}()
+
+	select {
+	case err := <-errs:
+		if !errors.Is(err, http.ErrServerClosed) {
+			return err
+		}
+		return nil
+	case <-ctx.Done():
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
+		defer cancel()
+		return server.Shutdown(shutdownCtx)
+	}
 }
