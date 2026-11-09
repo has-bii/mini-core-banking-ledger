@@ -8,12 +8,14 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"time"
 )
 
 type authService interface {
 	Register(context.Context, RegisterDTO) (user.User, error)
 	Login(context.Context, LoginDTO) (user.User, session.Session, string, error)
 	Me(context.Context, string) (user.User, error)
+	Logout(context.Context, string) error
 }
 
 type Handler struct {
@@ -29,6 +31,7 @@ func NewHandler(svc authService, log *slog.Logger, secureCookie bool) *Handler {
 func (h *Handler) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/register", h.register)
 	mux.HandleFunc("POST /auth/login", h.login)
+	mux.HandleFunc("POST /auth/logout", h.logout)
 	mux.HandleFunc("GET /auth/me", h.me)
 }
 
@@ -51,6 +54,24 @@ func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpx.WriteJSON(w, http.StatusOK, u)
+}
+
+func (h *Handler) logout(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+	if cookie, err := r.Cookie("session"); err == nil {
+		if err := h.svc.Logout(r.Context(), cookie.Value); err != nil {
+			h.log.Error("logout failed", "err", err)
+			httpx.WriteError(w, http.StatusInternalServerError, httpx.CodeInternalError, "internal error")
+			return
+		}
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name: "session", Value: "", Path: "/",
+		HttpOnly: true, Secure: h.secureCookie, SameSite: http.SameSiteLaxMode,
+		Expires: time.Unix(1, 0).UTC(), MaxAge: -1,
+	})
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) login(w http.ResponseWriter, r *http.Request) {

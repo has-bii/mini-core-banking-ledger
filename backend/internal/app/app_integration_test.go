@@ -124,8 +124,30 @@ func TestAuthIntegration(t *testing.T) {
 		t.Fatalf("unexpected session cookie attributes: %+v", sessionCookie)
 	}
 
+	otherLogin := request(t, http.MethodPost, "/api/auth/login", `{"email":"`+email+`","password":"password123"}`, http.StatusOK, nil)
+	var otherCookie *http.Cookie
+	for _, cookie := range otherLogin.Result().Cookies() {
+		if cookie.Name == "session" {
+			otherCookie = cookie
+		}
+	}
+	if otherCookie == nil || otherCookie.Value == sessionCookie.Value {
+		t.Fatal("second login did not create a separate session")
+	}
+
 	me := request(t, http.MethodGet, "/api/auth/me", "", http.StatusOK, sessionCookie)
 	if current := decodeUser(me); current.ID != registered.ID || current.Email != email {
 		t.Fatalf("current user differs from registered user: %+v", current)
 	}
+
+	logout := request(t, http.MethodPost, "/api/auth/logout", "", http.StatusNoContent, sessionCookie)
+	cookies := logout.Result().Cookies()
+	if logout.Body.Len() != 0 || len(cookies) != 1 || cookies[0].Name != "session" || cookies[0].Value != "" || cookies[0].MaxAge != -1 {
+		t.Fatalf("logout did not clear session cookie: body=%s; cookies=%v", logout.Body.String(), cookies)
+	}
+	request(t, http.MethodGet, "/api/auth/me", "", http.StatusUnauthorized, sessionCookie)
+	request(t, http.MethodGet, "/api/auth/me", "", http.StatusOK, otherCookie)
+	request(t, http.MethodPost, "/api/auth/logout", "", http.StatusNoContent, sessionCookie)
+	request(t, http.MethodPost, "/api/auth/logout", "", http.StatusNoContent, nil)
+	request(t, http.MethodPost, "/api/auth/logout", "", http.StatusNoContent, &http.Cookie{Name: "session", Value: "invalid"})
 }

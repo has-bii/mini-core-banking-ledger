@@ -26,6 +26,7 @@ type accountStore interface {
 type sessionService interface {
 	Create(context.Context, string) (session.Session, string, error)
 	FindByToken(context.Context, string) (session.Session, error)
+	Revoke(context.Context, string) error
 }
 
 type Service struct {
@@ -104,6 +105,13 @@ func (s *Service) Login(ctx context.Context, payload LoginDTO) (user.User, sessi
 		return user.User{}, session.Session{}, "", fmt.Errorf("create login session: %w", err)
 	}
 	return u, created, token, nil
+}
+
+func (s *Service) Logout(ctx context.Context, token string) error {
+	if err := s.sessions.Revoke(ctx, token); err != nil && !errors.Is(err, session.ErrNotFound) {
+		return fmt.Errorf("revoke logout session: %w", err)
+	}
+	return nil
 }
 
 func (s *Service) Me(ctx context.Context, token string) (user.User, error) {

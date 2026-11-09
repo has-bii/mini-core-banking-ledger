@@ -37,6 +37,7 @@ func (f fakeAccounts) FindByUserID(ctx context.Context, id string) (account.Acco
 type fakeSessions struct {
 	create func(context.Context, string) (session.Session, string, error)
 	find   func(context.Context, string) (session.Session, error)
+	revoke func(context.Context, string) error
 }
 
 func (f fakeSessions) Create(ctx context.Context, id string) (session.Session, string, error) {
@@ -45,6 +46,40 @@ func (f fakeSessions) Create(ctx context.Context, id string) (session.Session, s
 
 func (f fakeSessions) FindByToken(ctx context.Context, token string) (session.Session, error) {
 	return f.find(ctx, token)
+}
+
+func (f fakeSessions) Revoke(ctx context.Context, token string) error {
+	return f.revoke(ctx, token)
+}
+
+func TestLogout(t *testing.T) {
+	failure := errors.New("store unavailable")
+	for _, tt := range []struct {
+		name      string
+		revokeErr error
+		wantErr   error
+	}{
+		{name: "revoked"},
+		{name: "not found", revokeErr: fmt.Errorf("revoke: %w", session.ErrNotFound)},
+		{name: "store failure", revokeErr: failure, wantErr: failure},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			called := false
+			svc := NewService(nil, nil, nil, fakeSessions{revoke: func(_ context.Context, token string) error {
+				called = true
+				if token != "raw-token" {
+					t.Errorf("token = %q", token)
+				}
+				return tt.revokeErr
+			}})
+			if err := svc.Logout(t.Context(), "raw-token"); !errors.Is(err, tt.wantErr) {
+				t.Errorf("Logout() error = %v, want %v", err, tt.wantErr)
+			}
+			if !called {
+				t.Error("session was not revoked")
+			}
+		})
+	}
 }
 
 func TestLogin(t *testing.T) {

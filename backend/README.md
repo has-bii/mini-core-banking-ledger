@@ -70,7 +70,7 @@ goose -env .env.test up
 go test -tags=integration -count=1 ./...
 ```
 
-The suite exercises registration, duplicate registration, wrong passwords, login/session cookies, and authenticated/unauthenticated current-user requests through the real HTTP handler and PostgreSQL. It uses unique user emails and deletes only its own users afterward (accounts and sessions cascade). Missing configuration, an unavailable database, or unapplied migrations fail the integration run rather than silently skipping it. Interrupted runs may leave test rows behind. Normal `go test ./...` remains database-free.
+The suite exercises registration, duplicate registration, wrong passwords, login/session cookies, authenticated/unauthenticated current-user requests, and current-session logout through the real HTTP handler and PostgreSQL. It uses unique user emails and deletes only its own users afterward (accounts and sessions cascade). Missing configuration, an unavailable database, or unapplied migrations fail the integration run rather than silently skipping it. Interrupted runs may leave test rows behind. Normal `go test ./...` remains database-free.
 
 ## Login and sessions
 
@@ -92,7 +92,15 @@ curl -i -b cookies.txt http://localhost:8080/api/auth/me
 
 A successful response is `200` with the same `{"data": {...}}` user shape as login. Missing, empty, invalid, expired, or revoked sessions return `401` with error code `UNAUTHENTICATED`; unexpected lookup failures return a generic `500`. Responses use `Cache-Control: no-store` and never include the session token or password hash.
 
-The session service supports token lookup (rejecting expired sessions) and revocation. Reusable authentication middleware, logout endpoints, automatic expired-row cleanup, and login rate limiting are not included yet. The app's existing cross-origin protection applies to login too.
+`POST /api/auth/logout` revokes only the current session and clears the session cookie:
+
+```sh
+curl -i -b cookies.txt -c cookies.txt -X POST http://localhost:8080/api/auth/logout
+```
+
+Logout returns `204 No Content`, including when the cookie is missing, empty, invalid, expired, or already revoked. Other sessions remain active. Unexpected revocation failures return a generic `500` without clearing the cookie so the client can retry. Responses use `Cache-Control: no-store`.
+
+The session service supports token lookup (rejecting expired sessions) and revocation. Reusable authentication middleware, automatic expired-row cleanup, and login rate limiting are not included yet. The app's existing cross-origin protection applies to login and logout too.
 
 ## Architecture
 
