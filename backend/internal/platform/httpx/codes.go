@@ -7,4 +7,5 @@ const (
 	CodeUnauthenticated    = "UNAUTHENTICATED"
 	CodeInvalidCredentials = "INVALID_CREDENTIALS"
 	CodeEmailTaken         = "EMAIL_TAKEN"
+	CodeTooManyRequests    = "TOO_MANY_REQUESTS"
 )
