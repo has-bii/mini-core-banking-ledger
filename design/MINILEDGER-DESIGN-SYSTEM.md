@@ -1,8 +1,8 @@
 # MiniLedger design system
 
-Light-only “Fintech Fresh” system for mobile operations staff and accountants.
+Light-only “Sunny Ledger” system for mobile operations staff and accountants.
 
-The editable source is [design.pen](./design.pen). It contains seven library boards, **152 reusable components**, **146 tokens**, and isolated component specimens. No screen templates are included.
+The editable source is [design.pen](./design.pen). It contains seven library boards, **152 reusable components**, **148 tokens**, isolated component specimens, and sign-in/sign-up state screens.
 
 ## Files
 
@@ -18,9 +18,9 @@ The editable source is [design.pen](./design.pen). It contains seven library boa
 | Content gutter | 16px; content width is 358px at base and 328px at minimum |
 | Touch targets | At least 44 × 44px; badges and timeline markers are passive |
 | Safe areas | Runtime device insets; canvas samples use 47px top and 34px bottom |
-| Surfaces | Background #F6F7F9; white Cards; comfortable density |
-| Radius | 12px controls and Cards; 8px small marks; 16px large surfaces; 999px badges |
-| Font | Plus Jakarta Sans, weights 400–800 |
+| Surfaces | Background #F7F5FC; white working surfaces; lilac account Cards; mint brand accents |
+| Radius | 16px controls and Cards; 8px small marks; 24px feature surfaces; 999px badges |
+| Font | Bricolage Grotesque headings, weights 600–800; Plus Jakarta Sans body and amounts, weights 400–800 |
 | Numerals | Tabular, lining numerals for amounts, balances, account numbers and IDs |
 | Overlays | Full-width bottom Drawers |
 | Data density | Transaction list items replace mobile data tables |
@@ -32,6 +32,8 @@ The canvas engine resolves dimension variables to numeric values. The design gen
 The .pen schema does not expose OpenType feature controls. Numeric text is marked with typography metadata; the CSS handoff applies `font-variant-numeric: tabular-nums lining-nums` and `font-feature-settings: "tnum" on, "lnum" on`. Confirm font loading in the real application.
 
 ## Typography
+
+Use Bricolage Grotesque for display, h1–h3 and the wordmark; keep Plus Jakarta Sans for labels, descriptions, amounts and identifiers. The `.ml-heading` and `.ml-wordmark` recipes apply the display face. The mint brand label pairs the wordmark with a standard book-open icon.
 
 | Canvas style | Size | Line height | Weight | Purpose |
 | --- | --- | --- | --- | --- |
@@ -49,7 +51,7 @@ Amounts have a separate currency line and are right-aligned. Account names, desc
 
 ## Color and contrast
 
-The requested palette is preserved exactly. Semantic tints and darker semantic foregrounds support readable small labels.
+Plum actions (#7040BA), lilac surfaces (#EEE5FB), and mint accents (#BFE8DA) add personality. Mint highlights brand labels, avatars and selected filters; transaction meanings retain their semantic colors. Semantic tints and darker foregrounds support readable small labels.
 
 | Meaning | Base | Tint | Small-text foreground |
 | --- | --- | --- | --- |
@@ -58,9 +60,9 @@ The requested palette is preserved exactly. Semantic tints and darker semantic f
 | Warning | #D97706 | #FFFBEB | #92400E |
 | Information | #2563EB | #EFF6FF | #1D4ED8 |
 
-`muted-foreground` (#64748B) has 4.76:1 contrast on white, but 4.44:1 on the specified app background. `subtle-foreground` (#5B6B80) is the stronger alternative for small text on background and muted surfaces. Base credit green is reserved for large bold amounts and icons; compact credit amounts use `credit-foreground`.
+`muted-foreground` (#706579) has 5.08:1 contrast on the app background and 4.50:1 on lilac account surfaces. `subtle-foreground` (#62566E) supports helper text.
 
-Measured examples: foreground/background 16.65:1; primary white text 6.29:1; destructive white text 4.70:1; semantic foreground/tint pairs 5.72:1 or higher. Color always has a second cue such as a sign, icon, label or status.
+Measured examples: foreground/background 14.07:1; primary/white 6.71:1; mint accent text/background 7.18:1; secondary foreground/background 7.80:1. Color always has a second cue such as a sign, icon, label or status.
 
 Border and input colors are structural surface tokens. Do not use them for text. Focus uses the ring token and an explicit outline.
 
@@ -79,7 +81,7 @@ Use the CSS-variable approach described in [shadcn theming](https://ui.shadcn.co
 | Switch | Switch + Label | 48 × 28px track inside a 72 × 44px target |
 | Tabs | Tabs, TabsList, TabsTrigger, TabsContent | 44px trigger minimum; selected label and surface |
 | Badge | Badge | default, secondary, outline, destructive; passive pill |
-| Card | Card, CardHeader, CardContent, CardFooter | 12px radius, 16px padding, soft shadow |
+| Card | Card, CardHeader, CardContent, CardFooter | 16px radius, 16px padding, soft shadow; featured account Card uses 24px radius and flat lilac fill |
 | Avatar | Avatar, AvatarFallback | 44px and 56px specimens; nearby full name |
 | Separator | Separator | One-pixel structural divider |
 | Skeleton | Skeleton | Reserves transaction-row layout; one loading announcement |
@@ -152,16 +154,16 @@ Audit timestamps include a time zone. References wrap and can be copied with Son
 
 ## Verification checklist
 
-- [x] Seven root library boards; no dark tokens or screen templates.
-- [x] 152 reusable components; all 1,339 nodes have human-readable names.
+- [x] Seven library boards plus authentication state screens; light theme.
+- [x] 152 reusable components retained; added brand-label nodes have human-readable names.
 - [x] Structural pass after layout settled: no clipping or collapsed frames.
 - [x] All root placeholders cleared after section completion.
-- [x] Style-property audit: no literal color, font, spacing, radius, opacity or stroke values in component nodes.
+- [x] Refreshed palette, radii and display font use shared tokens; CSS and JSON values are synchronized.
 - [x] Numeric dimensions originate from tokens; reusable component dimensions retain binding metadata.
 - [x] Reusable button/input/currency/date/choice/chip/day targets are at least 44 × 44px.
 - [x] 360px component specimens: 328px content, wrapping account/transaction names and visible amounts.
 - [x] Compact Calendar day width is 46.9px; five-item navigation width is 65.6px.
-- [x] Contrast checked; stronger small-text token added for the app background.
+- [x] Contrast checked for plum actions, lilac surfaces, mint highlights and supporting text.
 - [x] Visual review of foundations, actions, controls, surfaces, transactions, navigation, Drawers, compact examples and toast.
 - [x] Exact 75% progress label agrees with the rendered fill.
 - [x] CSS supplies the OpenType numeric feature absent from the canvas schema.

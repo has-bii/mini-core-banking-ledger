@@ -1,6 +1,6 @@
 {
   "name": "MiniLedger",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "theme": "light",
   "baseViewport": {
     "width": 390,
@@ -10,11 +10,11 @@
   "tokens": {
     "background": {
       "type": "color",
-      "value": "#F6F7F9"
+      "value": "#F7F5FC"
     },
     "foreground": {
       "type": "color",
-      "value": "#0F172A"
+      "value": "#292238"
     },
     "card": {
       "type": "color",
@@ -22,7 +22,7 @@
     },
     "card-foreground": {
       "type": "color",
-      "value": "#0F172A"
+      "value": "#292238"
     },
     "popover": {
       "type": "color",
@@ -30,11 +30,11 @@
     },
     "popover-foreground": {
       "type": "color",
-      "value": "#0F172A"
+      "value": "#292238"
     },
     "primary": {
       "type": "color",
-      "value": "#4F46E5"
+      "value": "#7040BA"
     },
     "primary-foreground": {
       "type": "color",
@@ -42,27 +42,27 @@
     },
     "secondary": {
       "type": "color",
-      "value": "#EEF2FF"
+      "value": "#EEE5FB"
     },
     "secondary-foreground": {
       "type": "color",
-      "value": "#3730A3"
+      "value": "#58308B"
     },
     "muted": {
       "type": "color",
-      "value": "#EEF0F4"
+      "value": "#EEEAF4"
     },
     "muted-foreground": {
       "type": "color",
-      "value": "#64748B"
+      "value": "#706579"
     },
     "accent": {
       "type": "color",
-      "value": "#E0E7FF"
+      "value": "#BFE8DA"
     },
     "accent-foreground": {
       "type": "color",
-      "value": "#3730A3"
+      "value": "#204D40"
     },
     "destructive": {
       "type": "color",
@@ -74,15 +74,15 @@
     },
     "border": {
       "type": "color",
-      "value": "#E2E8F0"
+      "value": "#DDD5E8"
     },
     "input": {
       "type": "color",
-      "value": "#E2E8F0"
+      "value": "#DDD5E8"
     },
     "ring": {
       "type": "color",
-      "value": "#4F46E5"
+      "value": "#7040BA"
     },
     "credit": {
       "type": "color",
@@ -162,11 +162,11 @@
     },
     "radius/md": {
       "type": "number",
-      "value": 12
+      "value": 16
     },
     "radius/lg": {
       "type": "number",
-      "value": 16
+      "value": 24
     },
     "radius/none": {
       "type": "number",
@@ -334,7 +334,7 @@
     },
     "radius": {
       "type": "number",
-      "value": 12
+      "value": 16
     },
     "font/numerals": {
       "type": "string",
@@ -382,11 +382,11 @@
     },
     "primary-pressed": {
       "type": "color",
-      "value": "#4338CA"
+      "value": "#593099"
     },
     "secondary-pressed": {
       "type": "color",
-      "value": "#E0E7FF"
+      "value": "#E0D0F5"
     },
     "destructive-pressed": {
       "type": "color",
@@ -394,11 +394,11 @@
     },
     "disabled": {
       "type": "color",
-      "value": "#EEF0F4"
+      "value": "#EEEAF4"
     },
     "disabled-foreground": {
       "type": "color",
-      "value": "#64748B"
+      "value": "#706579"
     },
     "shadow-lg-color": {
       "type": "color",
@@ -590,7 +590,15 @@
     },
     "subtle-foreground": {
       "type": "color",
-      "value": "#5B6B80"
+      "value": "#62566E"
+    },
+    "auth/input-border": {
+      "type": "color",
+      "value": "#95859F"
+    },
+    "font/display": {
+      "type": "string",
+      "value": "Bricolage Grotesque"
     }
   },
   "cssVariableNames": {
@@ -739,7 +747,9 @@
     "text/amount-md": "--ml-text-amount-md",
     "weight/700": "--ml-weight-700",
     "weight/800": "--ml-weight-800",
-    "subtle-foreground": "--subtle-foreground"
+    "subtle-foreground": "--subtle-foreground",
+    "auth/input-border": "--ml-auth-input-border",
+    "font/display": "--ml-font-display"
   },
   "componentRegistry": {
     "foundation": "ZPMjM",

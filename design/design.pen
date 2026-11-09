@@ -39,9 +39,9 @@
               "id": "sgX7Q",
               "name": "Section title",
               "fill": "$foreground",
-              "content": "Clear by design.",
+              "content": "Serious numbers. Sunny outlook.",
               "lineHeight": "$leading/display",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/display",
               "fontWeight": "$weight/700",
               "letterSpacing": "$tracking/display"
@@ -53,7 +53,7 @@
               "fill": "$subtle-foreground",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "Fintech Fresh · Light theme · Mobile operations and accounting",
+              "content": "A little personality. The same precision. · Light theme · Mobile banking",
               "lineHeight": "$leading/body",
               "fontFamily": "$font/sans",
               "fontSize": "$text/body",
@@ -66,18 +66,8 @@
           "id": "FlXEv",
           "name": "Library signature",
           "width": "fill_container",
-          "fill": "$card",
+          "fill": "$accent",
           "cornerRadius": "$radius/md",
-          "effect": {
-            "type": "shadow",
-            "shadowType": "outer",
-            "color": "$shadow-color",
-            "offset": {
-              "x": "$size/0",
-              "y": "$elevation/md/y"
-            },
-            "blur": "$elevation/md/blur"
-          },
           "gap": "$spacing/12",
           "padding": "$spacing/32",
           "justifyContent": "space_between",
@@ -95,10 +85,10 @@
                   "type": "text",
                   "id": "oxsYz",
                   "name": "Wordmark",
-                  "fill": "$foreground",
+                  "fill": "$primary",
                   "content": "MiniLedger",
                   "lineHeight": "$leading/body",
-                  "fontFamily": "$font/sans",
+                  "fontFamily": "$font/display",
                   "fontSize": "$text/h1",
                   "fontWeight": "$weight/800"
                 },
@@ -111,7 +101,7 @@
                   "width": "fill_container",
                   "content": "Every amount clear.\nEvery entry accountable.",
                   "lineHeight": "$leading/heading",
-                  "fontFamily": "$font/sans",
+                  "fontFamily": "$font/display",
                   "fontSize": "$text/h2",
                   "fontWeight": "$weight/500"
                 },
@@ -205,7 +195,7 @@
               "fill": "$foreground",
               "content": "01   Semantic color",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -265,7 +255,7 @@
                       "id": "OmOR0",
                       "name": "background value",
                       "fill": "$subtle-foreground",
-                      "content": "#F6F7F9",
+                      "content": "#F7F5FC",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -309,7 +299,7 @@
                       "id": "bgngK",
                       "name": "foreground value",
                       "fill": "$subtle-foreground",
-                      "content": "#0F172A",
+                      "content": "#292238",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -397,7 +387,7 @@
                       "id": "kCoUF",
                       "name": "muted value",
                       "fill": "$subtle-foreground",
-                      "content": "#EEF0F4",
+                      "content": "#EEEAF4",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -441,7 +431,7 @@
                       "id": "XmYFj",
                       "name": "muted-foreground value",
                       "fill": "$subtle-foreground",
-                      "content": "#64748B",
+                      "content": "#706579",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -494,7 +484,7 @@
                       "id": "D9UQJ5",
                       "name": "primary value",
                       "fill": "$subtle-foreground",
-                      "content": "#4F46E5",
+                      "content": "#7040BA",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -582,7 +572,7 @@
                       "id": "qOSNs",
                       "name": "secondary value",
                       "fill": "$subtle-foreground",
-                      "content": "#EEF2FF",
+                      "content": "#EEE5FB",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -626,7 +616,7 @@
                       "id": "hFzS0",
                       "name": "accent value",
                       "fill": "$subtle-foreground",
-                      "content": "#E0E7FF",
+                      "content": "#BFE8DA",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -670,7 +660,7 @@
                       "id": "w5zNnw",
                       "name": "ring value",
                       "fill": "$subtle-foreground",
-                      "content": "#4F46E5",
+                      "content": "#7040BA",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -723,7 +713,7 @@
                       "id": "yI0RY",
                       "name": "border value",
                       "fill": "$subtle-foreground",
-                      "content": "#E2E8F0",
+                      "content": "#DDD5E8",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -767,7 +757,7 @@
                       "id": "PO4H8",
                       "name": "input value",
                       "fill": "$subtle-foreground",
-                      "content": "#E2E8F0",
+                      "content": "#DDD5E8",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -855,7 +845,7 @@
                       "id": "v8tyLY",
                       "name": "secondary-foreground value",
                       "fill": "$subtle-foreground",
-                      "content": "#3730A3",
+                      "content": "#58308B",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -899,7 +889,7 @@
                       "id": "yACqT",
                       "name": "accent-foreground value",
                       "fill": "$subtle-foreground",
-                      "content": "#3730A3",
+                      "content": "#204D40",
                       "lineHeight": "$leading/caption",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/caption",
@@ -932,7 +922,7 @@
               "fill": "$foreground",
               "content": "02   Meaning, beyond color",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -1204,9 +1194,9 @@
               "id": "O8B5S",
               "name": "Type foundation title",
               "fill": "$foreground",
-              "content": "03   Plus Jakarta Sans",
+              "content": "03   Bricolage Grotesque + Plus Jakarta Sans",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -1244,7 +1234,7 @@
                   "width": "fill_container",
                   "content": "The ledger, at a glance.",
                   "lineHeight": "$leading/display",
-                  "fontFamily": "$font/sans",
+                  "fontFamily": "$font/display",
                   "fontSize": "$text/display",
                   "fontWeight": "$weight/700"
                 }
@@ -1284,7 +1274,7 @@
                   "width": "fill_container",
                   "content": "Account overview",
                   "lineHeight": "$leading/heading",
-                  "fontFamily": "$font/sans",
+                  "fontFamily": "$font/display",
                   "fontSize": "$text/h1",
                   "fontWeight": "$weight/700"
                 }
@@ -1324,7 +1314,7 @@
                   "width": "fill_container",
                   "content": "Journal entries",
                   "lineHeight": "$leading/heading",
-                  "fontFamily": "$font/sans",
+                  "fontFamily": "$font/display",
                   "fontSize": "$text/h2",
                   "fontWeight": "$weight/700"
                 }
@@ -1364,7 +1354,7 @@
                   "width": "fill_container",
                   "content": "Transaction details",
                   "lineHeight": "$leading/heading",
-                  "fontFamily": "$font/sans",
+                  "fontFamily": "$font/display",
                   "fontSize": "$text/h3",
                   "fontWeight": "$weight/600"
                 }
@@ -1614,7 +1604,7 @@
               "fill": "$foreground",
               "content": "04   Rhythm, shape & elevation",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -1964,7 +1954,7 @@
                       "id": "sQOad",
                       "name": "Radius label",
                       "fill": "$foreground",
-                      "content": "md · 12px",
+                      "content": "md · 16px",
                       "lineHeight": "$leading/body",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/body-sm",
@@ -2011,7 +2001,7 @@
                       "id": "ss438",
                       "name": "Radius label",
                       "fill": "$foreground",
-                      "content": "lg · 16px",
+                      "content": "lg · 24px",
                       "lineHeight": "$leading/body",
                       "fontFamily": "$font/sans",
                       "fontSize": "$text/body-sm",
@@ -2086,7 +2076,7 @@
               "fill": "$subtle-foreground",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "4px grid · 16px mobile padding · 12px cards, fields and buttons · 44px minimum touch target · sm / md / lg shadows: 0 2 6, 0 4 12, 0 8 24.",
+              "content": "4px grid · 16px mobile padding · 16px controls · 24px feature surfaces · 44px minimum touch target · Soft elevation, sparingly.",
               "lineHeight": "$leading/caption",
               "fontFamily": "$font/sans",
               "fontSize": "$text/caption",
@@ -2115,7 +2105,7 @@
               "fill": "$foreground",
               "content": "05   Mobile contract",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -2182,7 +2172,7 @@
               "fill": "$foreground",
               "content": "Actions that feel certain.",
               "lineHeight": "$leading/display",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/display",
               "fontWeight": "$weight/700",
               "letterSpacing": "$tracking/display"
@@ -2223,7 +2213,7 @@
               "fill": "$foreground",
               "content": "01   Button",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -4117,7 +4107,7 @@
               "fill": "$foreground",
               "content": "02   Sizes with touch built in",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -4397,7 +4387,7 @@
               "fill": "$foreground",
               "content": "03   Every variant, every size",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -5419,7 +5409,7 @@
               "fill": "$foreground",
               "content": "04   Interaction contract",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -5683,7 +5673,7 @@
               "fill": "$foreground",
               "content": "Confident input.",
               "lineHeight": "$leading/display",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/display",
               "fontWeight": "$weight/700",
               "letterSpacing": "$tracking/display"
@@ -5724,7 +5714,7 @@
               "fill": "$foreground",
               "content": "01   Labels, helper text & errors",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -5784,7 +5774,7 @@
               "fill": "$foreground",
               "content": "02   Input · Textarea · Select",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -6942,7 +6932,7 @@
               "fill": "$foreground",
               "content": "03   Form field",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -7089,7 +7079,7 @@
               "fill": "$foreground",
               "content": "04   Checkbox & Switch",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -8224,7 +8214,7 @@
               "fill": "$foreground",
               "content": "05   Tabs",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -8731,7 +8721,7 @@
               "fill": "$foreground",
               "content": "A shared visual language.",
               "lineHeight": "$leading/display",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/display",
               "fontWeight": "$weight/700",
               "letterSpacing": "$tracking/display"
@@ -8772,7 +8762,7 @@
               "fill": "$foreground",
               "content": "01   Badge & ledger status",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -9110,7 +9100,7 @@
               "fill": "$foreground",
               "content": "02   Card · Avatar · Separator",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -9169,7 +9159,7 @@
                           "width": "fill_container",
                           "content": "Card title",
                           "lineHeight": "$leading/body",
-                          "fontFamily": "$font/sans",
+                          "fontFamily": "$font/display",
                           "fontSize": "$text/h3",
                           "fontWeight": "$weight/600"
                         },
@@ -9313,7 +9303,7 @@
                               "fill": "$accent-foreground",
                               "content": "MC",
                               "lineHeight": "$leading/body",
-                              "fontFamily": "$font/sans",
+                              "fontFamily": "$font/display",
                               "fontSize": "$text/h3",
                               "fontWeight": "$weight/700"
                             }
@@ -9479,7 +9469,7 @@
               "fill": "$foreground",
               "content": "03   Alert",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -9809,7 +9799,7 @@
               "fill": "$foreground",
               "content": "04   Progress",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -10211,7 +10201,7 @@
               "fill": "$foreground",
               "content": "05   Sonner",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -10558,7 +10548,7 @@
               "fill": "$foreground",
               "content": "Numbers you can trust.",
               "lineHeight": "$leading/display",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/display",
               "fontWeight": "$weight/700",
               "letterSpacing": "$tracking/display"
@@ -10599,7 +10589,7 @@
               "fill": "$foreground",
               "content": "01   Amount display",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -10955,7 +10945,7 @@
               "fill": "$foreground",
               "content": "02   Currency amount input",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -11263,7 +11253,7 @@
               "fill": "$foreground",
               "content": "03   Account card",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -11286,20 +11276,10 @@
                     }
                   },
                   "width": 358,
-                  "fill": "$card",
-                  "cornerRadius": "$radius/md",
-                  "stroke": "$border",
+                  "fill": "$secondary",
+                  "cornerRadius": "$radius/lg",
+                  "stroke": "$secondary-pressed",
                   "strokeWidth": "$stroke/default",
-                  "effect": {
-                    "type": "shadow",
-                    "shadowType": "outer",
-                    "color": "$shadow-color",
-                    "offset": {
-                      "x": "$size/0",
-                      "y": "$elevation/sm/y"
-                    },
-                    "blur": "$elevation/sm/blur"
-                  },
                   "layout": "vertical",
                   "gap": "$spacing/20",
                   "padding": "$spacing/16",
@@ -11613,7 +11593,7 @@
               "fill": "$foreground",
               "content": "04   Transaction list item",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -12160,7 +12140,7 @@
               "fill": "$foreground",
               "content": "05   Journal entry line & difference",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -12503,7 +12483,7 @@
               "fill": "$foreground",
               "content": "06   Audit trail timeline item",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -13032,7 +13012,7 @@
               "fill": "$foreground",
               "content": "Made for mobile.",
               "lineHeight": "$leading/display",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/display",
               "fontWeight": "$weight/700",
               "letterSpacing": "$tracking/display"
@@ -13073,7 +13053,7 @@
               "fill": "$foreground",
               "content": "01   Top app bar & bottom tab bar",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -13767,7 +13747,7 @@
                       "width": "fill_container",
                       "content": "390 × 844 base viewport\n360px minimum width\n16px content gutter\n44 × 44 minimum touch target",
                       "lineHeight": "$leading/body",
-                      "fontFamily": "$font/sans",
+                      "fontFamily": "$font/display",
                       "fontSize": "$text/h3",
                       "fontWeight": "$weight/600"
                     },
@@ -13824,7 +13804,7 @@
               "fill": "$foreground",
               "content": "02   Filter chip",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -13884,9 +13864,9 @@
                     }
                   },
                   "height": 44,
-                  "fill": "$secondary",
+                  "fill": "$accent",
                   "cornerRadius": "$radius/pill",
-                  "stroke": "$border",
+                  "stroke": "$accent",
                   "strokeWidth": "$stroke/default",
                   "gap": "$spacing/8",
                   "padding": [
@@ -13899,7 +13879,7 @@
                       "type": "text",
                       "id": "Da7AD",
                       "name": "Filter label",
-                      "fill": "$primary",
+                      "fill": "$accent-foreground",
                       "content": "Posted",
                       "lineHeight": "$leading/body",
                       "fontFamily": "$font/sans",
@@ -13921,7 +13901,7 @@
                       "height": 16,
                       "icon": "x",
                       "library": "feather",
-                      "fill": "$primary"
+                      "fill": "$accent-foreground"
                     }
                   ]
                 },
@@ -14107,7 +14087,7 @@
               "fill": "$foreground",
               "content": "03   Empty state",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -14148,8 +14128,8 @@
                       },
                       "width": 64,
                       "height": 64,
-                      "fill": "$secondary",
-                      "cornerRadius": "$radius/pill",
+                      "fill": "$accent",
+                      "cornerRadius": "$radius/lg",
                       "layout": "vertical",
                       "justifyContent": "center",
                       "alignItems": "center",
@@ -14169,7 +14149,7 @@
                           "height": 28,
                           "icon": "book-open",
                           "library": "feather",
-                          "fill": "$primary"
+                          "fill": "$accent-foreground"
                         }
                       ]
                     },
@@ -14183,7 +14163,7 @@
                       "content": "No transactions yet",
                       "lineHeight": "$leading/body",
                       "textAlign": "center",
-                      "fontFamily": "$font/sans",
+                      "fontFamily": "$font/display",
                       "fontSize": "$text/h3",
                       "fontWeight": "$weight/700"
                     },
@@ -14280,7 +14260,7 @@
                       "content": "No matching entries",
                       "lineHeight": "$leading/body",
                       "textAlign": "center",
-                      "fontFamily": "$font/sans",
+                      "fontFamily": "$font/display",
                       "fontSize": "$text/h3",
                       "fontWeight": "$weight/700"
                     },
@@ -14360,7 +14340,7 @@
               "fill": "$foreground",
               "content": "04   Calendar & bottom Drawers",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -14540,7 +14520,7 @@
                               "width": "fill_container",
                               "content": "Posting date",
                               "lineHeight": "$leading/body",
-                              "fontFamily": "$font/sans",
+                              "fontFamily": "$font/display",
                               "fontSize": "$text/h3",
                               "fontWeight": "$weight/700"
                             },
@@ -16529,7 +16509,7 @@
                           "width": "fill_container",
                           "content": "Reverse this entry?",
                           "lineHeight": "$leading/body",
-                          "fontFamily": "$font/sans",
+                          "fontFamily": "$font/display",
                           "fontSize": "$text/h3",
                           "fontWeight": "$weight/700"
                         },
@@ -16744,7 +16724,7 @@
               "fill": "$foreground",
               "content": "05   Date control states",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -17235,7 +17215,7 @@
               "fill": "$foreground",
               "content": "06   Select · open state",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -17330,7 +17310,7 @@
                           "width": "fill_container",
                           "content": "Currency",
                           "lineHeight": "$leading/body",
-                          "fontFamily": "$font/sans",
+                          "fontFamily": "$font/display",
                           "fontSize": "$text/h3",
                           "fontWeight": "$weight/700"
                         },
@@ -17640,7 +17620,7 @@
               "fill": "$foreground",
               "content": "Ready to build.",
               "lineHeight": "$leading/display",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/display",
               "fontWeight": "$weight/700",
               "letterSpacing": "$tracking/display"
@@ -17681,7 +17661,7 @@
               "fill": "$foreground",
               "content": "01   360px support",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -17884,7 +17864,7 @@
               "fill": "$foreground",
               "content": "02   Shared state recipes",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -18373,7 +18353,7 @@
               "fill": "$foreground",
               "content": "03   shadcn/ui mapping",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -18663,7 +18643,7 @@
               "fill": "$foreground",
               "content": "04   Verification checklist",
               "lineHeight": "$leading/body",
-              "fontFamily": "$font/sans",
+              "fontFamily": "$font/display",
               "fontSize": "$text/h3",
               "fontWeight": "$weight/700"
             },
@@ -18779,7 +18759,7 @@
                   "fill": "$foreground",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Contrast: semantic text uses darker foregrounds; signs and labels reinforce meaning.",
+                  "content": "Contrast: plum action 6.71:1; mint accent text 7.18:1; muted on lilac 4.50:1.",
                   "lineHeight": "$leading/body",
                   "fontFamily": "$font/sans",
                   "fontSize": "$text/body-sm",
@@ -18939,7 +18919,7 @@
                   "fill": "$foreground",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Handoff: light tokens only; CSS tabular numerals for values and identifiers.",
+                  "content": "Handoff: 148 light tokens; Bricolage headings; Jakarta body and tabular numerals.",
                   "lineHeight": "$leading/body",
                   "fontFamily": "$font/sans",
                   "fontSize": "$text/body-sm",
@@ -18980,7 +18960,7 @@
           "fill": "$foreground",
           "content": "Sign in, with clarity.",
           "lineHeight": 1.2,
-          "fontFamily": "$font/sans",
+          "fontFamily": "$font/display",
           "fontSize": 40,
           "fontWeight": "700",
           "letterSpacing": -0.8
@@ -19212,15 +19192,40 @@
               "gap": 40,
               "children": [
                 {
-                  "type": "text",
-                  "id": "a3uWyR",
-                  "name": "MiniLedger wordmark",
-                  "fill": "$foreground",
-                  "content": "MiniLedger",
-                  "lineHeight": 1.5,
-                  "fontFamily": "$font/sans",
-                  "fontSize": 20,
-                  "fontWeight": "$weight/800"
+                  "type": "frame",
+                  "id": "GlpwW",
+                  "name": "MiniLedger brand label",
+                  "fill": "$accent",
+                  "cornerRadius": "$radius/sm",
+                  "gap": "$spacing/8",
+                  "padding": [
+                    "$spacing/4",
+                    "$spacing/8"
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "CGFNI",
+                      "name": "Ledger brand icon",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "book-open",
+                      "library": "lucide",
+                      "fill": "$accent-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "s30RKi",
+                      "name": "MiniLedger wordmark",
+                      "fill": "$accent-foreground",
+                      "content": "MiniLedger",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font/display",
+                      "fontSize": 20,
+                      "fontWeight": "$weight/800"
+                    }
+                  ]
                 },
                 {
                   "type": "frame",
@@ -19245,7 +19250,7 @@
                           "fill": "$foreground",
                           "content": "Welcome back.",
                           "lineHeight": 1.3,
-                          "fontFamily": "$font/sans",
+                          "fontFamily": "$font/display",
                           "fontSize": 32,
                           "fontWeight": "700",
                           "letterSpacing": -0.8
@@ -19597,15 +19602,40 @@
               "gap": 40,
               "children": [
                 {
-                  "type": "text",
-                  "id": "e8eU6",
-                  "name": "MiniLedger wordmark",
-                  "fill": "$foreground",
-                  "content": "MiniLedger",
-                  "lineHeight": 1.5,
-                  "fontFamily": "$font/sans",
-                  "fontSize": 20,
-                  "fontWeight": "$weight/800"
+                  "type": "frame",
+                  "id": "hFH8k",
+                  "name": "MiniLedger brand label",
+                  "fill": "$accent",
+                  "cornerRadius": "$radius/sm",
+                  "gap": "$spacing/8",
+                  "padding": [
+                    "$spacing/4",
+                    "$spacing/8"
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "FOkT3",
+                      "name": "Ledger brand icon",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "book-open",
+                      "library": "lucide",
+                      "fill": "$accent-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "wQO4m",
+                      "name": "MiniLedger wordmark",
+                      "fill": "$accent-foreground",
+                      "content": "MiniLedger",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font/display",
+                      "fontSize": 20,
+                      "fontWeight": "$weight/800"
+                    }
+                  ]
                 },
                 {
                   "type": "frame",
@@ -19630,7 +19660,7 @@
                           "fill": "$foreground",
                           "content": "Welcome back.",
                           "lineHeight": 1.3,
-                          "fontFamily": "$font/sans",
+                          "fontFamily": "$font/display",
                           "fontSize": 32,
                           "fontWeight": "700",
                           "letterSpacing": -0.8
@@ -19998,15 +20028,40 @@
               "gap": 40,
               "children": [
                 {
-                  "type": "text",
-                  "id": "JWrmE",
-                  "name": "MiniLedger wordmark",
-                  "fill": "$foreground",
-                  "content": "MiniLedger",
-                  "lineHeight": 1.5,
-                  "fontFamily": "$font/sans",
-                  "fontSize": 20,
-                  "fontWeight": "$weight/800"
+                  "type": "frame",
+                  "id": "HkLSo",
+                  "name": "MiniLedger brand label",
+                  "fill": "$accent",
+                  "cornerRadius": "$radius/sm",
+                  "gap": "$spacing/8",
+                  "padding": [
+                    "$spacing/4",
+                    "$spacing/8"
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "m10ZIw",
+                      "name": "Ledger brand icon",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "book-open",
+                      "library": "lucide",
+                      "fill": "$accent-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "WCTLy",
+                      "name": "MiniLedger wordmark",
+                      "fill": "$accent-foreground",
+                      "content": "MiniLedger",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font/display",
+                      "fontSize": 20,
+                      "fontWeight": "$weight/800"
+                    }
+                  ]
                 },
                 {
                   "type": "frame",
@@ -20058,7 +20113,7 @@
                           "content": "You’re signed in.",
                           "lineHeight": 1.3,
                           "textAlign": "center",
-                          "fontFamily": "$font/sans",
+                          "fontFamily": "$font/display",
                           "fontSize": 32,
                           "fontWeight": "700",
                           "letterSpacing": -0.8
@@ -20649,15 +20704,40 @@
               "gap": 40,
               "children": [
                 {
-                  "type": "text",
-                  "id": "rm1Xu",
-                  "name": "MiniLedger wordmark",
-                  "fill": "$foreground",
-                  "content": "MiniLedger",
-                  "lineHeight": 1.5,
-                  "fontFamily": "$font/sans",
-                  "fontSize": 20,
-                  "fontWeight": "$weight/800"
+                  "type": "frame",
+                  "id": "QCkhJ",
+                  "name": "MiniLedger brand label",
+                  "fill": "$accent",
+                  "cornerRadius": "$radius/sm",
+                  "gap": "$spacing/8",
+                  "padding": [
+                    "$spacing/4",
+                    "$spacing/8"
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "jvwwl",
+                      "name": "Ledger brand icon",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "book-open",
+                      "library": "lucide",
+                      "fill": "$accent-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "E3OoR4",
+                      "name": "MiniLedger wordmark",
+                      "fill": "$accent-foreground",
+                      "content": "MiniLedger",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font/display",
+                      "fontSize": 20,
+                      "fontWeight": "$weight/800"
+                    }
+                  ]
                 },
                 {
                   "type": "frame",
@@ -20684,7 +20764,7 @@
                           "width": "fill_container",
                           "content": "Create your account.",
                           "lineHeight": 1.3,
-                          "fontFamily": "$font/sans",
+                          "fontFamily": "$font/display",
                           "fontSize": 32,
                           "fontWeight": "700",
                           "letterSpacing": -0.8
@@ -20988,7 +21068,7 @@
           "width": "fill_container",
           "content": "A simple start.",
           "lineHeight": 1.2,
-          "fontFamily": "$font/sans",
+          "fontFamily": "$font/display",
           "fontSize": 40,
           "fontWeight": "700",
           "letterSpacing": -0.8
@@ -21552,15 +21632,40 @@
               "gap": 32,
               "children": [
                 {
-                  "type": "text",
-                  "id": "CHFoR",
-                  "name": "MiniLedger wordmark",
-                  "fill": "$foreground",
-                  "content": "MiniLedger",
-                  "lineHeight": 1.5,
-                  "fontFamily": "$font/sans",
-                  "fontSize": 20,
-                  "fontWeight": "$weight/800"
+                  "type": "frame",
+                  "id": "Mdhs5",
+                  "name": "MiniLedger brand label",
+                  "fill": "$accent",
+                  "cornerRadius": "$radius/sm",
+                  "gap": "$spacing/8",
+                  "padding": [
+                    "$spacing/4",
+                    "$spacing/8"
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "p8bYJ",
+                      "name": "Ledger brand icon",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "book-open",
+                      "library": "lucide",
+                      "fill": "$accent-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "QcckS",
+                      "name": "MiniLedger wordmark",
+                      "fill": "$accent-foreground",
+                      "content": "MiniLedger",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font/display",
+                      "fontSize": 20,
+                      "fontWeight": "$weight/800"
+                    }
+                  ]
                 },
                 {
                   "type": "frame",
@@ -21587,7 +21692,7 @@
                           "width": "fill_container",
                           "content": "Create your account.",
                           "lineHeight": 1.3,
-                          "fontFamily": "$font/sans",
+                          "fontFamily": "$font/display",
                           "fontSize": 32,
                           "fontWeight": "700",
                           "letterSpacing": -0.8
@@ -21979,15 +22084,40 @@
               "gap": 40,
               "children": [
                 {
-                  "type": "text",
-                  "id": "RviSP",
-                  "name": "MiniLedger wordmark",
-                  "fill": "$foreground",
-                  "content": "MiniLedger",
-                  "lineHeight": 1.5,
-                  "fontFamily": "$font/sans",
-                  "fontSize": 20,
-                  "fontWeight": "$weight/800"
+                  "type": "frame",
+                  "id": "e9GYg",
+                  "name": "MiniLedger brand label",
+                  "fill": "$accent",
+                  "cornerRadius": "$radius/sm",
+                  "gap": "$spacing/8",
+                  "padding": [
+                    "$spacing/4",
+                    "$spacing/8"
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "e8wUp",
+                      "name": "Ledger brand icon",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "book-open",
+                      "library": "lucide",
+                      "fill": "$accent-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "dLp47",
+                      "name": "MiniLedger wordmark",
+                      "fill": "$accent-foreground",
+                      "content": "MiniLedger",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font/display",
+                      "fontSize": 20,
+                      "fontWeight": "$weight/800"
+                    }
+                  ]
                 },
                 {
                   "type": "frame",
@@ -22039,7 +22169,7 @@
                           "content": "You’re all set.",
                           "lineHeight": 1.3,
                           "textAlign": "center",
-                          "fontFamily": "$font/sans",
+                          "fontFamily": "$font/display",
                           "fontSize": 32,
                           "fontWeight": "700",
                           "letterSpacing": -0.8
@@ -22210,11 +22340,11 @@
   "variables": {
     "background": {
       "type": "color",
-      "value": "#F6F7F9"
+      "value": "#F7F5FC"
     },
     "foreground": {
       "type": "color",
-      "value": "#0F172A"
+      "value": "#292238"
     },
     "card": {
       "type": "color",
@@ -22222,7 +22352,7 @@
     },
     "card-foreground": {
       "type": "color",
-      "value": "#0F172A"
+      "value": "#292238"
     },
     "popover": {
       "type": "color",
@@ -22230,11 +22360,11 @@
     },
     "popover-foreground": {
       "type": "color",
-      "value": "#0F172A"
+      "value": "#292238"
     },
     "primary": {
       "type": "color",
-      "value": "#4F46E5"
+      "value": "#7040BA"
     },
     "primary-foreground": {
       "type": "color",
@@ -22242,27 +22372,27 @@
     },
     "secondary": {
       "type": "color",
-      "value": "#EEF2FF"
+      "value": "#EEE5FB"
     },
     "secondary-foreground": {
       "type": "color",
-      "value": "#3730A3"
+      "value": "#58308B"
     },
     "muted": {
       "type": "color",
-      "value": "#EEF0F4"
+      "value": "#EEEAF4"
     },
     "muted-foreground": {
       "type": "color",
-      "value": "#64748B"
+      "value": "#706579"
     },
     "accent": {
       "type": "color",
-      "value": "#E0E7FF"
+      "value": "#BFE8DA"
     },
     "accent-foreground": {
       "type": "color",
-      "value": "#3730A3"
+      "value": "#204D40"
     },
     "destructive": {
       "type": "color",
@@ -22274,15 +22404,15 @@
     },
     "border": {
       "type": "color",
-      "value": "#E2E8F0"
+      "value": "#DDD5E8"
     },
     "input": {
       "type": "color",
-      "value": "#E2E8F0"
+      "value": "#DDD5E8"
     },
     "ring": {
       "type": "color",
-      "value": "#4F46E5"
+      "value": "#7040BA"
     },
     "credit": {
       "type": "color",
@@ -22362,11 +22492,11 @@
     },
     "radius/md": {
       "type": "number",
-      "value": 12
+      "value": 16
     },
     "radius/lg": {
       "type": "number",
-      "value": 16
+      "value": 24
     },
     "radius/none": {
       "type": "number",
@@ -22534,7 +22664,7 @@
     },
     "radius": {
       "type": "number",
-      "value": 12
+      "value": 16
     },
     "font/numerals": {
       "type": "string",
@@ -22582,11 +22712,11 @@
     },
     "primary-pressed": {
       "type": "color",
-      "value": "#4338CA"
+      "value": "#593099"
     },
     "secondary-pressed": {
       "type": "color",
-      "value": "#E0E7FF"
+      "value": "#E0D0F5"
     },
     "destructive-pressed": {
       "type": "color",
@@ -22594,11 +22724,11 @@
     },
     "disabled": {
       "type": "color",
-      "value": "#EEF0F4"
+      "value": "#EEEAF4"
     },
     "disabled-foreground": {
       "type": "color",
-      "value": "#64748B"
+      "value": "#706579"
     },
     "shadow-lg-color": {
       "type": "color",
@@ -22790,11 +22920,15 @@
     },
     "subtle-foreground": {
       "type": "color",
-      "value": "#5B6B80"
+      "value": "#62566E"
     },
     "auth/input-border": {
       "type": "color",
-      "value": "#8592A6"
+      "value": "#95859F"
+    },
+    "font/display": {
+      "type": "string",
+      "value": "Bricolage Grotesque"
     }
   },
   "fileToken": "c5af3e0a-0916-4c2b-9754-6e0feb01b2df"

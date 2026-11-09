@@ -1,26 +1,28 @@
 /* MiniLedger · light theme · merge into the shadcn Tailwind v4 stylesheet.
-   Load Plus Jakarta Sans weights 400–800 in the application font loader. */
+   Load Plus Jakarta Sans weights 400–800 and Bricolage Grotesque weights 600–800. */
 :root {
   color-scheme: light;
-  --background: #F6F7F9;
-  --foreground: #0F172A;
+  --ml-font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --ml-auth-input-border: #95859F;
+  --background: #F7F5FC;
+  --foreground: #292238;
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
+  --card-foreground: #292238;
   --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
-  --primary: #4F46E5;
+  --popover-foreground: #292238;
+  --primary: #7040BA;
   --primary-foreground: #FFFFFF;
-  --secondary: #EEF2FF;
-  --secondary-foreground: #3730A3;
-  --muted: #EEF0F4;
-  --muted-foreground: #64748B;
-  --accent: #E0E7FF;
-  --accent-foreground: #3730A3;
+  --secondary: #EEE5FB;
+  --secondary-foreground: #58308B;
+  --muted: #EEEAF4;
+  --muted-foreground: #706579;
+  --accent: #BFE8DA;
+  --accent-foreground: #204D40;
   --destructive: #E11D48;
   --destructive-foreground: #FFFFFF;
-  --border: #E2E8F0;
-  --input: #E2E8F0;
-  --ring: #4F46E5;
+  --border: #DDD5E8;
+  --input: #DDD5E8;
+  --ring: #7040BA;
   --credit: #16A34A;
   --debit: #E11D48;
   --warning: #D97706;
@@ -40,8 +42,8 @@
   --ml-spacing-32: 32px;
   --ml-spacing-48: 48px;
   --ml-radius-sm: 8px;
-  --ml-radius-md: 12px;
-  --ml-radius-lg: 16px;
+  --ml-radius-md: 16px;
+  --ml-radius-lg: 24px;
   --ml-radius-none: 0px;
   --ml-text-display: 40px;
   --ml-text-h1: 32px;
@@ -83,7 +85,7 @@
   --ml-size-200: 200px;
   --ml-size-80: 80px;
   --ml-size-176: 176px;
-  --radius: 12px;
+  --radius: 16px;
   --ml-font-numerals: tabular-nums;
   --ml-touch-min: 44px;
   --ml-control-sm: 44px;
@@ -95,11 +97,11 @@
   --debit-foreground: #BE123C;
   --warning-tint: #FFFBEB;
   --info-tint: #EFF6FF;
-  --primary-pressed: #4338CA;
-  --secondary-pressed: #E0E7FF;
+  --primary-pressed: #593099;
+  --secondary-pressed: #E0D0F5;
   --destructive-pressed: #BE123C;
-  --disabled: #EEF0F4;
-  --disabled-foreground: #64748B;
+  --disabled: #EEEAF4;
+  --disabled-foreground: #706579;
   --shadow-lg-color: #0F172A14;
   --ml-size-2: 2px;
   --ml-size-34: 34px;
@@ -147,7 +149,7 @@
   --ml-text-amount-md: 20px;
   --ml-weight-700: 700;
   --ml-weight-800: 800;
-  --subtle-foreground: #5B6B80;
+  --subtle-foreground: #62566E;
   --ml-viewport-height: 100dvh;
   --ml-fluid-width: 100%;
   --ml-safe-top: env(safe-area-inset-top, var(--ml-size-0));
@@ -200,6 +202,7 @@
   --color-shadow-lg-color: var(--shadow-lg-color);
   --color-subtle-foreground: var(--subtle-foreground);
   --font-sans: var(--ml-font-sans);
+  --font-display: var(--ml-font-display);
   --spacing: var(--ml-spacing-4);
   --radius-sm: var(--ml-radius-sm);
   --radius-md: var(--radius);
@@ -241,6 +244,11 @@
 }
 
 @layer components {
+  .ml-heading, .ml-wordmark { font-family: var(--ml-font-display); }
+  .ml-brand-label { display: inline-flex; align-items: center; gap: var(--ml-spacing-8); padding: var(--ml-spacing-4) var(--ml-spacing-8); border-radius: var(--ml-radius-sm); background: var(--accent); color: var(--accent-foreground); }
+  .ml-account-card { padding: var(--ml-spacing-16); background: var(--secondary); border: var(--ml-stroke-default) solid var(--secondary-pressed); border-radius: var(--ml-radius-lg); }
+  .ml-filter-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-foreground); }
+  .ml-empty-icon { background: var(--accent); color: var(--accent-foreground); border-radius: var(--ml-radius-lg); }
   .ml-button {
     min-block-size: var(--ml-control-default);
     min-inline-size: var(--ml-touch-min);
