@@ -34,9 +34,9 @@ func Load() (Config, error) {
 	}
 
 	switch cfg.Env {
-	case "dev", "staging", "prod":
+	case "dev", "test", "staging", "prod":
 	default:
-		errs = append(errs, fmt.Errorf("APP_ENV must be dev, staging, or prod; got %q", cfg.Env))
+		errs = append(errs, fmt.Errorf("APP_ENV must be dev, test, staging, or prod; got %q", cfg.Env))
 	}
 
 	switch cfg.LogLevel {
