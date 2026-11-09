@@ -4,6 +4,7 @@ import (
 	"backend/internal/modules/session"
 	"backend/internal/platform/httpx"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -85,6 +86,70 @@ func TestGetUser(t *testing.T) {
 			}
 			if _, ok := httpx.UserIDFromContext(request.Context()); ok {
 				t.Error("middleware modified the original request context")
+			}
+		})
+	}
+}
+
+func TestAuthGuard(t *testing.T) {
+	t.Parallel()
+
+	for _, tt := range []struct {
+		name       string
+		cookie     bool
+		userID     string
+		lookupErr  error
+		wantStatus int
+	}{
+		{name: "missing identity", wantStatus: http.StatusUnauthorized},
+		{name: "unverified cookie", cookie: true, lookupErr: session.ErrNotFound, wantStatus: http.StatusUnauthorized},
+		{name: "empty identity", cookie: true, wantStatus: http.StatusUnauthorized},
+		{name: "verified identity", cookie: true, userID: "user-id", wantStatus: http.StatusNoContent},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			svc := sessionServiceStub{find: func(context.Context, string) (session.Session, error) {
+				return session.Session{UserID: tt.userID}, tt.lookupErr
+			}}
+			nextCalled := false
+			handler := httpx.Chain(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				nextCalled = true
+				if id, ok := httpx.UserIDFromContext(r.Context()); !ok || id != tt.userID {
+					t.Errorf("downstream identity = %q, %v; want %q, true", id, ok, tt.userID)
+				}
+				w.WriteHeader(http.StatusNoContent)
+			}), httpx.GetUser(svc), httpx.AuthGuard())
+
+			request := httptest.NewRequest(http.MethodGet, "/private", nil)
+			if tt.cookie {
+				request.AddCookie(&http.Cookie{Name: "session", Value: "token"})
+			}
+			response := httptest.NewRecorder()
+			handler.ServeHTTP(response, request)
+
+			if response.Code != tt.wantStatus {
+				t.Errorf("status = %d, want %d", response.Code, tt.wantStatus)
+			}
+			if nextCalled != (tt.wantStatus == http.StatusNoContent) {
+				t.Errorf("next called = %v for status %d", nextCalled, tt.wantStatus)
+			}
+			if tt.wantStatus == http.StatusUnauthorized {
+				if response.Header().Get("Cache-Control") != "no-store" {
+					t.Error("unauthorized response must not be cached")
+				}
+				var body struct {
+					Error struct {
+						Code    string `json:"code"`
+						Message string `json:"message"`
+					} `json:"error"`
+				}
+				if err := json.NewDecoder(response.Body).Decode(&body); err != nil {
+					t.Fatal(err)
+				}
+				if body.Error.Code != "UNAUTHENTICATED" || body.Error.Message != "authentication required" {
+					t.Errorf("unexpected error response: %+v", body.Error)
+				}
 			}
 		})
 	}

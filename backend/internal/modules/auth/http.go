@@ -32,18 +32,13 @@ func (h *Handler) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/register", h.register)
 	mux.HandleFunc("POST /auth/login", h.login)
 	mux.HandleFunc("POST /auth/logout", h.logout)
-	mux.HandleFunc("GET /auth/me", h.me)
+	mux.Handle("GET /auth/me", httpx.AuthGuard()(http.HandlerFunc(h.me)))
 }
 
 func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
-	cookie, err := r.Cookie("session")
-	if err != nil || cookie.Value == "" {
-		httpx.WriteError(w, http.StatusUnauthorized, httpx.CodeUnauthenticated, ErrUnauthenticated.Error())
-		return
-	}
-
-	u, err := h.svc.Me(r.Context(), cookie.Value)
+	userID, _ := httpx.UserIDFromContext(r.Context())
+	u, err := h.svc.Me(r.Context(), userID)
 	if err != nil {
 		if errors.Is(err, ErrUnauthenticated) {
 			httpx.WriteError(w, http.StatusUnauthorized, httpx.CodeUnauthenticated, ErrUnauthenticated.Error())

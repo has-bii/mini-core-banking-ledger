@@ -25,7 +25,6 @@ type accountStore interface {
 
 type sessionService interface {
 	Create(context.Context, string) (session.Session, string, error)
-	FindByToken(context.Context, string) (session.Session, error)
 	Revoke(context.Context, string) error
 }
 
@@ -114,16 +113,9 @@ func (s *Service) Logout(ctx context.Context, token string) error {
 	return nil
 }
 
-func (s *Service) Me(ctx context.Context, token string) (user.User, error) {
-	current, err := s.sessions.FindByToken(ctx, token)
-	if errors.Is(err, session.ErrNotFound) {
-		return user.User{}, ErrUnauthenticated
-	}
-	if err != nil {
-		return user.User{}, fmt.Errorf("find current session: %w", err)
-	}
-
-	u, err := s.users.FindByID(ctx, current.UserID)
+// Me returns the current user for a verified user ID.
+func (s *Service) Me(ctx context.Context, userID string) (user.User, error) {
+	u, err := s.users.FindByID(ctx, userID)
 	if errors.Is(err, user.ErrNotFound) {
 		return user.User{}, ErrUnauthenticated
 	}

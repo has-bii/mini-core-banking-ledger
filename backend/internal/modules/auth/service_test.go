@@ -34,15 +34,15 @@ func (s accountStoreStub) FindByUserID(context.Context, string) (account.Account
 }
 
 type sessionServiceStub struct {
-	result                        session.Session
-	createErr, findErr, revokeErr error
+	result               session.Session
+	createErr, revokeErr error
 }
 
 func (s sessionServiceStub) Create(context.Context, string) (session.Session, string, error) {
 	return s.result, "raw-token", s.createErr
 }
 func (s sessionServiceStub) FindByToken(context.Context, string) (session.Session, error) {
-	return s.result, s.findErr
+	return s.result, nil
 }
 func (s sessionServiceStub) Revoke(context.Context, string) error { return s.revokeErr }
 
@@ -145,23 +145,19 @@ func TestService_Me(t *testing.T) {
 	t.Parallel()
 	failure := errors.New("dependency unavailable")
 	for _, tt := range []struct {
-		name       string
-		sessionErr error
-		userErr    error
-		wantErr    error
+		name    string
+		userErr error
+		wantErr error
 	}{
-		{"authenticated", nil, nil, nil},
-		{"missing or expired session", session.ErrNotFound, nil, auth.ErrUnauthenticated},
-		{"session lookup failed", failure, nil, failure},
-		{"deleted user", nil, user.ErrNotFound, auth.ErrUnauthenticated},
-		{"user lookup failed", nil, failure, failure},
+		{"authenticated", nil, nil},
+		{"deleted user", user.ErrNotFound, auth.ErrUnauthenticated},
+		{"user lookup failed", failure, failure},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			u := user.User{ID: "user-id", Email: "alice@example.com"}
-			svc := auth.NewService(nil, userStoreStub{result: u, idErr: tt.userErr}, nil,
-				sessionServiceStub{result: session.Session{UserID: u.ID}, findErr: tt.sessionErr})
-			got, err := svc.Me(t.Context(), "token")
+			svc := auth.NewService(nil, userStoreStub{result: u, idErr: tt.userErr}, nil, nil)
+			got, err := svc.Me(t.Context(), u.ID)
 			if !errors.Is(err, tt.wantErr) {
 				t.Fatalf("Me() error = %v, want %v", err, tt.wantErr)
 			}

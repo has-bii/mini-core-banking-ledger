@@ -4,7 +4,8 @@ const (
 	CodeInternalError       = "INTERNAL_ERROR"
 	CodeInvalidJSON         = "INVALID_JSON"
 	CodeValidationError     = "VALIDATION_ERROR"
-	CodeUnauthenticated     = "UNAUTHENTICATED"
+	CodeUnauthenticated     = "UNAUTHENTICATED" // HTTP 401: identity is missing or invalid.
+	CodeForbidden           = "FORBIDDEN"       // HTTP 403: authenticated but lacks permission.
 	CodeInvalidCredentials  = "INVALID_CREDENTIALS"
 	CodeEmailTaken          = "EMAIL_TAKEN"
 	CodeTooManyRequests     = "TOO_MANY_REQUESTS"

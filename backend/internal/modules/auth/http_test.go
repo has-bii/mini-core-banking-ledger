@@ -4,6 +4,7 @@ import (
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
+	"backend/internal/platform/httpx"
 	"context"
 	"encoding/json"
 	"errors"
@@ -29,15 +30,15 @@ func (s authServiceStub) Register(ctx context.Context, p auth.RegisterDTO) (user
 func (s authServiceStub) Login(ctx context.Context, p auth.LoginDTO) (user.User, session.Session, string, error) {
 	return s.login(ctx, p)
 }
-func (s authServiceStub) Me(ctx context.Context, token string) (user.User, error) {
-	return s.me(ctx, token)
+func (s authServiceStub) Me(ctx context.Context, userID string) (user.User, error) {
+	return s.me(ctx, userID)
 }
 func (s authServiceStub) Logout(ctx context.Context, token string) error { return s.logout(ctx, token) }
 
 func authHandler(svc authServiceStub, secure bool) http.Handler {
 	mux := http.NewServeMux()
 	auth.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil)), secure).Register(mux)
-	return mux
+	return httpx.GetUser(sessionServiceStub{result: session.Session{UserID: "user-id"}})(mux)
 }
 
 func TestHandler_RejectsInvalidPayload(t *testing.T) {
@@ -88,7 +89,7 @@ func TestHandler_ErrorResponses(t *testing.T) {
 		{"invalid credentials", "POST", "/auth/login", false, auth.ErrInvalidCredentials, 401, "INVALID_CREDENTIALS", auth.ErrInvalidCredentials.Error()},
 		{"login failed", "POST", "/auth/login", false, failure, 500, "INTERNAL_ERROR", "internal error"},
 		{"missing cookie", "GET", "/auth/me", false, nil, 401, "UNAUTHENTICATED", auth.ErrUnauthenticated.Error()},
-		{"invalid session", "GET", "/auth/me", true, auth.ErrUnauthenticated, 401, "UNAUTHENTICATED", auth.ErrUnauthenticated.Error()},
+		{"deleted user", "GET", "/auth/me", true, auth.ErrUnauthenticated, 401, "UNAUTHENTICATED", auth.ErrUnauthenticated.Error()},
 		{"current user failed", "GET", "/auth/me", true, failure, 500, "INTERNAL_ERROR", "internal error"},
 		{"logout failed", "POST", "/auth/logout", true, failure, 500, "INTERNAL_ERROR", "internal error"},
 	} {
@@ -124,6 +125,53 @@ func TestHandler_ErrorResponses(t *testing.T) {
 				t.Error("failed request changed the session cookie")
 			}
 		})
+	}
+}
+
+func TestHandler_Me(t *testing.T) {
+	t.Parallel()
+
+	u := user.User{ID: "user-id", Name: "Alice", Email: "alice@example.com"}
+	svc := authServiceStub{me: func(_ context.Context, userID string) (user.User, error) {
+		if userID != u.ID {
+			t.Errorf("Me() received %q, want verified user ID %q", userID, u.ID)
+		}
+		return u, nil
+	}}
+	request := httptest.NewRequest(http.MethodGet, "/auth/me", nil)
+	request.AddCookie(&http.Cookie{Name: "session", Value: "raw-token"})
+	response := httptest.NewRecorder()
+	authHandler(svc, false).ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d: %s", response.Code, response.Body.String())
+	}
+	var body struct{ Data user.User }
+	if err := json.Unmarshal(response.Body.Bytes(), &body); err != nil || body.Data != u {
+		t.Fatalf("current user response = %s (%v), want %+v", response.Body.String(), err, u)
+	}
+	if response.Header().Get("Cache-Control") != "no-store" {
+		t.Error("current user response must not be cached")
+	}
+}
+
+func TestHandler_MeRequiresResolvedIdentity(t *testing.T) {
+	t.Parallel()
+
+	mux := http.NewServeMux()
+	svc := authServiceStub{me: func(context.Context, string) (user.User, error) {
+		t.Fatal("unverified request reached the current-user service")
+		return user.User{}, nil
+	}}
+	auth.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+	request := httptest.NewRequest(http.MethodGet, "/auth/me", nil)
+	request.AddCookie(&http.Cookie{Name: "session", Value: "raw-token"})
+	response := httptest.NewRecorder()
+	mux.ServeHTTP(response, request)
+
+	assertHTTPError(t, response, http.StatusUnauthorized, "UNAUTHENTICATED", "authentication required")
+	if response.Header().Get("Cache-Control") != "no-store" {
+		t.Error("unauthorized response must not be cached")
 	}
 }
 

@@ -43,7 +43,16 @@ func GetUser(svc sessionService) Middleware {
 	}
 }
 
-// if UserID from context is null, return Unauthorized error
-func AuthGuard() {
-
+// AuthGuard requires a verified user ID populated by GetUser.
+func AuthGuard() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if id, ok := UserIDFromContext(r.Context()); !ok || id == "" {
+				w.Header().Set("Cache-Control", "no-store")
+				WriteError(w, http.StatusUnauthorized, CodeUnauthenticated, "authentication required")
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
 }
