@@ -30,16 +30,53 @@ goose -env .env create add_accounts sql
 
 Edit generated files in `migrations/` under `-- +goose Up` and `-- +goose Down`.
 
-## Checks
+## Tests and checks
 
-The backend currently has no automated tests. From `backend/`, check compilation and run static analysis:
+Run commands from `backend/`.
+
+### Unit tests
+
+```sh
+go test -race ./...
+```
+
+Unit tests cover auth validation, auth/session service decisions, HTTP errors, and cookie security. They use standard Go testing, handwritten stubs, and `httptest`; no database, Redis, or environment file is required.
+
+### Integration tests
+
+Requires PostgreSQL 18 and the Goose CLI. Start the existing Compose database:
+
+```sh
+docker compose -f ../docker-compose.postgres.yaml up -d --wait
+```
+
+Create a local `.env.test` containing a dedicated test database URL:
+
+```dotenv
+DATABASE_URL="postgresql://user:password@localhost:5432/test"
+```
+
+Compose creates the `test` database when initializing a fresh volume. For an existing volume, ensure that database exists. `.env.test` is ignored by Git; do not use a production or development database.
+
+```sh
+go test -race -count=1 -tags=integration ./...
+```
+
+This runs both unit and integration tests. Integration tests cover stores, expiry, registration rollback, and the full register → login → me → logout flow, including password/token hashing. They do not require Redis or a running API server.
+
+The shared helper reads `DATABASE_URL` directly from `.env.test`, without falling back to `.env` or the shell's `DATABASE_URL`. It creates a unique schema per integration test, uses only that schema in each pool connection's `search_path`, and applies actual migrations using Goose. Cleanup closes the pool and drops only the schema it created; no shared tables are truncated. The database user needs schema creation privileges. Missing configuration, Goose, or PostgreSQL fails the tests rather than skipping them.
+
+If a test process is forcibly killed, cleanup cannot run and a `test_…` schema may remain in the test database. Remove leftover schemas only after confirming no tests are using them.
+
+### Compilation and static analysis
 
 ```sh
 go build ./...
 go vet ./...
+go vet -tags=integration ./...
 ```
 
-These checks do not verify runtime behavior.
+No coverage threshold is enforced.
 
 ## API specification
 

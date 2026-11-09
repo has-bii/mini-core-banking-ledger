@@ -134,4 +134,10 @@ Data flows upward as **database rows → store models → service results → ha
 
 ## 5. Verification
 
-The backend currently has no automated tests or shared test helpers. See the [backend checks](../README.md#checks) for compilation and static analysis commands. Runtime behavior, database constraints, and authentication flows require manual verification.
+Tests live beside the source files they exercise. Unit tests use standard `testing`, named table-driven subtests where useful, handwritten interface stubs, and `httptest`. They cover validation, auth/session decisions, HTTP error mapping, and session cookies without external services.
+
+Integration tests use `//go:build integration` and real PostgreSQL. They verify store behavior, session expiry, registration rollback on a credentials failure, and the complete auth flow through `app.New`. Registration's transactional writes are tested against the database rather than mocked; no production interfaces are changed for testing.
+
+`internal/testutil.Postgres` reads `.env.test` explicitly and provisions a unique schema per test using real Goose migrations. Every pool connection uses a schema-only `search_path`, with no `public` fallback. `t.Cleanup` closes the pool and drops only that schema. Fixtures are created within individual tests; expiry is tested with past timestamps, not sleeps. A helper self-check verifies connection/schema isolation and cleanup.
+
+See [tests and checks](../README.md#tests-and-checks) for setup and commands. Integration setup failures are fatal, not skipped. CI setup, generated mocks, and coverage gates are intentionally out of scope.
