@@ -132,21 +132,6 @@ Errors travel upward through normal Go returns, not exceptions:
 
 Data flows upward as **database rows → store models → service results → handler JSON**. Keep sensitive persistence fields out of public responses.
 
-## 5. Test Seams
+## 5. Verification
 
-The module's interface is its test surface. Prefer external test packages (`auth_test`, `session_test`) where tests need only exported behavior. Keep tests beside the module they describe; sharing setup does not require centralizing scenarios.
-
-| Seam | Test adapter | Observable behavior |
-| --- | --- | --- |
-| Auth workflow interface | Handwritten dependency adapters for failures; real PostgreSQL for registration | Results, domain errors, usable credentials, atomic registration, concurrent duplicates |
-| Registered HTTP routes | Handwritten auth adapter and `httptest` | Validation, status/error mapping, safe response bodies, cookies, cache headers |
-| Store interface | Isolated PostgreSQL schema | Persistence round-trips, constraint/error translation, session expiry and revocation |
-| Application HTTP interface | Real wiring and PostgreSQL | One complete authentication journey and independent cross-module scenarios |
-
-- Do not mock SQL strings, row scanners, transaction call sequences, or private helpers. Verify transactions through their observable effects: a failed registration leaves no user and can be retried.
-- Keep failure injection local. The registration rollback test adds a rejecting credentials constraint only in its own schema; it does not add production configuration or a transaction interface solely for tests.
-- Use `internal/testutil/testdb.Open(t)` for a fresh migrated schema. Never truncate shared tables, depend on scenario order, or silently skip an integration test when infrastructure is missing.
-- Keep one sequential journey to prove wiring. Give other scenarios independent fixtures so an early failure does not hide unrelated results.
-- Give each behavior a primary test seam: HTTP validation, error mapping, and cookie attributes belong in handler tests; dependency failures belong in workflow tests; persistence and constraints belong in store tests. Application tests retain cross-module behavior, such as revoking only the current session, and environment-dependent wiring, such as secure cookies.
-- Keep setup local unless multiple modules need it. Configuration tests share a valid environment fixture and run outside the repository's `.env`; database tests share only `testdb.Open(t)`. Avoid configurable test harnesses and shared domain-fixture packages.
-- When deeper tests replace implementation-coupled tests, remove the redundant tests. Retain focused dependency-failure and security checks that exercise behavior the end-to-end journey cannot reach reliably.
+The backend currently has no automated tests or shared test helpers. See the [backend checks](../README.md#checks) for compilation and static analysis commands. Runtime behavior, database constraints, and authentication flows require manual verification.

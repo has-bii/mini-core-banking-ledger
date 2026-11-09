@@ -41,25 +41,18 @@ goose -env .env down # Rolls back the latest migration; may delete data.
 goose -env .env create add_accounts sql
 ```
 
-Edit generated files in `migrations/` under `-- +goose Up` and `-- +goose Down`. To migrate a test database, use `-env .env.test` instead.
+Edit generated files in `migrations/` under `-- +goose Up` and `-- +goose Down`.
 
-## Testing
+## Checks
 
-Unit tests need no database:
+The backend currently has no automated tests. From `backend/`, check compilation and run static analysis:
 
 ```sh
-go test -race ./...
+go build ./...
 go vet ./...
 ```
 
-For integration tests, copy `.env.example` to `.env.test` and point both database URLs at a separate, existing PostgreSQL 18 test database, never a default or production database. Compose creates a `test` database on first initialization. Its user must be allowed to create schemas.
-
-```sh
-go test -race -tags=integration -count=1 ./...
-go vet -tags=integration ./...
-```
-
-Integration tests read `DATABASE_URL` only from `.env.test`, ignoring the shell value. They create, migrate, and drop an isolated schema per test; no manual migration or Goose CLI is needed. Configuration or database errors fail the run. A killed process may leave `test_*` schemas behind.
+These checks do not verify runtime behavior.
 
 ## API specification
 
