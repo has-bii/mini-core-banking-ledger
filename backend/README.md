@@ -17,19 +17,6 @@ go run ./cmd/api
 
 The API loads `.env`; existing environment variables take precedence.
 
-## API rate limiting
-
-All `/api/` routes share one in-memory token bucket using `golang.org/x/time/rate`.
-`RATE_LIMIT_RPS` defaults to 100 requests/second; `RATE_LIMIT_BURST` defaults to
-200 tokens. Both must be positive integers. The bucket starts full, consumes one
-token per request, and rejects excess requests immediately with HTTP 429 and
-error code `RATE_LIMITED`. Allowed-origin CORS preflights bypass the bucket;
-429 responses retain CORS headers.
-
-Limits are per process and reset on restart. One client can consume the shared
-allowance. These defaults need load testing; arrival limits do not cap concurrent
-requests. No per-client or login-specific brute-force protection is provided.
-
 ## Migrations
 
 Keep `DATABASE_URL` and `GOOSE_DBSTRING` pointed at the same database. See `.env.example` for the required settings.

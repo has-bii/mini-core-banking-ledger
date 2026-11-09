@@ -12,13 +12,6 @@ info:
     never returned in JSON. Login-specific brute-force protection and automatic
     expired-session cleanup are not implemented.
 
-    All /api/ routes share one in-memory token bucket per process. RATE_LIMIT_RPS
-    defaults to 100 requests/second and RATE_LIMIT_BURST to 200 tokens; both must
-    be positive integers. The bucket starts full and resets on restart. Each
-    request consumes one token; excess requests immediately return 429 with
-    error code RATE_LIMITED. Allowed-origin CORS preflights bypass the bucket.
-    Limits are shared across clients, not per-client, and do not cap concurrency.
-
     CORS allows one exact frontend origin configured by CORS_ORIGIN, defaulting
     to http://localhost:3000. This is separate from the API server URL below.
     Responses to that origin include Access-Control-Allow-Origin matching the
@@ -76,8 +69,6 @@ paths:
                 error:
                   code: EMAIL_TAKEN
                   message: email already taken
-        '429':
-          $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
   /auth/login:
@@ -133,8 +124,6 @@ paths:
                   message: invalid email or password
         '403':
           $ref: '#/components/responses/CrossOriginForbidden'
-        '429':
-          $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
   /auth/me:
@@ -171,8 +160,6 @@ paths:
                 error:
                   code: UNAUTHENTICATED
                   message: authentication required
-        '429':
-          $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
   /auth/logout:
@@ -204,8 +191,6 @@ paths:
               example: session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Max-Age=0; HttpOnly; SameSite=Lax
         '403':
           $ref: '#/components/responses/CrossOriginForbidden'
-        '429':
-          $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
 components:
@@ -302,24 +287,10 @@ components:
                 - INVALID_CREDENTIALS
                 - UNAUTHENTICATED
                 - INTERNAL_ERROR
-                - RATE_LIMITED
             message:
               type: string
               description: Human-readable detail; multiple validation errors are joined by newlines.
   responses:
-    RateLimited:
-      description: Shared API token bucket exhausted (RATE_LIMITED). CORS headers are retained for the allowed origin.
-      headers:
-        Cache-Control:
-          $ref: '#/components/headers/NoStore'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              code: RATE_LIMITED
-              message: too many requests
     CrossOriginForbidden:
       description: |
         Rejected by CSRF protection before the authentication handler runs.

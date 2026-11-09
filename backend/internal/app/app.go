@@ -13,7 +13,6 @@ import (
 	"backend/internal/platform/httpx"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"golang.org/x/time/rate"
 )
 
 func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler, error) {
@@ -29,8 +28,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 
 	api := http.NewServeMux()
 	auth.NewHandler(authSvc, log, cfg.Env != "dev" && cfg.Env != "test").Register(api)
-	limiter := rate.NewLimiter(rate.Limit(cfg.RateLimitRPS), cfg.RateLimitBurst)
-	mux.Handle("/api/", httpx.RateLimit(limiter)(http.StripPrefix("/api", api)))
+	mux.Handle("/api/", http.StripPrefix("/api", api))
 
 	return httpx.Chain(mux, httpx.Recoverer(log), httpx.Logging(log), cors), nil
 }
