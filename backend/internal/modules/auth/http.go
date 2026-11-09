@@ -13,6 +13,7 @@ import (
 type authService interface {
 	Register(context.Context, RegisterDTO) (user.User, error)
 	Login(context.Context, LoginDTO) (user.User, session.Session, string, error)
+	Me(context.Context, string) (user.User, error)
 }
 
 type Handler struct {
@@ -28,6 +29,28 @@ func NewHandler(svc authService, log *slog.Logger, secureCookie bool) *Handler {
 func (h *Handler) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/register", h.register)
 	mux.HandleFunc("POST /auth/login", h.login)
+	mux.HandleFunc("GET /auth/me", h.me)
+}
+
+func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+	cookie, err := r.Cookie("session")
+	if err != nil || cookie.Value == "" {
+		httpx.WriteError(w, http.StatusUnauthorized, "UNAUTHENTICATED", ErrUnauthenticated.Error())
+		return
+	}
+
+	u, err := h.svc.Me(r.Context(), cookie.Value)
+	if err != nil {
+		if errors.Is(err, ErrUnauthenticated) {
+			httpx.WriteError(w, http.StatusUnauthorized, "UNAUTHENTICATED", ErrUnauthenticated.Error())
+		} else {
+			h.log.Error("current user lookup failed", "err", err)
+			httpx.WriteError(w, http.StatusInternalServerError, "INTERNAL_ERROR", "internal error")
+		}
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, u)
 }
 
 func (h *Handler) login(w http.ResponseWriter, r *http.Request) {

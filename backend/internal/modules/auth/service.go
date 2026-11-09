@@ -14,9 +14,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var ErrInvalidCredentials = errors.New("invalid email or password")
+var (
+	ErrInvalidCredentials = errors.New("invalid email or password")
+	ErrUnauthenticated    = errors.New("authentication required")
+)
 
 type userStore interface {
+	FindByID(context.Context, string) (user.User, error)
 	FindByEmail(context.Context, string) (user.User, error)
 }
 
@@ -26,6 +30,7 @@ type accountStore interface {
 
 type sessionService interface {
 	Create(context.Context, string) (session.Session, string, error)
+	FindByToken(context.Context, string) (session.Session, error)
 }
 
 type Service struct {
@@ -104,6 +109,25 @@ func (s *Service) Login(ctx context.Context, payload LoginDTO) (user.User, sessi
 		return user.User{}, session.Session{}, "", fmt.Errorf("create login session: %w", err)
 	}
 	return u, created, token, nil
+}
+
+func (s *Service) Me(ctx context.Context, token string) (user.User, error) {
+	current, err := s.sessions.FindByToken(ctx, token)
+	if errors.Is(err, session.ErrNotFound) {
+		return user.User{}, ErrUnauthenticated
+	}
+	if err != nil {
+		return user.User{}, fmt.Errorf("find current session: %w", err)
+	}
+
+	u, err := s.users.FindByID(ctx, current.UserID)
+	if errors.Is(err, user.ErrNotFound) {
+		return user.User{}, ErrUnauthenticated
+	}
+	if err != nil {
+		return user.User{}, fmt.Errorf("find current user: %w", err)
+	}
+	return u, nil
 }
 
 func comparePassword(hashedPassword, password string) error {
