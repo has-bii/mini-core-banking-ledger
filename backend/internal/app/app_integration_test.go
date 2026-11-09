@@ -26,7 +26,11 @@ const (
 
 func newTestApp(t *testing.T, env string) http.Handler {
 	t.Helper()
-	return app.New(env, testdb.Open(t), slog.New(slog.NewTextHandler(io.Discard, nil)))
+	handler, err := app.New(env, "http://localhost:3000", testdb.Open(t), slog.New(slog.NewTextHandler(io.Discard, nil)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return handler
 }
 
 func request(t *testing.T, handler http.Handler, method, path, body string, status int, cookie *http.Cookie) *httptest.ResponseRecorder {

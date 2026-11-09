@@ -38,7 +38,10 @@ func run() error {
 	}
 	defer pool.Close()
 
-	handler := app.New(cfg.Env, pool, log)
+	handler, err := app.New(cfg.Env, cfg.CORSOrigin, pool, log)
+	if err != nil {
+		return err
+	}
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           handler,

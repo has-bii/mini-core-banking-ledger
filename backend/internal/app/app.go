@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -13,7 +14,11 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func New(env string, pool *pgxpool.Pool, log *slog.Logger) http.Handler {
+func New(env, corsOrigin string, pool *pgxpool.Pool, log *slog.Logger) (http.Handler, error) {
+	cors, err := httpx.CORS(corsOrigin)
+	if err != nil {
+		return nil, fmt.Errorf("CORS_ORIGIN: %w", err)
+	}
 
 	mux := http.NewServeMux()
 
@@ -24,6 +29,5 @@ func New(env string, pool *pgxpool.Pool, log *slog.Logger) http.Handler {
 	auth.NewHandler(authSvc, log, env != "dev" && env != "test").Register(api)
 	mux.Handle("/api/", http.StripPrefix("/api", api))
 
-	protected := http.NewCrossOriginProtection().Handler(mux)
-	return httpx.Chain(protected, httpx.Recoverer(log), httpx.Logging(log))
+	return httpx.Chain(mux, httpx.Recoverer(log), httpx.Logging(log), cors), nil
 }

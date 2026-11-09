@@ -12,8 +12,8 @@ import (
 var ErrDatabaseURLRequired = errors.New("DATABASE_URL is required")
 
 type Config struct {
-	Env, Addr, DatabaseURL, LogLevel string
-	ReadTimeout, ShutdownTimeout     time.Duration
+	Env, Addr, DatabaseURL, LogLevel, CORSOrigin string
+	ReadTimeout, ShutdownTimeout                 time.Duration
 }
 
 func Load() (Config, error) {
@@ -27,6 +27,7 @@ func Load() (Config, error) {
 		Addr:            getString("HTTP_ADDR", ":8080"),
 		DatabaseURL:     getString("DATABASE_URL", ""),
 		LogLevel:        getString("LOG_LEVEL", "info"),
+		CORSOrigin:      getString("CORS_ORIGIN", "http://localhost:3000"),
 		ReadTimeout:     getDuration("HTTP_READ_TIMEOUT", 5*time.Second, &errs),
 		ShutdownTimeout: getDuration("SHUTDOWN_TIMEOUT", 10*time.Second, &errs),
 	}
