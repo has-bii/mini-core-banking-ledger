@@ -1,4 +1,4 @@
-package session
+package session_test
 
 import (
 	"context"
@@ -9,19 +9,21 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"backend/internal/modules/session"
 )
 
 type fakeStore struct {
-	create func(context.Context, string, string, time.Time) (Session, error)
-	find   func(context.Context, string) (Session, error)
+	create func(context.Context, string, string, time.Time) (session.Session, error)
+	find   func(context.Context, string) (session.Session, error)
 	delete func(context.Context, string) error
 }
 
-func (f fakeStore) Create(ctx context.Context, userID, hash string, expires time.Time) (Session, error) {
+func (f fakeStore) Create(ctx context.Context, userID, hash string, expires time.Time) (session.Session, error) {
 	return f.create(ctx, userID, hash, expires)
 }
 
-func (f fakeStore) FindByTokenHash(ctx context.Context, hash string) (Session, error) {
+func (f fakeStore) FindByTokenHash(ctx context.Context, hash string) (session.Session, error) {
 	return f.find(ctx, hash)
 }
 
@@ -38,25 +40,25 @@ func TestCreate(t *testing.T) {
 		}
 		t.Run(name, func(t *testing.T) {
 			var storedHash string
-			var want Session
-			before := time.Now().Add(Lifetime)
-			service := NewService(fakeStore{create: func(_ context.Context, userID, hash string, expires time.Time) (Session, error) {
+			var want session.Session
+			before := time.Now().Add(session.Lifetime)
+			service := session.NewService(fakeStore{create: func(_ context.Context, userID, hash string, expires time.Time) (session.Session, error) {
 				if userID != "user-1" {
 					t.Errorf("user ID = %q", userID)
 				}
-				if expires.Before(before) || expires.After(time.Now().Add(Lifetime)) {
-					t.Errorf("expiry = %v, want now + %v", expires, Lifetime)
+				if expires.Before(before) || expires.After(time.Now().Add(session.Lifetime)) {
+					t.Errorf("expiry = %v, want now + %v", expires, session.Lifetime)
 				}
 				storedHash = hash
-				want = Session{ID: "session-1", UserID: userID, ExpiresAt: expires}
+				want = session.Session{ID: "session-1", UserID: userID, ExpiresAt: expires}
 				return want, storeErr
 			}})
-			got, token, err := service.Create(context.Background(), "user-1")
+			got, token, err := service.Create(t.Context(), "user-1")
 			if !errors.Is(err, storeErr) {
 				t.Fatalf("Create() error = %v, want %v", err, storeErr)
 			}
 			if storeErr != nil {
-				if got != (Session{}) || token != "" {
+				if got != (session.Session{}) || token != "" {
 					t.Error("failed creation returned session or token")
 				}
 				return
@@ -86,27 +88,27 @@ func TestTokenOperations(t *testing.T) {
 		wantErr  error
 	}{
 		{"valid", valid, nil, nil},
-		{"missing", valid, ErrNotFound, ErrNotFound},
+		{"missing", valid, session.ErrNotFound, session.ErrNotFound},
 		{"store failure", valid, failure, failure},
-		{"empty", "", nil, ErrNotFound},
-		{"short", valid[:42], nil, ErrNotFound},
-		{"long", valid + "A", nil, ErrNotFound},
-		{"invalid alphabet", strings.Repeat("!", 43), nil, ErrNotFound},
-		{"noncanonical padding bits", strings.Repeat("A", 42) + "B", nil, ErrNotFound},
+		{"empty", "", nil, session.ErrNotFound},
+		{"short", valid[:42], nil, session.ErrNotFound},
+		{"long", valid + "A", nil, session.ErrNotFound},
+		{"invalid alphabet", strings.Repeat("!", 43), nil, session.ErrNotFound},
+		{"noncanonical padding bits", strings.Repeat("A", 42) + "B", nil, session.ErrNotFound},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			findCalls, deleteCalls := 0, 0
-			want := Session{ID: "session-1", UserID: "user-1"}
+			want := session.Session{ID: "session-1", UserID: "user-1"}
 			digest := sha256.Sum256([]byte(tt.token))
 			wantHash := hex.EncodeToString(digest[:])
-			service := NewService(fakeStore{
-				find: func(_ context.Context, hash string) (Session, error) {
+			service := session.NewService(fakeStore{
+				find: func(_ context.Context, hash string) (session.Session, error) {
 					findCalls++
 					if hash != wantHash {
 						t.Errorf("lookup hash = %q, want %q", hash, wantHash)
 					}
 					if tt.storeErr != nil {
-						return Session{}, tt.storeErr
+						return session.Session{}, tt.storeErr
 					}
 					return want, nil
 				},
@@ -118,14 +120,14 @@ func TestTokenOperations(t *testing.T) {
 					return tt.storeErr
 				},
 			})
-			got, err := service.FindByToken(context.Background(), tt.token)
+			got, err := service.FindByToken(t.Context(), tt.token)
 			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("FindByToken() error = %v, want %v", err, tt.wantErr)
 			}
-			if tt.wantErr == nil && got != want || tt.wantErr != nil && got != (Session{}) {
+			if tt.wantErr == nil && got != want || tt.wantErr != nil && got != (session.Session{}) {
 				t.Errorf("unexpected session: %v", got)
 			}
-			if err := service.Revoke(context.Background(), tt.token); !errors.Is(err, tt.wantErr) {
+			if err := service.Revoke(t.Context(), tt.token); !errors.Is(err, tt.wantErr) {
 				t.Errorf("Revoke() error = %v, want %v", err, tt.wantErr)
 			}
 			wantCalls := 0

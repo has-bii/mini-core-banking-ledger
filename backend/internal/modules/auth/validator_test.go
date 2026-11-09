@@ -1,9 +1,11 @@
-package auth
+package auth_test
 
 import (
 	"slices"
 	"strings"
 	"testing"
+
+	"backend/internal/modules/auth"
 )
 
 func TestValidation(t *testing.T) {
@@ -15,23 +17,23 @@ func TestValidation(t *testing.T) {
 	}{
 		{"valid", "alice@example.com", "password", nil},
 		{"trim email", " alice@example.com ", "password", nil},
-		{"invalid email", "Alice <alice@example.com>", "password", []error{ErrInvalidEmail}},
-		{"empty password", "alice@example.com", "", []error{ErrPasswordTooShort}},
-		{"blank password", "alice@example.com", "        ", []error{ErrPasswordTooShort}},
-		{"seven characters", "alice@example.com", "1234567", []error{ErrPasswordTooShort}},
+		{"invalid email", "Alice <alice@example.com>", "password", []error{auth.ErrInvalidEmail}},
+		{"empty password", "alice@example.com", "", []error{auth.ErrPasswordTooShort}},
+		{"blank password", "alice@example.com", "        ", []error{auth.ErrPasswordTooShort}},
+		{"seven characters", "alice@example.com", "1234567", []error{auth.ErrPasswordTooShort}},
 		{"eight unicode characters", "alice@example.com", strings.Repeat("é", 8), nil},
-		{"seven unicode characters", "alice@example.com", strings.Repeat("é", 7), []error{ErrPasswordTooShort}},
+		{"seven unicode characters", "alice@example.com", strings.Repeat("é", 7), []error{auth.ErrPasswordTooShort}},
 		{"72 bytes", "alice@example.com", strings.Repeat("a", 72), nil},
-		{"73 bytes", "alice@example.com", strings.Repeat("a", 73), []error{ErrPasswordTooLong}},
-		{"unicode byte limit", "alice@example.com", strings.Repeat("é", 37), []error{ErrPasswordTooLong}},
-		{"multiple errors", "", "", []error{ErrInvalidEmail, ErrPasswordTooShort}},
+		{"73 bytes", "alice@example.com", strings.Repeat("a", 73), []error{auth.ErrPasswordTooLong}},
+		{"unicode byte limit", "alice@example.com", strings.Repeat("é", 37), []error{auth.ErrPasswordTooLong}},
+		{"multiple errors", "", "", []error{auth.ErrInvalidEmail, auth.ErrPasswordTooShort}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			register := RegisterDTO{Name: " Alice ", Email: tt.email, Password: tt.password}
+			register := auth.RegisterDTO{Name: " Alice ", Email: tt.email, Password: tt.password}
 			if got := register.Validate(); !slices.Equal(got, tt.want) {
 				t.Errorf("Register.Validate() = %v, want %v", got, tt.want)
 			}
-			login := LoginDTO{Email: tt.email, Password: tt.password}
+			login := auth.LoginDTO{Email: tt.email, Password: tt.password}
 			if got := login.Validate(); !slices.Equal(got, tt.want) {
 				t.Errorf("Login.Validate() = %v, want %v", got, tt.want)
 			}
@@ -46,8 +48,8 @@ func TestValidation(t *testing.T) {
 }
 
 func TestRegisterRequiresName(t *testing.T) {
-	payload := RegisterDTO{Name: " \t ", Email: "alice@example.com", Password: "password"}
-	if got := payload.Validate(); !slices.Equal(got, []error{ErrNameRequired}) {
+	payload := auth.RegisterDTO{Name: " \t ", Email: "alice@example.com", Password: "password"}
+	if got := payload.Validate(); !slices.Equal(got, []error{auth.ErrNameRequired}) {
 		t.Errorf("Validate() = %v, want name required", got)
 	}
 }

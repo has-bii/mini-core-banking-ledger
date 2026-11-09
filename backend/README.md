@@ -51,8 +51,9 @@ Edit the generated file in `migrations/`, adding the schema changes under `-- +g
 
 ## Testing
 
-Unit tests use Go's standard library and handwritten fakes; no PostgreSQL, `.env`, or extra test dependencies are required. Tests live beside the code in `*_test.go` files and cover auth validation, login/current-user behavior, registration preflight checks, session token handling, and email/UUID identifiers. HTTP-to-PostgreSQL integration tests live in `internal/app/app_integration_test.go` behind the `integration` build tag.
+Database-free tests use Go's standard library and handwritten adapters. They cover auth validation and workflows, session token handling, identifiers, and HTTP routing, error responses, and cookie behavior. Auth and session tests use external test packages so they exercise the exported interface rather than private implementation details.
 
+PostgreSQL-backed tests live beside the relevant modules in `*_integration_test.go`, behind the `integration` build tag. The full authentication journey lives in `internal/app/app_integration_test.go`.
 
 ```sh
 go test -race ./...
@@ -61,16 +62,26 @@ go vet ./...
 
 ### Integration tests
 
-Use a dedicated test database. The tests read `DATABASE_URL` directly from `backend/.env.test`, ignoring the shell's `DATABASE_URL`; they never load `.env`. Ensure `.env.test` points at the test database and its `GOOSE_DBSTRING` matches `DATABASE_URL`.
+Use a dedicated PostgreSQL 18 test database. The tests read `DATABASE_URL` directly from `backend/.env.test`, ignoring the shell's `DATABASE_URL`; they never load `.env`. The database must already exist and its user must be allowed to create schemas. The Compose setup creates a database named `test` on first initialization.
 
-With PostgreSQL running, apply migrations and run from `backend/`:
+With PostgreSQL running, run from `backend/`:
 
 ```sh
-goose -env .env.test up
-go test -tags=integration -count=1 ./...
+go test -race -tags=integration -count=1 ./...
+go vet -tags=integration ./...
+# Check that scenarios do not depend on execution order.
+go test -race -tags=integration -shuffle=on -count=3 ./...
 ```
 
-The suite exercises registration, duplicate registration, wrong passwords, login/session cookies, authenticated/unauthenticated current-user requests, and current-session logout through the real HTTP handler and PostgreSQL. It uses unique user emails and deletes only its own users afterward (accounts and sessions cascade). Missing configuration, an unavailable database, or unapplied migrations fail the integration run rather than silently skipping it. Interrupted runs may leave test rows behind. Normal `go test ./...` remains database-free.
+`internal/testutil/testdb.Open(t)` creates a unique schema per test, sets the pool's search path to that schema, applies the checked-in SQL migrations' Goose Up sections in transactions, and drops only that schema during cleanup. No manual migration step or Goose executable is needed for tests. This helper supports SQL-only migrations, not Goose Go migrations or advanced Goose directives. It does not migrate or clear the public schema. Parallel tests can reuse fixture emails without sharing rows; normal cleanup also runs on test failure. A killed process may leave `test_*` schemas behind in the dedicated test database.
+
+Coverage is split by behavior:
+
+- **Auth module:** persisted registration credentials, rollback on credentials failure, and concurrent duplicate registrations that both pass the pre-check.
+- **Stores:** user/account round-trips, domain-error translation, PostgreSQL constraint failures, session expiry, and scoped, idempotent revocation.
+- **Application:** one register → login → me → logout journey, plus independent error, multi-session, and environment-specific cookie scenarios.
+
+Missing configuration, an unavailable database, or migration failures fail the integration run rather than silently skipping it. Normal `go test ./...` remains database-free.
 
 ## Login and sessions
 

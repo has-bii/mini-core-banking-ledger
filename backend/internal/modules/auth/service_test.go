@@ -1,4 +1,4 @@
-package auth
+package auth_test
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"backend/internal/modules/account"
+	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
 
@@ -65,7 +66,7 @@ func TestLogout(t *testing.T) {
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			called := false
-			svc := NewService(nil, nil, nil, fakeSessions{revoke: func(_ context.Context, token string) error {
+			svc := auth.NewService(nil, nil, nil, fakeSessions{revoke: func(_ context.Context, token string) error {
 				called = true
 				if token != "raw-token" {
 					t.Errorf("token = %q", token)
@@ -102,17 +103,17 @@ func TestLogin(t *testing.T) {
 		wantErr    error
 	}{
 		{name: "success", password: &passwordHash, input: "password"},
-		{name: "unknown user", userErr: fmt.Errorf("lookup: %w", user.ErrNotFound), wantErr: ErrInvalidCredentials},
+		{name: "unknown user", userErr: fmt.Errorf("lookup: %w", user.ErrNotFound), wantErr: auth.ErrInvalidCredentials},
 		{name: "user lookup failure", userErr: failure, wantErr: failure},
-		{name: "missing account", accountErr: fmt.Errorf("lookup: %w", account.ErrNotFound), wantErr: ErrInvalidCredentials},
+		{name: "missing account", accountErr: fmt.Errorf("lookup: %w", account.ErrNotFound), wantErr: auth.ErrInvalidCredentials},
 		{name: "account lookup failure", accountErr: failure, wantErr: failure},
-		{name: "no password", wantErr: ErrInvalidCredentials},
-		{name: "wrong password", password: &passwordHash, input: "wrong-password", wantErr: ErrInvalidCredentials},
+		{name: "no password", wantErr: auth.ErrInvalidCredentials},
+		{name: "wrong password", password: &passwordHash, input: "wrong-password", wantErr: auth.ErrInvalidCredentials},
 		{name: "session creation failure", password: &passwordHash, input: "password", sessionErr: failure, wantErr: failure},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			created := false
-			service := NewService(nil, fakeUsers{findByEmail: func(_ context.Context, email string) (user.User, error) {
+			service := auth.NewService(nil, fakeUsers{findByEmail: func(_ context.Context, email string) (user.User, error) {
 				if email != wantUser.Email {
 					t.Errorf("email = %q, want %q", email, wantUser.Email)
 				}
@@ -132,7 +133,7 @@ func TestLogin(t *testing.T) {
 				}
 				return wantSession, "raw-token", tt.sessionErr
 			}})
-			gotUser, gotSession, token, err := service.Login(context.Background(), LoginDTO{Email: wantUser.Email, Password: tt.input})
+			gotUser, gotSession, token, err := service.Login(t.Context(), auth.LoginDTO{Email: wantUser.Email, Password: tt.input})
 			if !errors.Is(err, tt.wantErr) {
 				t.Fatalf("Login() error = %v, want %v", err, tt.wantErr)
 			}
@@ -162,13 +163,13 @@ func TestMe(t *testing.T) {
 		wantErr    error
 	}{
 		{name: "success"},
-		{name: "missing session", sessionErr: fmt.Errorf("lookup: %w", session.ErrNotFound), wantErr: ErrUnauthenticated},
+		{name: "missing session", sessionErr: fmt.Errorf("lookup: %w", session.ErrNotFound), wantErr: auth.ErrUnauthenticated},
 		{name: "session lookup failure", sessionErr: failure, wantErr: failure},
-		{name: "missing user", userErr: fmt.Errorf("lookup: %w", user.ErrNotFound), wantErr: ErrUnauthenticated},
+		{name: "missing user", userErr: fmt.Errorf("lookup: %w", user.ErrNotFound), wantErr: auth.ErrUnauthenticated},
 		{name: "user lookup failure", userErr: failure, wantErr: failure},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			service := NewService(nil, fakeUsers{findByID: func(_ context.Context, id string) (user.User, error) {
+			service := auth.NewService(nil, fakeUsers{findByID: func(_ context.Context, id string) (user.User, error) {
 				if tt.sessionErr != nil {
 					t.Fatal("user lookup after failed session lookup")
 				}
@@ -182,7 +183,7 @@ func TestMe(t *testing.T) {
 				}
 				return session.Session{UserID: want.ID}, tt.sessionErr
 			}})
-			got, err := service.Me(context.Background(), "raw-token")
+			got, err := service.Me(t.Context(), "raw-token")
 			if !errors.Is(err, tt.wantErr) {
 				t.Fatalf("Me() error = %v, want %v", err, tt.wantErr)
 			}
@@ -204,13 +205,13 @@ func TestRegisterPreflight(t *testing.T) {
 		{"lookup failure", failure, failure},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			service := NewService(nil, fakeUsers{findByEmail: func(_ context.Context, email string) (user.User, error) {
+			service := auth.NewService(nil, fakeUsers{findByEmail: func(_ context.Context, email string) (user.User, error) {
 				if email != "alice@example.com" {
 					t.Errorf("email = %q", email)
 				}
 				return user.User{}, tt.findErr
 			}}, nil, nil)
-			got, err := service.Register(context.Background(), RegisterDTO{Email: "alice@example.com", Password: "password"})
+			got, err := service.Register(t.Context(), auth.RegisterDTO{Email: "alice@example.com", Password: "password"})
 			if !errors.Is(err, tt.wantErr) || got != (user.User{}) {
 				t.Errorf("Register() = %v, %v; want empty user, %v", got, err, tt.wantErr)
 			}

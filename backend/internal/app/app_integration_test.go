@@ -3,151 +3,189 @@
 package app_test
 
 import (
-	"context"
 	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
-	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"backend/internal/app"
 	"backend/internal/modules/user"
-	"backend/internal/platform/database"
+	"backend/internal/testutil/testdb"
 
 	"github.com/google/uuid"
-	"github.com/joho/godotenv"
 )
 
-func TestAuthIntegration(t *testing.T) {
-	// Read the file directly so a shell DATABASE_URL cannot override the test database.
-	env, err := godotenv.Read(filepath.Join("..", "..", ".env.test"))
-	if err != nil {
-		t.Fatalf("read backend/.env.test: %v", err)
-	}
-	if env["DATABASE_URL"] == "" {
-		t.Fatal("DATABASE_URL is required in backend/.env.test")
-	}
+const (
+	testEmail    = "alice@example.com"
+	registration = `{"name":"Alice","email":"alice@example.com","password":"password123"}`
+	credentials  = `{"email":"alice@example.com","password":"password123"}`
+)
 
-	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Second)
-	defer cancel()
-	pool, err := database.Open(ctx, env["DATABASE_URL"])
-	if err != nil {
-		t.Fatal("open test database (apply migrations first): ", err)
-	}
-	t.Cleanup(pool.Close)
+func newTestApp(t *testing.T, env string) http.Handler {
+	t.Helper()
+	return app.New(env, testdb.Open(t), slog.New(slog.NewTextHandler(io.Discard, nil)))
+}
 
-	email := "integration-" + uuid.NewString() + "@example.com"
-	t.Cleanup(func() {
-		cleanupCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		if _, err := pool.Exec(cleanupCtx, `DELETE FROM users WHERE email = $1`, email); err != nil {
-			t.Errorf("clean up test user: %v", err)
-		}
-	})
-
-	handler := app.New("test", pool, slog.New(slog.NewTextHandler(io.Discard, nil)))
-	request := func(t *testing.T, method, path, body string, status int, cookie *http.Cookie) *httptest.ResponseRecorder {
-		t.Helper()
-		req := httptest.NewRequest(method, path, strings.NewReader(body)).WithContext(ctx)
-		if body != "" {
-			req.Header.Set("Content-Type", "application/json")
-		}
-		if cookie != nil {
-			req.AddCookie(cookie)
-		}
-		rec := httptest.NewRecorder()
-		handler.ServeHTTP(rec, req)
-		if rec.Code != status {
-			t.Fatalf("%s %s: status = %d, want %d; body = %s", method, path, rec.Code, status, rec.Body.String())
-		}
-		return rec
+func request(t *testing.T, handler http.Handler, method, path, body string, status int, cookie *http.Cookie) *httptest.ResponseRecorder {
+	t.Helper()
+	req := httptest.NewRequest(method, path, strings.NewReader(body)).WithContext(t.Context())
+	if body != "" {
+		req.Header.Set("Content-Type", "application/json")
 	}
-	decodeUser := func(rec *httptest.ResponseRecorder) user.User {
-		t.Helper()
-		var response struct {
-			Data user.User `json:"data"`
-		}
-		if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
-			t.Fatalf("decode user: %v", err)
-		}
-		return response.Data
+	if cookie != nil {
+		req.AddCookie(cookie)
 	}
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+	if rec.Code != status {
+		t.Fatalf("%s %s: status = %d, want %d; body = %s", method, path, rec.Code, status, rec.Body.String())
+	}
+	return rec
+}
 
-	registration := `{"name":"Integration User","email":"` + email + `","password":"password123"}`
-	registered := decodeUser(request(t, http.MethodPost, "/api/auth/register", registration, http.StatusCreated, nil))
-	if _, err := uuid.Parse(registered.ID); err != nil || registered.Email != email || registered.Name != "Integration User" {
+func decodeUser(t *testing.T, rec *httptest.ResponseRecorder) user.User {
+	t.Helper()
+	var response struct {
+		Data user.User `json:"data"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
+		t.Fatalf("decode user: %v", err)
+	}
+	for _, secret := range []string{"password", "token"} {
+		if strings.Contains(rec.Body.String(), secret) {
+			t.Errorf("response exposed %s", secret)
+		}
+	}
+	return response.Data
+}
+
+func sessionCookie(t *testing.T, rec *httptest.ResponseRecorder) *http.Cookie {
+	t.Helper()
+	for _, cookie := range rec.Result().Cookies() {
+		if cookie.Name == "session" && cookie.Value != "" {
+			return cookie
+		}
+	}
+	t.Fatal("login did not set a session cookie")
+	return nil
+}
+
+func register(t *testing.T, handler http.Handler) user.User {
+	t.Helper()
+	return decodeUser(t, request(t, handler, "POST", "/api/auth/register", registration, http.StatusCreated, nil))
+}
+
+func login(t *testing.T, handler http.Handler) *http.Cookie {
+	t.Helper()
+	return sessionCookie(t, request(t, handler, "POST", "/api/auth/login", credentials, http.StatusOK, nil))
+}
+
+func assertErrorCode(t *testing.T, rec *httptest.ResponseRecorder, code string) {
+	t.Helper()
+	var response struct {
+		Error struct{ Code string } `json:"error"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
+		t.Fatal(err)
+	}
+	if response.Error.Code != code {
+		t.Errorf("error code = %q, want %q", response.Error.Code, code)
+	}
+}
+
+func TestAuthJourney(t *testing.T) {
+	t.Parallel()
+	handler := newTestApp(t, "test")
+	registered := register(t, handler)
+	if _, err := uuid.Parse(registered.ID); err != nil || registered.Email != testEmail || registered.Name != "Alice" {
 		t.Fatalf("unexpected registered user: %+v", registered)
 	}
-
-	for _, tc := range []struct {
-		name, method, path, body, code string
-		status                         int
-	}{
-		{"duplicate registration", http.MethodPost, "/api/auth/register", registration, "EMAIL_TAKEN", http.StatusConflict},
-		{"wrong password", http.MethodPost, "/api/auth/login", `{"email":"` + email + `","password":"wrong-password"}`, "INVALID_CREDENTIALS", http.StatusUnauthorized},
-		{"unauthenticated", http.MethodGet, "/api/auth/me", "", "UNAUTHENTICATED", http.StatusUnauthorized},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			rec := request(t, tc.method, tc.path, tc.body, tc.status, nil)
-			var response struct {
-				Error struct {
-					Code string `json:"code"`
-				} `json:"error"`
-			}
-			if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
-				t.Fatal(err)
-			}
-			if response.Error.Code != tc.code {
-				t.Errorf("error code = %q, want %q", response.Error.Code, tc.code)
-			}
-		})
-	}
-
-	login := request(t, http.MethodPost, "/api/auth/login", `{"email":"`+email+`","password":"password123"}`, http.StatusOK, nil)
-	if loggedIn := decodeUser(login); loggedIn.ID != registered.ID || loggedIn.Email != email {
+	response := request(t, handler, "POST", "/api/auth/login", credentials, http.StatusOK, nil)
+	if loggedIn := decodeUser(t, response); loggedIn != registered {
 		t.Fatalf("login returned a different user: %+v", loggedIn)
 	}
-	var sessionCookie *http.Cookie
-	for _, cookie := range login.Result().Cookies() {
-		if cookie.Name == "session" {
-			sessionCookie = cookie
-		}
-	}
-	if sessionCookie == nil || sessionCookie.Value == "" {
-		t.Fatal("login did not set a session cookie")
-	}
-	if !sessionCookie.HttpOnly || sessionCookie.SameSite != http.SameSiteLaxMode || sessionCookie.Path != "/" {
-		t.Fatalf("unexpected session cookie attributes: %+v", sessionCookie)
-	}
-
-	otherLogin := request(t, http.MethodPost, "/api/auth/login", `{"email":"`+email+`","password":"password123"}`, http.StatusOK, nil)
-	var otherCookie *http.Cookie
-	for _, cookie := range otherLogin.Result().Cookies() {
-		if cookie.Name == "session" {
-			otherCookie = cookie
-		}
-	}
-	if otherCookie == nil || otherCookie.Value == sessionCookie.Value {
-		t.Fatal("second login did not create a separate session")
-	}
-
-	me := request(t, http.MethodGet, "/api/auth/me", "", http.StatusOK, sessionCookie)
-	if current := decodeUser(me); current.ID != registered.ID || current.Email != email {
+	cookie := sessionCookie(t, response)
+	me := request(t, handler, "GET", "/api/auth/me", "", http.StatusOK, cookie)
+	if current := decodeUser(t, me); current != registered {
 		t.Fatalf("current user differs from registered user: %+v", current)
 	}
-
-	logout := request(t, http.MethodPost, "/api/auth/logout", "", http.StatusNoContent, sessionCookie)
+	logout := request(t, handler, "POST", "/api/auth/logout", "", http.StatusNoContent, cookie)
 	cookies := logout.Result().Cookies()
 	if logout.Body.Len() != 0 || len(cookies) != 1 || cookies[0].Name != "session" || cookies[0].Value != "" || cookies[0].MaxAge != -1 {
 		t.Fatalf("logout did not clear session cookie: body=%s; cookies=%v", logout.Body.String(), cookies)
 	}
-	request(t, http.MethodGet, "/api/auth/me", "", http.StatusUnauthorized, sessionCookie)
-	request(t, http.MethodGet, "/api/auth/me", "", http.StatusOK, otherCookie)
-	request(t, http.MethodPost, "/api/auth/logout", "", http.StatusNoContent, sessionCookie)
-	request(t, http.MethodPost, "/api/auth/logout", "", http.StatusNoContent, nil)
-	request(t, http.MethodPost, "/api/auth/logout", "", http.StatusNoContent, &http.Cookie{Name: "session", Value: "invalid"})
+	rejected := request(t, handler, "GET", "/api/auth/me", "", http.StatusUnauthorized, cookie)
+	assertErrorCode(t, rejected, "UNAUTHENTICATED")
+}
+
+func TestAuthErrorsIntegration(t *testing.T) {
+	for _, tc := range []struct {
+		name, method, path, body, code string
+		status                         int
+		registered                     bool
+	}{
+		{"duplicate registration", "POST", "/api/auth/register", registration, "EMAIL_TAKEN", 409, true},
+		{"wrong password", "POST", "/api/auth/login", `{"email":"alice@example.com","password":"wrong-password"}`, "INVALID_CREDENTIALS", 401, true},
+		{"unknown user", "POST", "/api/auth/login", credentials, "INVALID_CREDENTIALS", 401, false},
+		{"unauthenticated", "GET", "/api/auth/me", "", "UNAUTHENTICATED", 401, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			handler := newTestApp(t, "test")
+			if tc.registered {
+				register(t, handler)
+			}
+			rec := request(t, handler, tc.method, tc.path, tc.body, tc.status, nil)
+			assertErrorCode(t, rec, tc.code)
+		})
+	}
+}
+
+func TestLogoutOnlyRevokesCurrentSession(t *testing.T) {
+	t.Parallel()
+	handler := newTestApp(t, "test")
+	register(t, handler)
+	first, second := login(t, handler), login(t, handler)
+	if first.Value == second.Value {
+		t.Fatal("separate logins must create different sessions")
+	}
+	request(t, handler, "POST", "/api/auth/logout", "", http.StatusNoContent, first)
+	request(t, handler, "GET", "/api/auth/me", "", http.StatusUnauthorized, first)
+	request(t, handler, "GET", "/api/auth/me", "", http.StatusOK, second)
+	request(t, handler, "POST", "/api/auth/logout", "", http.StatusNoContent, first)
+}
+
+func TestLogoutWithoutValidSession(t *testing.T) {
+	t.Parallel()
+	handler := newTestApp(t, "test")
+	for _, tc := range []struct {
+		name   string
+		cookie *http.Cookie
+	}{
+		{"missing", nil},
+		{"empty", &http.Cookie{Name: "session", Value: ""}},
+		{"invalid", &http.Cookie{Name: "session", Value: "invalid"}},
+		{"unknown", &http.Cookie{Name: "session", Value: strings.Repeat("A", 43)}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			request(t, handler, "POST", "/api/auth/logout", "", http.StatusNoContent, tc.cookie)
+		})
+	}
+}
+
+func TestSessionCookieEnvironment(t *testing.T) {
+	for _, env := range []string{"dev", "test", "production"} {
+		t.Run(env, func(t *testing.T) {
+			t.Parallel()
+			handler := newTestApp(t, env)
+			register(t, handler)
+			cookie := login(t, handler)
+			if !cookie.HttpOnly || cookie.SameSite != http.SameSiteLaxMode || cookie.Path != "/" || cookie.Domain != "" || cookie.Secure != (env == "production") {
+				t.Fatalf("unexpected %s session cookie: %+v", env, cookie)
+			}
+		})
+	}
 }
