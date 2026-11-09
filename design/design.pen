@@ -19441,7 +19441,7 @@
                   "id": "nvM0z",
                   "name": "Account access question",
                   "fill": "$subtle-foreground",
-                  "content": "Need access to MiniLedger?",
+                  "content": "New to MiniLedger?",
                   "lineHeight": "$leading/body",
                   "fontFamily": "$font/sans",
                   "fontSize": 12,
@@ -19450,16 +19450,16 @@
                 {
                   "type": "frame",
                   "id": "lCKER",
-                  "name": "Contact administrator action",
+                  "name": "Create account action",
                   "height": 44,
                   "alignItems": "center",
                   "children": [
                     {
                       "type": "text",
                       "id": "uGREO",
-                      "name": "Contact administrator label",
+                      "name": "Create account label",
                       "fill": "$primary",
-                      "content": "Contact your administrator",
+                      "content": "Create account",
                       "lineHeight": "$leading/body",
                       "fontFamily": "$font/sans",
                       "fontSize": 14,
@@ -19842,7 +19842,7 @@
                   "id": "SOdha",
                   "name": "Account access question",
                   "fill": "$subtle-foreground",
-                  "content": "Need access to MiniLedger?",
+                  "content": "New to MiniLedger?",
                   "lineHeight": "$leading/body",
                   "fontFamily": "$font/sans",
                   "fontSize": 12,
@@ -19851,16 +19851,16 @@
                 {
                   "type": "frame",
                   "id": "u5QtSy",
-                  "name": "Contact administrator action",
+                  "name": "Create account action",
                   "height": 44,
                   "alignItems": "center",
                   "children": [
                     {
                       "type": "text",
                       "id": "VfKQ8",
-                      "name": "Contact administrator label",
+                      "name": "Create account label",
                       "fill": "$primary",
-                      "content": "Contact your administrator",
+                      "content": "Create account",
                       "lineHeight": "$leading/body",
                       "fontFamily": "$font/sans",
                       "fontSize": 14,
@@ -20281,7 +20281,7 @@
                   "fill": "$subtle-foreground",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Show password toggles visibility. Sign in submits the credentials. Password recovery and administrator support remain available.",
+                  "content": "Show password toggles visibility. Sign in submits the credentials. Create account opens sign up. Password recovery remains available.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font/sans",
                   "fontSize": 12,
@@ -20541,6 +20541,1666 @@
                   "fontWeight": "normal"
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "hkWyh",
+      "x": 9994,
+      "y": 200,
+      "name": "Sign up · Default",
+      "clip": true,
+      "width": 390,
+      "fill": "$card",
+      "cornerRadius": "$radius/lg",
+      "stroke": "$border",
+      "strokeWidth": 1,
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "JFqAe",
+          "name": "Device status bar",
+          "width": "fill_container",
+          "height": 47,
+          "padding": [
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "NjRkB",
+              "name": "Device time",
+              "fill": "$foreground",
+              "content": "9:41",
+              "lineHeight": "$leading/body",
+              "fontFamily": "$font/sans",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "JW80s",
+              "name": "Device indicators",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "W4FbM",
+                  "name": "signal indicator",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$foreground"
+                },
+                {
+                  "type": "icon",
+                  "id": "MhDWM",
+                  "name": "wifi indicator",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$foreground"
+                },
+                {
+                  "type": "icon",
+                  "id": "XR7xo",
+                  "name": "battery-full indicator",
+                  "width": 22,
+                  "height": 16,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$foreground"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "N4Hsy",
+          "name": "Sign up body",
+          "width": "fill_container",
+          "height": 763,
+          "layout": "vertical",
+          "padding": [
+            24,
+            24,
+            16,
+            24
+          ],
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "MFlaw",
+              "name": "Sign up main content",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 40,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "rm1Xu",
+                  "name": "MiniLedger wordmark",
+                  "fill": "$foreground",
+                  "content": "MiniLedger",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 20,
+                  "fontWeight": "$weight/800"
+                },
+                {
+                  "type": "frame",
+                  "id": "X5WAV",
+                  "name": "Sign up panel",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "h5ISU",
+                      "name": "Sign up introduction",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "NQ4BI",
+                          "name": "Create account heading",
+                          "fill": "$foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Create your account.",
+                          "lineHeight": 1.3,
+                          "fontFamily": "$font/sans",
+                          "fontSize": 32,
+                          "fontWeight": "700",
+                          "letterSpacing": -0.8
+                        },
+                        {
+                          "type": "text",
+                          "id": "yVtc5",
+                          "name": "Sign up description",
+                          "fill": "$subtle-foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Start managing your accounts\nand journal entries in one place.",
+                          "lineHeight": "$leading/body",
+                          "fontFamily": "$font/sans",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "XUOft",
+                      "name": "Sign up form",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 16,
+                      "children": [
+                        {
+                          "id": "V05Nq",
+                          "type": "ref",
+                          "ref": "VYdr5",
+                          "name": "Full name field",
+                          "width": "fill_container",
+                          "descendants": {
+                            "rfjIp/NnD0D": {
+                              "content": "Full name"
+                            },
+                            "O2vTm5": {
+                              "stroke": "$auth/input-border"
+                            },
+                            "O2vTm5/dOpnF": {
+                              "content": "Enter your full name"
+                            },
+                            "w0cNB": {
+                              "enabled": false,
+                              "width": 342
+                            }
+                          }
+                        },
+                        {
+                          "id": "PkORR",
+                          "type": "ref",
+                          "ref": "VYdr5",
+                          "name": "Email address field",
+                          "width": "fill_container",
+                          "descendants": {
+                            "rfjIp/NnD0D": {
+                              "content": "Email address"
+                            },
+                            "O2vTm5": {
+                              "stroke": "$auth/input-border"
+                            },
+                            "O2vTm5/dOpnF": {
+                              "content": "name@company.com"
+                            },
+                            "w0cNB": {
+                              "type": "text",
+                              "id": "atT4H",
+                              "x": 0,
+                              "y": 0,
+                              "name": "Email helper omitted",
+                              "enabled": false,
+                              "fill": "$subtle-foreground",
+                              "fontFamily": "$font/sans",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          }
+                        },
+                        {
+                          "id": "Uelw4",
+                          "type": "ref",
+                          "ref": "VYdr5",
+                          "name": "Password field",
+                          "width": "fill_container",
+                          "descendants": {
+                            "rfjIp/NnD0D": {
+                              "content": "Password"
+                            },
+                            "O2vTm5": {
+                              "padding": [
+                                0,
+                                4,
+                                0,
+                                12
+                              ],
+                              "stroke": "$auth/input-border"
+                            },
+                            "O2vTm5/dOpnF": {
+                              "type": "frame",
+                              "id": "KIPiW",
+                              "name": "Password entry row",
+                              "width": "fill_container",
+                              "height": "fill_container",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Eu9D2",
+                                  "name": "Password value",
+                                  "fill": "$muted-foreground",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Enter your password",
+                                  "lineHeight": "$leading/body",
+                                  "fontFamily": "$font/sans",
+                                  "fontSize": 16,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "m4Ycs",
+                                  "name": "Show password button",
+                                  "width": 44,
+                                  "height": 44,
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "xsgsZ",
+                                      "name": "Show password icon",
+                                      "width": 20,
+                                      "height": 20,
+                                      "icon": "eye",
+                                      "library": "lucide",
+                                      "fill": "$muted-foreground"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            "w0cNB": {
+                              "type": "text",
+                              "id": "n7JBWO",
+                              "name": "Password requirement",
+                              "fill": "$subtle-foreground",
+                              "content": "Use at least 8 characters.",
+                              "fontFamily": "$font/sans",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "z1AHjY",
+                          "x": 0,
+                          "y": 186,
+                          "name": "Password recovery row",
+                          "enabled": false,
+                          "justifyContent": "end",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "s7nmd",
+                              "name": "Forgot password action",
+                              "height": 44,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "SaNo3",
+                                  "name": "Forgot password label",
+                                  "fill": "$primary",
+                                  "content": "Forgot password?",
+                                  "lineHeight": "$leading/body",
+                                  "fontFamily": "$font/sans",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "P89qOv",
+                          "type": "ref",
+                          "ref": "CNVek",
+                          "name": "Create account button",
+                          "width": "fill_container",
+                          "descendants": {
+                            "sldYy": {
+                              "content": "Create account"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "DrD6S",
+              "name": "Account access help",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "EzoEe",
+                  "name": "Account access question",
+                  "fill": "$subtle-foreground",
+                  "content": "Already have an account?",
+                  "lineHeight": "$leading/body",
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "k9yz4L",
+                  "name": "Sign in action",
+                  "height": 44,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "H4rOp",
+                      "name": "Sign in label",
+                      "fill": "$primary",
+                      "content": "Sign in",
+                      "lineHeight": "$leading/body",
+                      "fontFamily": "$font/sans",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "yqyUa",
+          "name": "Bottom safe area",
+          "width": "fill_container",
+          "height": 34,
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius/pill",
+              "id": "M33J4",
+              "name": "Home indicator",
+              "fill": "$foreground",
+              "width": 128,
+              "height": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "jderB",
+      "x": 9994,
+      "y": 0,
+      "name": "08 · Sign up — flow overview",
+      "width": 1234,
+      "layout": "vertical",
+      "gap": 12,
+      "children": [
+        {
+          "type": "text",
+          "id": "N9V8M",
+          "name": "Sign up section index",
+          "fill": "$primary",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "MINILEDGER  /  AUTHENTICATION  /  08",
+          "lineHeight": 1.5,
+          "fontFamily": "$font/sans",
+          "fontSize": 12,
+          "fontWeight": "700",
+          "letterSpacing": 1.2
+        },
+        {
+          "type": "text",
+          "id": "z5Kfo",
+          "name": "Sign up flow title",
+          "fill": "$foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "A simple start.",
+          "lineHeight": 1.2,
+          "fontFamily": "$font/sans",
+          "fontSize": 40,
+          "fontWeight": "700",
+          "letterSpacing": -0.8
+        },
+        {
+          "type": "text",
+          "id": "wam5B",
+          "name": "Sign up flow description",
+          "fill": "$subtle-foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Create an account, recover from errors, and continue to your ledger.",
+          "lineHeight": 1.5,
+          "fontFamily": "$font/sans",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "eayrs",
+          "name": "Sign up state labels",
+          "width": "fill_container",
+          "gap": 32,
+          "padding": [
+            16,
+            0,
+            0,
+            0
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "tkhw3",
+              "name": "Ready to sign in label",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "B1URX",
+                  "name": "Ready to sign in number",
+                  "fill": "$primary",
+                  "content": "01",
+                  "lineHeight": "$leading/body",
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "mVhMi",
+                  "name": "Ready to sign in caption",
+                  "fill": "$foreground",
+                  "content": "Ready to create an account",
+                  "lineHeight": "$leading/body",
+                  "fontFamily": "$font/sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "FRauW",
+              "name": "Credentials not accepted label",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "oab6L",
+                  "name": "Credentials not accepted number",
+                  "fill": "$primary",
+                  "content": "02",
+                  "lineHeight": "$leading/body",
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "vhHoT",
+                  "name": "Credentials not accepted caption",
+                  "fill": "$foreground",
+                  "content": "Email already registered",
+                  "lineHeight": "$leading/body",
+                  "fontFamily": "$font/sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "K209IV",
+              "name": "Successfully signed in label",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "FvyRw",
+                  "name": "Successfully signed in number",
+                  "fill": "$primary",
+                  "content": "03",
+                  "lineHeight": "$leading/body",
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "UBqgg",
+                  "name": "Successfully signed in caption",
+                  "fill": "$foreground",
+                  "content": "Account created",
+                  "lineHeight": "$leading/body",
+                  "fontFamily": "$font/sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "rEgby",
+      "x": 9994,
+      "y": 1084,
+      "name": "Sign up · Behavior notes and review",
+      "width": 1234,
+      "fill": "$background",
+      "cornerRadius": "$radius/lg",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "text",
+          "id": "mBngt",
+          "name": "Sign up handoff title",
+          "fill": "$foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Behavior & quality review",
+          "lineHeight": 1.5,
+          "fontFamily": "$font/sans",
+          "fontSize": 20,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "VhsiB",
+          "name": "Sign up state behavior notes",
+          "width": "fill_container",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "fl8wg",
+              "name": "Create account notes",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "rCn6P",
+                  "name": "Create account title",
+                  "fill": "$foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "01 · Default",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "kxN5b",
+                  "name": "Create account description",
+                  "fill": "$subtle-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Require full name, valid email and a password of at least 8 characters. Show password toggles visibility. Create account submits once; Sign in returns to the sign-in screen.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Echor",
+              "name": "Validation and retry notes",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "zTs7m",
+                  "name": "Validation and retry title",
+                  "fill": "$foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "02 · Error",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "Zzmnv",
+                  "name": "Validation and retry description",
+                  "fill": "$subtle-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Preserve entered values and keep the password masked. An existing email shows an alert and inline error; offer Sign in or a different email. Other validation errors appear beside their fields. Request failures allow retry.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "j3YBS",
+              "name": "Switch between screens notes",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "gtgPl",
+                  "name": "Switch between screens title",
+                  "fill": "$foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "03 · Success",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "w4Cde",
+                  "name": "Switch between screens description",
+                  "fill": "$subtle-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Create the account and sign the user in immediately. Confirm their identity; Continue to overview opens Overview. No email verification, code or activation step.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ZBQPq",
+          "name": "Sign up design checklist",
+          "width": "fill_container",
+          "stroke": "$border",
+          "strokeWidth": {
+            "top": 1
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": [
+            16,
+            0,
+            0,
+            0
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "W0zzhu",
+              "name": "Layout intact; no collapsed containers.",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "dK9UT",
+                  "name": "Review checkmark",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "check",
+                  "library": "lucide",
+                  "fill": "$credit-foreground"
+                },
+                {
+                  "type": "text",
+                  "id": "SBh0m",
+                  "name": "Review criterion",
+                  "fill": "$subtle-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Layout intact; no collapsed containers.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "tnArE",
+              "name": "All content fits within the screen.",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "W6lFz",
+                  "name": "Review checkmark",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "check",
+                  "library": "lucide",
+                  "fill": "$credit-foreground"
+                },
+                {
+                  "type": "text",
+                  "id": "PDTKZ",
+                  "name": "Review criterion",
+                  "fill": "$subtle-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "All content fits within the screen.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "x9G9G",
+              "name": "Text and control contrast checked.",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "lusF8",
+                  "name": "Review checkmark",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "check",
+                  "library": "lucide",
+                  "fill": "$credit-foreground"
+                },
+                {
+                  "type": "text",
+                  "id": "YIJgZ",
+                  "name": "Review criterion",
+                  "fill": "$subtle-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Text and control contrast checked.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Bs9jq",
+              "name": "Consistent insets and 44px touch targets.",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "uqBfW",
+                  "name": "Review checkmark",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "check",
+                  "library": "lucide",
+                  "fill": "$credit-foreground"
+                },
+                {
+                  "type": "text",
+                  "id": "eDlXd",
+                  "name": "Review criterion",
+                  "fill": "$subtle-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Consistent insets and 44px touch targets.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ujXR0",
+              "name": "Shared components and flex layout retained.",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "Q8dnc",
+                  "name": "Review checkmark",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "check",
+                  "library": "lucide",
+                  "fill": "$credit-foreground"
+                },
+                {
+                  "type": "text",
+                  "id": "m0XRXx",
+                  "name": "Review criterion",
+                  "fill": "$subtle-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Shared components and flex layout retained.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "fXxHL",
+      "x": 10416,
+      "y": 200,
+      "name": "Sign up · Error",
+      "clip": true,
+      "width": 390,
+      "fill": "$card",
+      "cornerRadius": "$radius/lg",
+      "stroke": "$border",
+      "strokeWidth": 1,
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "zRspp",
+          "name": "Device status bar",
+          "width": "fill_container",
+          "height": 47,
+          "padding": [
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "j5MRa8",
+              "name": "Device time",
+              "fill": "$foreground",
+              "content": "9:41",
+              "lineHeight": "$leading/body",
+              "fontFamily": "$font/sans",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "t3CHC",
+              "name": "Device indicators",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "n74aDl",
+                  "name": "signal indicator",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$foreground"
+                },
+                {
+                  "type": "icon",
+                  "id": "pglzH",
+                  "name": "wifi indicator",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$foreground"
+                },
+                {
+                  "type": "icon",
+                  "id": "ptL03",
+                  "name": "battery-full indicator",
+                  "width": 22,
+                  "height": 16,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$foreground"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "oTz1g",
+          "name": "Sign up body",
+          "width": "fill_container",
+          "height": 763,
+          "layout": "vertical",
+          "padding": [
+            24,
+            24,
+            16,
+            24
+          ],
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "gQiSR",
+              "name": "Sign up main content",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 32,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "CHFoR",
+                  "name": "MiniLedger wordmark",
+                  "fill": "$foreground",
+                  "content": "MiniLedger",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 20,
+                  "fontWeight": "$weight/800"
+                },
+                {
+                  "type": "frame",
+                  "id": "inLzF",
+                  "name": "Sign up panel",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "TJ54y",
+                      "name": "Sign up introduction",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Y2FMo",
+                          "name": "Create account heading",
+                          "fill": "$foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Create your account.",
+                          "lineHeight": 1.3,
+                          "fontFamily": "$font/sans",
+                          "fontSize": 32,
+                          "fontWeight": "700",
+                          "letterSpacing": -0.8
+                        },
+                        {
+                          "type": "text",
+                          "id": "Rv9tc",
+                          "name": "Sign up description",
+                          "fill": "$subtle-foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Start managing your accounts\nand journal entries in one place.",
+                          "lineHeight": "$leading/body",
+                          "fontFamily": "$font/sans",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "mTNcY",
+                      "type": "ref",
+                      "ref": "xEv4W",
+                      "name": "Account already exists alert",
+                      "width": "fill_container",
+                      "descendants": {
+                        "DJgNk": {
+                          "content": "Account already exists"
+                        },
+                        "kWkC1": {
+                          "content": "Sign in or use a different email address."
+                        }
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kJSbf",
+                      "name": "Sign up form",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 16,
+                      "children": [
+                        {
+                          "id": "lFaZX",
+                          "type": "ref",
+                          "ref": "VYdr5",
+                          "name": "Full name field",
+                          "width": "fill_container",
+                          "descendants": {
+                            "rfjIp/NnD0D": {
+                              "content": "Full name"
+                            },
+                            "O2vTm5": {
+                              "stroke": "$auth/input-border"
+                            },
+                            "O2vTm5/dOpnF": {
+                              "content": "Nadia Putri",
+                              "fill": "$foreground"
+                            },
+                            "w0cNB": {
+                              "enabled": false,
+                              "width": 342
+                            }
+                          }
+                        },
+                        {
+                          "id": "sUWJR",
+                          "type": "ref",
+                          "ref": "VYdr5",
+                          "name": "Email address field",
+                          "width": "fill_container",
+                          "descendants": {
+                            "rfjIp/NnD0D": {
+                              "content": "Email address"
+                            },
+                            "O2vTm5": {
+                              "stroke": "$destructive"
+                            },
+                            "O2vTm5/dOpnF": {
+                              "content": "nadia@company.com",
+                              "fill": "$foreground"
+                            },
+                            "w0cNB": {
+                              "type": "text",
+                              "id": "mhRpM",
+                              "name": "Email already registered error",
+                              "fill": "$debit-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "This email is already registered.",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font/sans",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          }
+                        },
+                        {
+                          "id": "xbhkR",
+                          "type": "ref",
+                          "ref": "VYdr5",
+                          "name": "Password field",
+                          "width": "fill_container",
+                          "descendants": {
+                            "rfjIp/NnD0D": {
+                              "content": "Password"
+                            },
+                            "O2vTm5": {
+                              "padding": [
+                                0,
+                                4,
+                                0,
+                                12
+                              ],
+                              "stroke": "$auth/input-border"
+                            },
+                            "O2vTm5/dOpnF": {
+                              "type": "frame",
+                              "id": "l7y45",
+                              "name": "Password entry row",
+                              "width": "fill_container",
+                              "height": "fill_container",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "cSt4I",
+                                  "name": "Password value",
+                                  "fill": "$foreground",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "••••••••••••",
+                                  "lineHeight": "$leading/body",
+                                  "fontFamily": "$font/sans",
+                                  "fontSize": 16,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "kKhoh",
+                                  "name": "Show password button",
+                                  "width": 44,
+                                  "height": 44,
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "qKU32",
+                                      "name": "Show password icon",
+                                      "width": 20,
+                                      "height": 20,
+                                      "icon": "eye",
+                                      "library": "lucide",
+                                      "fill": "$muted-foreground"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            "w0cNB": {
+                              "type": "text",
+                              "id": "I4JjOo",
+                              "name": "Password requirement",
+                              "fill": "$subtle-foreground",
+                              "content": "Use at least 8 characters.",
+                              "fontFamily": "$font/sans",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "doQdS",
+                          "x": 0,
+                          "y": 186,
+                          "name": "Password recovery row",
+                          "enabled": false,
+                          "justifyContent": "end",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "oOUTw",
+                              "name": "Forgot password action",
+                              "height": 44,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "NqsdJ",
+                                  "name": "Forgot password label",
+                                  "fill": "$primary",
+                                  "content": "Forgot password?",
+                                  "lineHeight": "$leading/body",
+                                  "fontFamily": "$font/sans",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "vMexH",
+                          "type": "ref",
+                          "ref": "CNVek",
+                          "name": "Create account button",
+                          "width": "fill_container",
+                          "descendants": {
+                            "sldYy": {
+                              "content": "Create account"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "m7c03N",
+              "name": "Account access help",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "QPpma",
+                  "name": "Account access question",
+                  "fill": "$subtle-foreground",
+                  "content": "Already have an account?",
+                  "lineHeight": "$leading/body",
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "zVTax",
+                  "name": "Sign in action",
+                  "height": 44,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Yzl8z",
+                      "name": "Sign in label",
+                      "fill": "$primary",
+                      "content": "Sign in",
+                      "lineHeight": "$leading/body",
+                      "fontFamily": "$font/sans",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ROVc7",
+          "name": "Bottom safe area",
+          "width": "fill_container",
+          "height": 34,
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius/pill",
+              "id": "KB3X9",
+              "name": "Home indicator",
+              "fill": "$foreground",
+              "width": 128,
+              "height": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "wrIXE",
+      "x": 10838,
+      "y": 200,
+      "name": "Sign up · Success",
+      "clip": true,
+      "width": 390,
+      "fill": "$card",
+      "cornerRadius": "$radius/lg",
+      "stroke": "$border",
+      "strokeWidth": 1,
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "XokDL",
+          "name": "Device status bar",
+          "width": "fill_container",
+          "height": 47,
+          "padding": [
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "z8GjjV",
+              "name": "Device time",
+              "fill": "$foreground",
+              "content": "9:41",
+              "lineHeight": "$leading/body",
+              "fontFamily": "$font/sans",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "mfMyN",
+              "name": "Device indicators",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "X31TRn",
+                  "name": "signal indicator",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "$foreground"
+                },
+                {
+                  "type": "icon",
+                  "id": "Nscku",
+                  "name": "wifi indicator",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "$foreground"
+                },
+                {
+                  "type": "icon",
+                  "id": "vynuy",
+                  "name": "battery-full indicator",
+                  "width": 22,
+                  "height": 16,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "$foreground"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "BQwtv",
+          "name": "Sign up success body",
+          "width": "fill_container",
+          "height": 763,
+          "layout": "vertical",
+          "padding": [
+            24,
+            24,
+            16,
+            24
+          ],
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "QpgKU",
+              "name": "Sign up success main content",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 40,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "RviSP",
+                  "name": "MiniLedger wordmark",
+                  "fill": "$foreground",
+                  "content": "MiniLedger",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 20,
+                  "fontWeight": "$weight/800"
+                },
+                {
+                  "type": "frame",
+                  "id": "C14hO",
+                  "name": "Account created panel",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 24,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "oWUkX",
+                      "name": "Account created status",
+                      "width": 64,
+                      "height": 64,
+                      "fill": "$credit-tint",
+                      "cornerRadius": "$radius/pill",
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "GcLaX",
+                          "name": "Success checkmark",
+                          "width": 32,
+                          "height": 32,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$credit-foreground"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qFdzP",
+                      "name": "Account created introduction",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "oBGev",
+                          "name": "Account created heading",
+                          "fill": "$foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "You’re all set.",
+                          "lineHeight": 1.3,
+                          "textAlign": "center",
+                          "fontFamily": "$font/sans",
+                          "fontSize": 32,
+                          "fontWeight": "700",
+                          "letterSpacing": -0.8
+                        },
+                        {
+                          "type": "text",
+                          "id": "UHnv6",
+                          "name": "Account created description",
+                          "fill": "$subtle-foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Welcome to MiniLedger, Nadia.\nYour account is ready to use.",
+                          "lineHeight": 1.5,
+                          "textAlign": "center",
+                          "fontFamily": "$font/sans",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "oQoEB",
+                      "name": "New account identity",
+                      "width": "fill_container",
+                      "stroke": "$border",
+                      "strokeWidth": {
+                        "top": 1,
+                        "bottom": 1
+                      },
+                      "gap": 12,
+                      "padding": [
+                        16,
+                        0
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "wuZtd",
+                          "type": "ref",
+                          "ref": "wfBhG",
+                          "name": "Nadia account avatar",
+                          "descendants": {
+                            "gyMxR": {
+                              "content": "NP"
+                            }
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "DFuyv",
+                          "name": "Account identity",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zXVjd",
+                              "name": "Authenticated account name",
+                              "fill": "$foreground",
+                              "content": "Nadia Putri",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font/sans",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "l8c4H",
+                              "name": "Authenticated account email",
+                              "fill": "$subtle-foreground",
+                              "content": "nadia@company.com",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font/sans",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "lgvaI",
+                      "name": "Signed in actions",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "id": "iNsKZ",
+                          "type": "ref",
+                          "ref": "CNVek",
+                          "name": "Continue to overview button",
+                          "width": "fill_container",
+                          "descendants": {
+                            "sldYy": {
+                              "content": "Continue to overview"
+                            }
+                          }
+                        },
+                        {
+                          "id": "WFmVC",
+                          "type": "ref",
+                          "ref": "uWTGt",
+                          "enabled": false,
+                          "name": "Use a different account button",
+                          "width": 342,
+                          "descendants": {
+                            "Yhg0j": {
+                              "content": "Use a different account"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yZJPQ",
+              "name": "Signed in footer",
+              "width": "fill_container",
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "BuYqm",
+                  "name": "MiniLedger product descriptor",
+                  "fill": "$subtle-foreground",
+                  "content": "MiniLedger · Core banking ledger",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font/sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "s34ndV",
+          "name": "Bottom safe area",
+          "width": "fill_container",
+          "height": 34,
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": "$radius/pill",
+              "id": "Udy4b",
+              "name": "Home indicator",
+              "fill": "$foreground",
+              "width": 128,
+              "height": 4
             }
           ]
         }
