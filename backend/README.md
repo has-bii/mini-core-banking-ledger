@@ -51,7 +51,8 @@ Edit the generated file in `migrations/`, adding the schema changes under `-- +g
 
 ## Testing
 
-Fast tests use the Go standard library and do not require PostgreSQL:
+Unit tests use Go's standard library and handwritten fakes; no PostgreSQL, `.env`, or extra test dependencies are required. Tests live beside the code in `*_test.go` files and cover auth validation, login/current-user behavior, registration preflight checks, session token handling, and email/UUID identifiers. Database integration and HTTP handler tests are not included.
+
 
 ```sh
 go test -race ./...
