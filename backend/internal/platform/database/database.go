@@ -10,8 +10,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// DBTX is satisfied by both *pgxpool.Pool and pgx.Tx.
 type DBTX interface {
-	Begin(ctx context.Context) (pgx.Tx, error)
 	Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
 	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
 	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
@@ -40,8 +40,9 @@ func Open(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	return pool, nil
 }
 
-func InTx(ctx context.Context, db DBTX, fn func(tx pgx.Tx) error) error {
-	tx, err := db.Begin(ctx)
+// InTx commits if fn returns nil and rolls back otherwise.
+func InTx(ctx context.Context, pool *pgxpool.Pool, fn func(tx pgx.Tx) error) error {
+	tx, err := pool.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("begin tx: %w", err)
 	}

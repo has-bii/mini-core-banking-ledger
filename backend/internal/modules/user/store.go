@@ -50,28 +50,6 @@ func (s *Store) FindByEmail(ctx context.Context, email string) (User, error) {
 	return u, nil
 }
 
-func (s *Store) CreateWithCredentials(ctx context.Context, name, email, hashedPassword string) (User, error) {
-	const q = `INSERT INTO accounts ("userId", password, "createdAt", "updatedAt")
-		VALUES ($1, $2, now(), now())`
-
-	var u User
-	err := database.InTx(ctx, s.db, func(tx pgx.Tx) error {
-		var err error
-		u, err = NewStore(tx).Create(ctx, name, email)
-		if err != nil {
-			return err
-		}
-		if _, err := tx.Exec(ctx, q, u.ID, hashedPassword); err != nil {
-			return fmt.Errorf("create account: %w", err)
-		}
-		return nil
-	})
-	if err != nil {
-		return User{}, err
-	}
-	return u, nil
-}
-
 func (s *Store) Create(ctx context.Context, name, email string) (User, error) {
 	const q = `INSERT INTO users (name, email, "createdAt", "updatedAt")
 		VALUES ($1, $2, now(), now())

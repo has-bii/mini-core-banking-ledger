@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"backend/internal/modules/auth"
-	"backend/internal/modules/user"
 	"backend/internal/platform/httpx"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -15,8 +14,7 @@ func New(env string, pool *pgxpool.Pool, log *slog.Logger) http.Handler {
 
 	mux := http.NewServeMux()
 
-	userStore := user.NewStore(pool)
-	authSvc := auth.NewService(userStore)
+	authSvc := auth.NewService(pool)
 
 	auth.NewHandler(authSvc, log).Register(mux)
 
