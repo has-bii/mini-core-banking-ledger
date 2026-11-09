@@ -33,5 +33,5 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 	auth.NewHandler(authSvc, log, cfg.Env != "dev" && cfg.Env != "test").Register(api)
 	mux.Handle("/api/", http.StripPrefix("/api", api))
 
-	return httpx.Chain(mux, httpx.Recoverer(log), httpx.Logging(log), cors, tb.Middleware()), nil
+	return httpx.Chain(mux, httpx.Recoverer(log), httpx.Logging(log), cors, httpx.GetUser(sessionSvc), tb.Middleware()), nil
 }
