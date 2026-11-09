@@ -19,4 +19,4 @@ The API loads `.env` from the working directory; existing environment variables 
 
 ## Architecture
 
-See [backend architecture guidelines](docs/rule.md) for layer responsibilities, transaction ownership, and validation rules.
+See [backend architecture guidelines](docs/architecture.md) for layer responsibilities, transaction ownership, and validation rules.
