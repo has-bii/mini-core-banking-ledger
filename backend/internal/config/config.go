@@ -9,6 +9,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var ErrDatabaseURLRequired = errors.New("DATABASE_URL is required")
+
 type Config struct {
 	Env, Addr, DatabaseURL, LogLevel string
 	ReadTimeout, ShutdownTimeout     time.Duration
@@ -30,7 +32,7 @@ func Load() (Config, error) {
 	}
 
 	if cfg.DatabaseURL == "" {
-		errs = append(errs, errors.New("DATABASE_URL is required"))
+		errs = append(errs, ErrDatabaseURLRequired)
 	}
 
 	switch cfg.Env {

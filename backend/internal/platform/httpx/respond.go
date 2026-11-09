@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+var ErrSingleJSONValueRequired = errors.New("request body must contain one JSON value")
+
 func WriteJSON(w http.ResponseWriter, status int, v any) {
 	writeJSON(w, status, map[string]any{"data": v})
 }
@@ -32,7 +34,7 @@ func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 		return err
 	}
 	if err := dec.Decode(new(any)); err != io.EOF {
-		return errors.New("request body must contain one JSON value")
+		return ErrSingleJSONValueRequired
 	}
 	return nil
 }

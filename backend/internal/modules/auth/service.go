@@ -14,11 +14,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var (
-	ErrInvalidCredentials = errors.New("invalid email or password")
-	ErrUnauthenticated    = errors.New("authentication required")
-)
-
 type userStore interface {
 	FindByID(context.Context, string) (user.User, error)
 	FindByEmail(context.Context, string) (user.User, error)

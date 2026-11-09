@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"strings"
 	"unicode/utf8"
 
@@ -20,19 +19,19 @@ func (p *RegisterDTO) Validate() []error {
 	var errs []error
 
 	if p.Name == "" {
-		errs = append(errs, errors.New("name is required"))
+		errs = append(errs, ErrNameRequired)
 	}
 
 	if !identifier.IsValidEmail(p.Email) {
-		errs = append(errs, errors.New("email must be a valid email address"))
+		errs = append(errs, ErrInvalidEmail)
 	}
 
 	if strings.TrimSpace(p.Password) == "" || utf8.RuneCountInString(p.Password) < 8 {
-		errs = append(errs, errors.New("password must contain at least 8 characters"))
+		errs = append(errs, ErrPasswordTooShort)
 	}
 	// bcrypt rejects passwords longer than 72 bytes, not 72 characters.
 	if len(p.Password) > 72 {
-		errs = append(errs, errors.New("password is too long; please use a shorter password"))
+		errs = append(errs, ErrPasswordTooLong)
 	}
 
 	return errs
@@ -49,16 +48,16 @@ func (p *LoginDTO) Validate() []error {
 	var errs []error
 
 	if !identifier.IsValidEmail(p.Email) {
-		errs = append(errs, errors.New("email must be a valid email address"))
+		errs = append(errs, ErrInvalidEmail)
 	}
 
 	if strings.TrimSpace(p.Password) == "" || utf8.RuneCountInString(p.Password) < 8 {
-		errs = append(errs, errors.New("password must contain at least 8 characters"))
+		errs = append(errs, ErrPasswordTooShort)
 	}
 
 	// bcrypt rejects passwords longer than 72 bytes, not 72 characters.
 	if len(p.Password) > 72 {
-		errs = append(errs, errors.New("password is too long; please use a shorter password"))
+		errs = append(errs, ErrPasswordTooLong)
 	}
 
 	return errs
