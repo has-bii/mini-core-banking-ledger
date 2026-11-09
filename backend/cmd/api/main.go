@@ -45,7 +45,7 @@ func run() error {
 	}
 	defer redisClient.Close()
 
-	handler, err := app.New(cfg.Env, cfg.CORSOrigin, pool, log)
+	handler, err := app.New(cfg, pool, log)
 	if err != nil {
 		return err
 	}

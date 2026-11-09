@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"backend/internal/app"
+	"backend/internal/config"
 	"backend/internal/modules/user"
 	"backend/internal/testutil/testdb"
 
@@ -26,7 +27,9 @@ const (
 
 func newTestApp(t *testing.T, env string) http.Handler {
 	t.Helper()
-	handler, err := app.New(env, "http://localhost:3000", testdb.Open(t), slog.New(slog.NewTextHandler(io.Discard, nil)))
+	handler, err := app.New(config.Config{
+		Env: env, CORSOrigin: "http://localhost:3000", RateLimitRPS: 100, RateLimitBurst: 200,
+	}, testdb.Open(t), slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)
 	}

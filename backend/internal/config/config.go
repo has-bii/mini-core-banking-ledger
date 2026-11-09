@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -17,6 +18,7 @@ var (
 type Config struct {
 	Env, Addr, DatabaseURL, RedisURL, LogLevel, CORSOrigin string
 	ReadTimeout, ShutdownTimeout                           time.Duration
+	RateLimitRPS, RateLimitBurst                           int
 }
 
 func Load() (Config, error) {
@@ -34,6 +36,8 @@ func Load() (Config, error) {
 		CORSOrigin:      getString("CORS_ORIGIN", "http://localhost:3000"),
 		ReadTimeout:     getDuration("HTTP_READ_TIMEOUT", 5*time.Second, &errs),
 		ShutdownTimeout: getDuration("SHUTDOWN_TIMEOUT", 10*time.Second, &errs),
+		RateLimitRPS:    getPositiveInt("RATE_LIMIT_RPS", 100, &errs),
+		RateLimitBurst:  getPositiveInt("RATE_LIMIT_BURST", 200, &errs),
 	}
 
 	if cfg.DatabaseURL == "" {
@@ -67,6 +71,19 @@ func getString(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func getPositiveInt(key string, fallback int, errs *[]error) int {
+	value := os.Getenv(key)
+	if value == "" {
+		return fallback
+	}
+	parsed, err := strconv.Atoi(value)
+	if err != nil || parsed <= 0 {
+		*errs = append(*errs, fmt.Errorf("%s must be a positive integer; got %q", key, value))
+		return fallback
+	}
+	return parsed
 }
 
 func getDuration(key string, fallback time.Duration, errs *[]error) time.Duration {
