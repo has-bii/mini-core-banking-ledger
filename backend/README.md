@@ -48,14 +48,8 @@ go vet -tags=integration ./...
 
 Integration tests read `DATABASE_URL` only from `.env.test`, ignoring the shell value. They create, migrate, and drop an isolated schema per test; no manual migration or Goose CLI is needed. Configuration or database errors fail the run. A killed process may leave `test_*` schemas behind.
 
-## Auth API
+## API specification
 
-| Endpoint | Behavior |
-| --- | --- |
-| `POST /api/auth/login` | Accepts email and password; returns the user and sets a session cookie. |
-| `GET /api/auth/me` | Returns the current user, or `401` for an invalid session. |
-| `POST /api/auth/logout` | Revokes the current session and clears its cookie; returns `204`, even without a valid session. |
-
-Sessions last 24 hours. Cookies use `HttpOnly` and `SameSite=Lax`; environments other than `dev` and `test` require HTTPS. Session tokens are stored as SHA-256 hashes and never returned in JSON. Login rate limiting and automatic expired-session cleanup are not implemented.
+See [api/openapi.yaml](api/openapi.yaml) (OpenAPI 3.0.3) for implemented endpoints, request and response schemas, validation, errors, and session cookies.
 
 See [architecture guidelines](docs/architecture.md) for layer responsibilities, transactions, and validation rules.

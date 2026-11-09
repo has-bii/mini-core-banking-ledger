@@ -1,0 +1,305 @@
+openapi: 3.0.3
+info:
+  title: Mini Core Banking Ledger API
+  version: 0.1.0
+  description: |
+    Contract for the implemented authentication API.
+    JSON request bodies must contain exactly one JSON value, must not exceed
+    1 MiB, and must not contain unknown fields. Decode failures return 400,
+    including oversized bodies.
+
+    Sessions last 24 hours. Session tokens are stored as SHA-256 hashes and
+    never returned in JSON. Login rate limiting and automatic expired-session
+    cleanup are not implemented.
+servers:
+  - url: http://localhost:8080/api
+    description: Local development (default HTTP_ADDR)
+tags:
+  - name: Auth
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      operationId: register
+      summary: Register a user
+      description: Creates a user and password account. Does not create a session or set a cookie.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              name: Alice
+              email: alice@example.com
+              password: password123
+      responses:
+        '201':
+          description: User created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email already registered (EMAIL_TAKEN).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: EMAIL_TAKEN
+                  message: email already taken
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /auth/login:
+    post:
+      tags: [Auth]
+      operationId: login
+      summary: Log in and create a session
+      description: |
+        Returns the user and sets the session cookie. Unknown users and wrong
+        passwords both return INVALID_CREDENTIALS. All responses include
+        Cache-Control: no-store.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: alice@example.com
+              password: password123
+      responses:
+        '200':
+          description: Authenticated; session cookie set for 24 hours.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            Set-Cookie:
+              description: |
+                session=<token>; Path=/; Max-Age=86400; Expires=<expiry>;
+                HttpOnly; SameSite=Lax. Secure is also set when APP_ENV is
+                staging or prod; those environments require HTTPS.
+              schema:
+                type: string
+              example: session=opaque-token; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid email or password (INVALID_CREDENTIALS).
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: INVALID_CREDENTIALS
+                  message: invalid email or password
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /auth/me:
+    get:
+      tags: [Auth]
+      operationId: getCurrentUser
+      summary: Get the current user
+      description: |
+        Requires a valid, unexpired session. Missing, empty, expired, revoked,
+        or otherwise invalid session cookies return UNAUTHENTICATED.
+        All responses include Cache-Control: no-store.
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Current user.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Authentication required (UNAUTHENTICATED).
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: UNAUTHENTICATED
+                  message: authentication required
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logout
+      summary: Revoke the current session and clear its cookie
+      description: |
+        Idempotent: returns 204 even if the session is absent or invalid.
+        Other sessions remain valid. All responses include Cache-Control:
+        no-store. A session revocation failure returns 500 without clearing
+        the cookie.
+      security:
+        - {}
+        - sessionCookie: []
+      responses:
+        '204':
+          description: Session revoked if present; cookie cleared. No response body.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            Set-Cookie:
+              description: |
+                Clears the session cookie with Path=/, Max-Age=0, an expiry
+                in the past, HttpOnly and SameSite=Lax. Secure is also set
+                when APP_ENV is staging or prod.
+              schema:
+                type: string
+              example: session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Max-Age=0; HttpOnly; SameSite=Lax
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Opaque session token set by login; expires after 24 hours.
+  headers:
+    NoStore:
+      description: Prevents caching of session-related responses.
+      schema:
+        type: string
+        enum: [no-store]
+  schemas:
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          description: |
+            Surrounding whitespace is trimmed before validation and lookup.
+            Must be a plain email address accepted by Go net/mail.ParseAddress,
+            without a display name. Case is preserved.
+          example: alice@example.com
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          minLength: 8
+          description: |
+            At least 8 Unicode characters, at most 72 UTF-8 bytes, and not
+            entirely whitespace. The password is not trimmed. The byte limit
+            cannot be represented by OpenAPI maxLength.
+    RegisterRequest:
+      type: object
+      additionalProperties: false
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          description: Surrounding whitespace is trimmed; the result must not be empty.
+          example: Alice
+        email:
+          $ref: '#/components/schemas/LoginRequest/properties/email'
+        password:
+          $ref: '#/components/schemas/LoginRequest/properties/password'
+    User:
+      type: object
+      required: [id, name, email, image, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Alice
+        email:
+          type: string
+          example: alice@example.com
+        image:
+          type: string
+          nullable: true
+          description: Profile image value; null when unset.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    UserResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/User'
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                - INVALID_JSON
+                - VALIDATION_ERROR
+                - EMAIL_TAKEN
+                - INVALID_CREDENTIALS
+                - UNAUTHENTICATED
+                - INTERNAL_ERROR
+            message:
+              type: string
+              description: Human-readable detail; multiple validation errors are joined by newlines.
+  responses:
+    BadRequest:
+      description: |
+        INVALID_JSON for malformed JSON, unknown fields, type mismatches,
+        multiple JSON values, empty bodies, or bodies exceeding 1 MiB.
+        VALIDATION_ERROR for invalid field values or missing required fields.
+        Login responses include Cache-Control: no-store.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            invalidJSON:
+              value:
+                error:
+                  code: INVALID_JSON
+                  message: Invalid JSON body
+            validationError:
+              value:
+                error:
+                  code: VALIDATION_ERROR
+                  message: password must contain at least 8 characters
+    InternalError:
+      description: |
+        Unexpected server error (INTERNAL_ERROR). Login, current-user and logout
+        responses include Cache-Control: no-store.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: INTERNAL_ERROR
+              message: internal error
