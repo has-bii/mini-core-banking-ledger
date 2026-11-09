@@ -1,0 +1,17 @@
+services:
+  redis:
+    image: redis:8-alpine
+    container_name: mini-core-banking-redis
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-password}
+    command: ["sh", "-c", 'exec redis-server --save "" --appendonly no --requirepass "$$REDIS_PASSWORD"']
+    ports:
+      - "127.0.0.1:6379:6379"
+    tmpfs:
+      - /data
+    healthcheck:
+      test: ["CMD-SHELL", 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli ping | grep -qx PONG']
+      interval: 10s
+      timeout: 5s
+      retries: 5
