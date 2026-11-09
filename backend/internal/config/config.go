@@ -9,11 +9,14 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var ErrDatabaseURLRequired = errors.New("DATABASE_URL is required")
+var (
+	ErrDatabaseURLRequired = errors.New("DATABASE_URL is required")
+	ErrRedisURLRequired    = errors.New("REDIS_URL is required")
+)
 
 type Config struct {
-	Env, Addr, DatabaseURL, LogLevel, CORSOrigin string
-	ReadTimeout, ShutdownTimeout                 time.Duration
+	Env, Addr, DatabaseURL, RedisURL, LogLevel, CORSOrigin string
+	ReadTimeout, ShutdownTimeout                           time.Duration
 }
 
 func Load() (Config, error) {
@@ -26,6 +29,7 @@ func Load() (Config, error) {
 		Env:             getString("APP_ENV", "dev"),
 		Addr:            getString("HTTP_ADDR", ":8080"),
 		DatabaseURL:     getString("DATABASE_URL", ""),
+		RedisURL:        getString("REDIS_URL", ""),
 		LogLevel:        getString("LOG_LEVEL", "info"),
 		CORSOrigin:      getString("CORS_ORIGIN", "http://localhost:3000"),
 		ReadTimeout:     getDuration("HTTP_READ_TIMEOUT", 5*time.Second, &errs),
@@ -34,6 +38,9 @@ func Load() (Config, error) {
 
 	if cfg.DatabaseURL == "" {
 		errs = append(errs, ErrDatabaseURLRequired)
+	}
+	if cfg.RedisURL == "" {
+		errs = append(errs, ErrRedisURLRequired)
 	}
 
 	switch cfg.Env {

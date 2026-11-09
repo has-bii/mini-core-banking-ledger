@@ -13,6 +13,7 @@ import (
 	"backend/internal/config"
 	"backend/internal/platform/database"
 	"backend/internal/platform/logger"
+	"backend/internal/platform/redis"
 )
 
 func main() {
@@ -37,6 +38,12 @@ func run() error {
 		return err
 	}
 	defer pool.Close()
+
+	redisClient, err := redis.Open(ctx, cfg.RedisURL)
+	if err != nil {
+		return err
+	}
+	defer redisClient.Close()
 
 	handler, err := app.New(cfg.Env, cfg.CORSOrigin, pool, log)
 	if err != nil {
