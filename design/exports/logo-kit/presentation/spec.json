@@ -1,0 +1,57 @@
+{
+  "brand": "MiniLedger",
+  "tagline": "Balanced by design.",
+  "brief": "A mobile ledger for operations staff and accountants. Equal mirrored halves and an open center express balance, precision and clarity.",
+  "adjectives": [
+    "geometric",
+    "dependable",
+    "clear",
+    "approachable"
+  ],
+  "criteria": "Works in one color, preserves the center split, and uses the existing plum and mint palette.",
+  "industry": "finance",
+  "mockups": [
+    "app-icon",
+    "website",
+    "favicon-tab",
+    "business-card",
+    "social",
+    "payment-card"
+  ],
+  "nav": [
+    "Accounts",
+    "Transactions",
+    "Journal"
+  ],
+  "brand_color": "#7040BA",
+  "tile_color": "#7040BA",
+  "greyscale": false,
+  "final": true,
+  "designer": "MiniLedger",
+  "round": 2,
+  "concepts": [
+    {
+      "name": "Geometric Balanced M",
+      "symbol": "../svg/miniledger-symbol-plum.svg",
+      "lockup": "../svg/miniledger-horizontal-plum.svg",
+      "stacked": "../svg/miniledger-stacked-plum.svg",
+      "symbol_on_tile": "../svg/miniledger-symbol-white.svg",
+      "symbol_on_dark": "../svg/miniledger-symbol-white.svg",
+      "lockup_on_dark": "../svg/miniledger-horizontal-white.svg",
+      "lockup_on_tile": "../svg/miniledger-horizontal-white.svg",
+      "stacked_on_tile": "../svg/miniledger-stacked-white.svg",
+      "idea": "Two mirrored halves form one balanced M, with a continuous central gap.",
+      "rationale": [
+        "Angular forms and flat terminals give the mark a geometric character.",
+        "An outlined wordmark keeps the artwork independent of installed fonts.",
+        "A dedicated small-size cut opens the center for favicons."
+      ]
+    }
+  ],
+  "recommendation": "Use the plum horizontal logo on light surfaces. Use the white symbol on plum for app icons. Application mockups illustrate the identity and do not represent shipped products.",
+  "next_steps": [
+    "Use the supplied SVG masters for interface work.",
+    "Follow the clear-space and minimum-size guidance.",
+    "Use the small-size symbol at 16\u201324 px."
+  ]
+}
