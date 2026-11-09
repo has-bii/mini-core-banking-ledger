@@ -39,7 +39,7 @@
 `internal/app/app.go` is the composition root. Wire dependencies explicitly with constructors; no IoC container is required.
 
 - **Handlers** receive services and supporting infrastructure such as a logger.
-- **Services** receive stores and/or a pool when they own transactional workflows.
+- **Services** receive stores and collaborating services through consumer-defined interfaces. Construct pool-backed stores in `app.New`; additionally inject a pool when a service owns transactional workflows. Transaction-bound stores are constructed inside the transaction callback.
 - **Stores** receive `database.DBTX`.
 - Services may depend on other services for shared business logic, but dependencies must remain acyclic. Extract shared logic when needed.
 

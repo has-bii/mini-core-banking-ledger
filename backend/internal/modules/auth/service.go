@@ -35,8 +35,8 @@ type Service struct {
 	sessions sessionService
 }
 
-func NewService(pool *pgxpool.Pool, sessions *session.Service) *Service {
-	return &Service{pool: pool, users: user.NewStore(pool), accounts: account.NewStore(pool), sessions: sessions}
+func NewService(pool *pgxpool.Pool, users userStore, accounts accountStore, sessions sessionService) *Service {
+	return &Service{pool: pool, users: users, accounts: accounts, sessions: sessions}
 }
 
 func (s *Service) Register(ctx context.Context, payload RegisterDTO) (user.User, error) {
