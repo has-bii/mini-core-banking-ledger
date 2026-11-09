@@ -134,10 +134,10 @@ Data flows upward as **database rows → store models → service results → ha
 
 ## 5. Verification
 
-Tests live beside the source files they exercise. Unit tests use standard `testing`, named table-driven subtests where useful, handwritten interface stubs, and `httptest`. They cover validation, auth/session decisions, HTTP error mapping, and session cookies without external services.
+Follow the [testing guidelines](testing_guideline.md) for coverage responsibilities, case limits, naming, assertions, isolation, and review rules.
 
-Integration tests use `//go:build integration` and real PostgreSQL. They verify store behavior, session expiry, registration rollback on a credentials failure, and the complete auth flow through `app.New`. Registration's transactional writes are tested against the database rather than mocked; no production interfaces are changed for testing.
+- **Unit tests** exercise validation, service decisions, and HTTP contracts without external services, using standard `testing`, handwritten interface stubs, and `httptest`.
+- **Integration tests** use `//go:build integration` and real PostgreSQL for stores, transactional rollback, and representative workflows through `app.New`. Do not change production interfaces solely for testing.
+- **Database isolation** uses `internal/testutil.Postgres`: explicit `.env.test`, real Goose migrations, one private schema per test, schema-only `search_path`, and schema-scoped cleanup. Setup failures are fatal, not skipped.
 
-`internal/testutil.Postgres` reads `.env.test` explicitly and provisions a unique schema per test using real Goose migrations. Every pool connection uses a schema-only `search_path`, with no `public` fallback. `t.Cleanup` closes the pool and drops only that schema. Fixtures are created within individual tests; expiry is tested with past timestamps, not sleeps. A helper self-check verifies connection/schema isolation and cleanup.
-
-See [tests and checks](../README.md#tests-and-checks) for setup and commands. Integration setup failures are fatal, not skipped. CI setup, generated mocks, and coverage gates are intentionally out of scope.
+See [tests and checks](../README.md#tests-and-checks) for local setup and commands.
