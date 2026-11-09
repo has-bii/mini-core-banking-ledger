@@ -20,7 +20,9 @@ func New(env string, pool *pgxpool.Pool, log *slog.Logger) http.Handler {
 	sessionSvc := session.NewService(session.NewStore(pool))
 	authSvc := auth.NewService(pool, user.NewStore(pool), account.NewStore(pool), sessionSvc)
 
-	auth.NewHandler(authSvc, log, env != "dev" && env != "test").Register(mux)
+	api := http.NewServeMux()
+	auth.NewHandler(authSvc, log, env != "dev" && env != "test").Register(api)
+	mux.Handle("/api/", http.StripPrefix("/api", api))
 
 	protected := http.NewCrossOriginProtection().Handler(mux)
 	return httpx.Chain(protected, httpx.Recoverer(log), httpx.Logging(log))

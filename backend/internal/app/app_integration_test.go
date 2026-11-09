@@ -78,7 +78,7 @@ func TestAuthIntegration(t *testing.T) {
 	}
 
 	registration := `{"name":"Integration User","email":"` + email + `","password":"password123"}`
-	registered := decodeUser(request(t, http.MethodPost, "/auth/register", registration, http.StatusCreated, nil))
+	registered := decodeUser(request(t, http.MethodPost, "/api/auth/register", registration, http.StatusCreated, nil))
 	if _, err := uuid.Parse(registered.ID); err != nil || registered.Email != email || registered.Name != "Integration User" {
 		t.Fatalf("unexpected registered user: %+v", registered)
 	}
@@ -87,9 +87,9 @@ func TestAuthIntegration(t *testing.T) {
 		name, method, path, body, code string
 		status                         int
 	}{
-		{"duplicate registration", http.MethodPost, "/auth/register", registration, "EMAIL_TAKEN", http.StatusConflict},
-		{"wrong password", http.MethodPost, "/auth/login", `{"email":"` + email + `","password":"wrong-password"}`, "INVALID_CREDENTIALS", http.StatusUnauthorized},
-		{"unauthenticated", http.MethodGet, "/auth/me", "", "UNAUTHENTICATED", http.StatusUnauthorized},
+		{"duplicate registration", http.MethodPost, "/api/auth/register", registration, "EMAIL_TAKEN", http.StatusConflict},
+		{"wrong password", http.MethodPost, "/api/auth/login", `{"email":"` + email + `","password":"wrong-password"}`, "INVALID_CREDENTIALS", http.StatusUnauthorized},
+		{"unauthenticated", http.MethodGet, "/api/auth/me", "", "UNAUTHENTICATED", http.StatusUnauthorized},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			rec := request(t, tc.method, tc.path, tc.body, tc.status, nil)
@@ -107,7 +107,7 @@ func TestAuthIntegration(t *testing.T) {
 		})
 	}
 
-	login := request(t, http.MethodPost, "/auth/login", `{"email":"`+email+`","password":"password123"}`, http.StatusOK, nil)
+	login := request(t, http.MethodPost, "/api/auth/login", `{"email":"`+email+`","password":"password123"}`, http.StatusOK, nil)
 	if loggedIn := decodeUser(login); loggedIn.ID != registered.ID || loggedIn.Email != email {
 		t.Fatalf("login returned a different user: %+v", loggedIn)
 	}
@@ -124,7 +124,7 @@ func TestAuthIntegration(t *testing.T) {
 		t.Fatalf("unexpected session cookie attributes: %+v", sessionCookie)
 	}
 
-	me := request(t, http.MethodGet, "/auth/me", "", http.StatusOK, sessionCookie)
+	me := request(t, http.MethodGet, "/api/auth/me", "", http.StatusOK, sessionCookie)
 	if current := decodeUser(me); current.ID != registered.ID || current.Email != email {
 		t.Fatalf("current user differs from registered user: %+v", current)
 	}

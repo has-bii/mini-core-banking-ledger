@@ -74,20 +74,20 @@ The suite exercises registration, duplicate registration, wrong passwords, login
 
 ## Login and sessions
 
-`POST /auth/login` accepts an email and password:
+`POST /api/auth/login` accepts an email and password:
 
 ```sh
-curl -i -c cookies.txt http://localhost:8080/auth/login \
+curl -i -c cookies.txt http://localhost:8080/api/auth/login \
   -H 'Content-Type: application/json' \
   -d '{"email":"alice@example.com","password":"password123"}'
 ```
 
 A successful login returns the user and sets a host-only `session` cookie with `HttpOnly`, `SameSite=Lax`, `Path=/`, and a 24-hour lifetime. `Secure` is enabled outside `dev` and `test`; staging and production must use HTTPS. The raw token is never returned in JSON or stored in the database: the existing `sessions.token` column holds its SHA-256 hash. Invalid credentials return `401`; invalid input returns `400`.
 
-`GET /auth/me` returns the current user using the session cookie from login:
+`GET /api/auth/me` returns the current user using the session cookie from login:
 
 ```sh
-curl -i -b cookies.txt http://localhost:8080/auth/me
+curl -i -b cookies.txt http://localhost:8080/api/auth/me
 ```
 
 A successful response is `200` with the same `{"data": {...}}` user shape as login. Missing, empty, invalid, expired, or revoked sessions return `401` with error code `UNAUTHENTICATED`; unexpected lookup failures return a generic `500`. Responses use `Cache-Control: no-store` and never include the session token or password hash.
