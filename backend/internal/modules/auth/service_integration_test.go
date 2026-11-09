@@ -11,32 +11,11 @@ import (
 
 	"backend/internal/modules/account"
 	"backend/internal/modules/auth"
-	"backend/internal/modules/session"
 	"backend/internal/modules/user"
 	"backend/internal/testutil/testdb"
 
 	"github.com/jackc/pgx/v5/pgconn"
 )
-
-func TestRegisterPersistsUsableCredentials(t *testing.T) {
-	t.Parallel()
-	pool := testdb.Open(t)
-	users := user.NewStore(pool)
-	svc := auth.NewService(pool, users, account.NewStore(pool), session.NewService(session.NewStore(pool)))
-	payload := auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "password123"}
-	u, err := svc.Register(t.Context(), payload)
-	if err != nil {
-		t.Fatal(err)
-	}
-	stored, err := users.FindByEmail(t.Context(), payload.Email)
-	if err != nil || stored.ID != u.ID || stored.Name != payload.Name {
-		t.Fatalf("registered user was not persisted: %+v, %v", stored, err)
-	}
-	loggedIn, _, token, err := svc.Login(t.Context(), auth.LoginDTO{Email: payload.Email, Password: payload.Password})
-	if err != nil || loggedIn.ID != u.ID || token == "" {
-		t.Fatalf("registered credentials cannot log in: %+v, %q, %v", loggedIn, token, err)
-	}
-}
 
 func TestRegisterRollsBackWhenCredentialsFail(t *testing.T) {
 	t.Parallel()

@@ -15,42 +15,51 @@ import (
 )
 
 type fakeUsers struct {
-	findByEmail func(context.Context, string) (user.User, error)
-	findByID    func(context.Context, string) (user.User, error)
+	result    user.User
+	err       error
+	email, id string
 }
 
-func (f fakeUsers) FindByEmail(ctx context.Context, email string) (user.User, error) {
-	return f.findByEmail(ctx, email)
+func (f *fakeUsers) FindByEmail(_ context.Context, email string) (user.User, error) {
+	f.email = email
+	return f.result, f.err
 }
 
-func (f fakeUsers) FindByID(ctx context.Context, id string) (user.User, error) {
-	return f.findByID(ctx, id)
+func (f *fakeUsers) FindByID(_ context.Context, id string) (user.User, error) {
+	f.id = id
+	return f.result, f.err
 }
 
 type fakeAccounts struct {
-	find func(context.Context, string) (account.Account, error)
+	result account.Account
+	err    error
+	userID string
 }
 
-func (f fakeAccounts) FindByUserID(ctx context.Context, id string) (account.Account, error) {
-	return f.find(ctx, id)
+func (f *fakeAccounts) FindByUserID(_ context.Context, id string) (account.Account, error) {
+	f.userID = id
+	return f.result, f.err
 }
 
 type fakeSessions struct {
-	create func(context.Context, string) (session.Session, string, error)
-	find   func(context.Context, string) (session.Session, error)
-	revoke func(context.Context, string) error
+	result                               session.Session
+	err                                  error
+	createdFor, foundToken, revokedToken string
 }
 
-func (f fakeSessions) Create(ctx context.Context, id string) (session.Session, string, error) {
-	return f.create(ctx, id)
+func (f *fakeSessions) Create(_ context.Context, id string) (session.Session, string, error) {
+	f.createdFor = id
+	return f.result, "raw-token", f.err
 }
 
-func (f fakeSessions) FindByToken(ctx context.Context, token string) (session.Session, error) {
-	return f.find(ctx, token)
+func (f *fakeSessions) FindByToken(_ context.Context, token string) (session.Session, error) {
+	f.foundToken = token
+	return f.result, f.err
 }
 
-func (f fakeSessions) Revoke(ctx context.Context, token string) error {
-	return f.revoke(ctx, token)
+func (f *fakeSessions) Revoke(_ context.Context, token string) error {
+	f.revokedToken = token
+	return f.err
 }
 
 func TestLogout(t *testing.T) {
@@ -65,19 +74,13 @@ func TestLogout(t *testing.T) {
 		{name: "store failure", revokeErr: failure, wantErr: failure},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			called := false
-			svc := auth.NewService(nil, nil, nil, fakeSessions{revoke: func(_ context.Context, token string) error {
-				called = true
-				if token != "raw-token" {
-					t.Errorf("token = %q", token)
-				}
-				return tt.revokeErr
-			}})
+			sessions := &fakeSessions{err: tt.revokeErr}
+			svc := auth.NewService(nil, nil, nil, sessions)
 			if err := svc.Logout(t.Context(), "raw-token"); !errors.Is(err, tt.wantErr) {
 				t.Errorf("Logout() error = %v, want %v", err, tt.wantErr)
 			}
-			if !called {
-				t.Error("session was not revoked")
+			if sessions.revokedToken != "raw-token" {
+				t.Errorf("revoked token = %q, want raw-token", sessions.revokedToken)
 			}
 		})
 	}
@@ -112,42 +115,38 @@ func TestLogin(t *testing.T) {
 		{name: "session creation failure", password: &passwordHash, input: "password", sessionErr: failure, wantErr: failure},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			created := false
-			service := auth.NewService(nil, fakeUsers{findByEmail: func(_ context.Context, email string) (user.User, error) {
-				if email != wantUser.Email {
-					t.Errorf("email = %q, want %q", email, wantUser.Email)
-				}
-				return wantUser, tt.userErr
-			}}, fakeAccounts{find: func(_ context.Context, id string) (account.Account, error) {
-				if tt.userErr != nil {
-					t.Fatal("account lookup after failed user lookup")
-				}
-				if id != wantUser.ID {
-					t.Errorf("account user ID = %q", id)
-				}
-				return account.Account{Password: tt.password}, tt.accountErr
-			}}, fakeSessions{create: func(_ context.Context, id string) (session.Session, string, error) {
-				created = true
-				if id != wantUser.ID {
-					t.Errorf("session user ID = %q", id)
-				}
-				return wantSession, "raw-token", tt.sessionErr
-			}})
-			gotUser, gotSession, token, err := service.Login(t.Context(), auth.LoginDTO{Email: wantUser.Email, Password: tt.input})
+			users := &fakeUsers{result: wantUser, err: tt.userErr}
+			accounts := &fakeAccounts{result: account.Account{Password: tt.password}, err: tt.accountErr}
+			sessions := &fakeSessions{result: wantSession, err: tt.sessionErr}
+			svc := auth.NewService(nil, users, accounts, sessions)
+
+			gotUser, gotSession, token, err := svc.Login(t.Context(), auth.LoginDTO{Email: wantUser.Email, Password: tt.input})
 			if !errors.Is(err, tt.wantErr) {
 				t.Fatalf("Login() error = %v, want %v", err, tt.wantErr)
 			}
+			if users.email != wantUser.Email {
+				t.Errorf("email = %q, want %q", users.email, wantUser.Email)
+			}
+			wantAccountID := ""
+			if tt.userErr == nil {
+				wantAccountID = wantUser.ID
+			}
+			if accounts.userID != wantAccountID {
+				t.Errorf("account lookup = %q, want %q", accounts.userID, wantAccountID)
+			}
+			wantSessionID := ""
+			if tt.wantErr == nil || tt.sessionErr != nil {
+				wantSessionID = wantUser.ID
+			}
+			if sessions.createdFor != wantSessionID {
+				t.Errorf("session created for = %q, want %q", sessions.createdFor, wantSessionID)
+			}
 			if tt.wantErr == nil {
-				if gotUser != wantUser || gotSession != wantSession || token != "raw-token" || !created {
+				if gotUser != wantUser || gotSession != wantSession || token != "raw-token" {
 					t.Fatalf("unexpected login result: %v, %v, %q", gotUser, gotSession, token)
 				}
-			} else {
-				if gotUser != (user.User{}) || gotSession != (session.Session{}) || token != "" {
-					t.Error("failed login returned user, session or token")
-				}
-				if created != (tt.sessionErr != nil) {
-					t.Error("session creation must only follow successful authentication")
-				}
+			} else if gotUser != (user.User{}) || gotSession != (session.Session{}) || token != "" {
+				t.Error("failed login returned user, session or token")
 			}
 		})
 	}
@@ -169,23 +168,23 @@ func TestMe(t *testing.T) {
 		{name: "user lookup failure", userErr: failure, wantErr: failure},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			service := auth.NewService(nil, fakeUsers{findByID: func(_ context.Context, id string) (user.User, error) {
-				if tt.sessionErr != nil {
-					t.Fatal("user lookup after failed session lookup")
-				}
-				if id != want.ID {
-					t.Errorf("user ID = %q", id)
-				}
-				return want, tt.userErr
-			}}, nil, fakeSessions{find: func(_ context.Context, token string) (session.Session, error) {
-				if token != "raw-token" {
-					t.Errorf("token = %q", token)
-				}
-				return session.Session{UserID: want.ID}, tt.sessionErr
-			}})
-			got, err := service.Me(t.Context(), "raw-token")
+			users := &fakeUsers{result: want, err: tt.userErr}
+			sessions := &fakeSessions{result: session.Session{UserID: want.ID}, err: tt.sessionErr}
+			svc := auth.NewService(nil, users, nil, sessions)
+
+			got, err := svc.Me(t.Context(), "raw-token")
 			if !errors.Is(err, tt.wantErr) {
 				t.Fatalf("Me() error = %v, want %v", err, tt.wantErr)
+			}
+			if sessions.foundToken != "raw-token" {
+				t.Errorf("session token = %q", sessions.foundToken)
+			}
+			wantUserID := ""
+			if tt.sessionErr == nil {
+				wantUserID = want.ID
+			}
+			if users.id != wantUserID {
+				t.Errorf("user lookup = %q, want %q", users.id, wantUserID)
 			}
 			if tt.wantErr == nil && got != want || tt.wantErr != nil && got != (user.User{}) {
 				t.Errorf("unexpected user: %v", got)
@@ -205,15 +204,14 @@ func TestRegisterPreflight(t *testing.T) {
 		{"lookup failure", failure, failure},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			service := auth.NewService(nil, fakeUsers{findByEmail: func(_ context.Context, email string) (user.User, error) {
-				if email != "alice@example.com" {
-					t.Errorf("email = %q", email)
-				}
-				return user.User{}, tt.findErr
-			}}, nil, nil)
-			got, err := service.Register(t.Context(), auth.RegisterDTO{Email: "alice@example.com", Password: "password"})
+			users := &fakeUsers{err: tt.findErr}
+			svc := auth.NewService(nil, users, nil, nil)
+			got, err := svc.Register(t.Context(), auth.RegisterDTO{Email: "alice@example.com", Password: "password"})
 			if !errors.Is(err, tt.wantErr) || got != (user.User{}) {
 				t.Errorf("Register() = %v, %v; want empty user, %v", got, err, tt.wantErr)
+			}
+			if users.email != "alice@example.com" {
+				t.Errorf("email = %q", users.email)
 			}
 		})
 	}
