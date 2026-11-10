@@ -3,7 +3,7 @@ info:
   title: Mini Core Banking Ledger API
   version: 0.1.0
   description: |
-    Contract for the implemented authentication API.
+    Contract for the implemented authentication and account APIs.
     JSON request bodies must contain exactly one JSON value, must not exceed
     1 MiB, and must not contain unknown fields. Decode failures return 400,
     including oversized bodies.
@@ -37,6 +37,7 @@ servers:
     description: Local development (default HTTP_ADDR)
 tags:
   - name: Auth
+  - name: Accounts
 paths:
   /auth/register:
     post:
@@ -75,6 +76,8 @@ paths:
                 error:
                   code: EMAIL_TAKEN
                   message: email already taken
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalError'
   /auth/login:
@@ -130,6 +133,8 @@ paths:
                   message: invalid email or password
         '403':
           $ref: '#/components/responses/CrossOriginForbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalError'
   /auth/me:
@@ -166,6 +171,8 @@ paths:
                 error:
                   code: UNAUTHENTICATED
                   message: authentication required
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalError'
   /auth/logout:
@@ -197,6 +204,70 @@ paths:
               example: session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Max-Age=0; HttpOnly; SameSite=Lax
         '403':
           $ref: '#/components/responses/CrossOriginForbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /accounts:
+    get:
+      tags: [Accounts]
+      operationId: getAccounts
+      summary: List the current user's accounts
+      description: |
+        Requires a valid, unexpired session. Returns only accounts belonging to
+        the current user, ordered by sort_order. Responses from the account
+        handler and authentication guard include Cache-Control: no-store;
+        errors from the shared middleware may omit this header.
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: order
+          in: query
+          description: |
+            Sort direction for sort_order. Surrounding whitespace is trimmed
+            and matching is case-insensitive. An explicitly empty value is invalid.
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: Accounts for the current user; an empty array if none exist.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountsResponse'
+        '400':
+          description: Invalid order query parameter (VALIDATION_ERROR).
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: VALIDATION_ERROR
+                  message: order must be either 'asc' or 'desc'
+        '401':
+          description: Authentication required (UNAUTHENTICATED).
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: UNAUTHENTICATED
+                  message: authentication required
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalError'
 components:
@@ -208,7 +279,7 @@ components:
       description: Opaque session token set by login; expires after 24 hours.
   headers:
     NoStore:
-      description: Prevents caching of session-related responses.
+      description: Prevents caching of session-related and account responses.
       schema:
         type: string
         enum: [no-store]
@@ -276,6 +347,36 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/User'
+    Account:
+      type: object
+      required: [id, name, account_type, sort_order, balance, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        account_type:
+          type: string
+          enum: [main, sub_account, savings]
+        sort_order:
+          type: integer
+          minimum: 0
+          maximum: 32767
+        balance:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+    AccountsResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
     ErrorResponse:
       type: object
       required: [error]
@@ -292,11 +393,22 @@ components:
                 - EMAIL_TAKEN
                 - INVALID_CREDENTIALS
                 - UNAUTHENTICATED
+                - TOO_MANY_REQUESTS
                 - INTERNAL_ERROR
             message:
               type: string
               description: Human-readable detail; multiple validation errors are joined by newlines.
   responses:
+    TooManyRequests:
+      description: Shared per-process token bucket exhausted (TOO_MANY_REQUESTS).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: TOO_MANY_REQUESTS
+              message: too many requests
     CrossOriginForbidden:
       description: |
         Rejected by CSRF protection before the authentication handler runs.
@@ -328,8 +440,9 @@ components:
                   message: password must contain at least 8 characters
     InternalError:
       description: |
-        Unexpected server error (INTERNAL_ERROR). Login, current-user and logout
-        responses include Cache-Control: no-store.
+        Unexpected server error (INTERNAL_ERROR). Responses from the login,
+        current-user, logout and account handlers include Cache-Control: no-store.
+        Errors from shared middleware may omit this header.
       content:
         application/json:
           schema:
