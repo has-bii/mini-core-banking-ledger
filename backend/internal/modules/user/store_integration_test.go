@@ -12,7 +12,7 @@ import (
 func TestStore_UserPersistence(t *testing.T) {
 	t.Parallel()
 	store := user.NewStore(testutil.Postgres(t))
-	created, err := store.Create(t.Context(), "Alice", "alice@example.com")
+	created, err := store.Create(t.Context(), "Alice", "alice@example.com", "stored-password-hash")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -27,7 +27,7 @@ func TestStore_UserPersistence(t *testing.T) {
 	if err != nil || byEmail != created {
 		t.Fatalf("FindByEmail() = %+v, %v; want %+v", byEmail, err, created)
 	}
-	if _, err := store.Create(t.Context(), "Another Alice", created.Email); !errors.Is(err, user.ErrEmailTaken) {
+	if _, err := store.Create(t.Context(), "Another Alice", created.Email, "stored-password-hash"); !errors.Is(err, user.ErrEmailTaken) {
 		t.Fatalf("duplicate email error = %v, want ErrEmailTaken", err)
 	}
 	if _, err := store.FindByID(t.Context(), "00000000-0000-0000-0000-000000000000"); !errors.Is(err, user.ErrNotFound) {

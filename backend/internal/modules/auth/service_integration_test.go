@@ -3,7 +3,6 @@
 package auth_test
 
 import (
-	"backend/internal/modules/account"
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
@@ -15,12 +14,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func TestService_RegisterRollsBackCredentialsFailure(t *testing.T) {
+func TestService_RegisterRejectsCredentialsFailure(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
 	users := user.NewStore(pool)
-	svc := auth.NewService(pool, users, account.NewStore(pool), session.NewService(session.NewStore(pool)))
-	if _, err := pool.Exec(t.Context(), "ALTER TABLE accounts ADD CONSTRAINT test_reject_credentials CHECK (false)"); err != nil {
+	svc := auth.NewService(users, session.NewService(session.NewStore(pool)))
+	if _, err := pool.Exec(t.Context(), "ALTER TABLE users ADD CONSTRAINT test_reject_credentials CHECK (false)"); err != nil {
 		t.Fatal(err)
 	}
 	payload := auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "password123"}
@@ -32,15 +31,15 @@ func TestService_RegisterRollsBackCredentialsFailure(t *testing.T) {
 	if _, err := users.FindByEmail(t.Context(), payload.Email); !errors.Is(err, user.ErrNotFound) {
 		t.Fatalf("registration left a user after credentials failure: %v", err)
 	}
-	if _, err := pool.Exec(t.Context(), "ALTER TABLE accounts DROP CONSTRAINT test_reject_credentials"); err != nil {
+	if _, err := pool.Exec(t.Context(), "ALTER TABLE users DROP CONSTRAINT test_reject_credentials"); err != nil {
 		t.Fatal(err)
 	}
 	u, err := svc.Register(t.Context(), payload)
 	if err != nil {
-		t.Fatalf("registration after rollback must succeed: %v", err)
+		t.Fatalf("registration after removing constraint must succeed: %v", err)
 	}
-	if _, err := account.NewStore(pool).FindByUserID(t.Context(), u.ID); err != nil {
-		t.Fatalf("successful registration must create credentials: %v", err)
+	if _, _, _, err := svc.Login(t.Context(), auth.LoginDTO{Email: u.Email, Password: payload.Password}); err != nil {
+		t.Fatalf("successful registration must create usable credentials: %v", err)
 	}
 }
 
@@ -51,7 +50,6 @@ func TestService_DependencyFailures(t *testing.T) {
 	}{
 		{"register lookup", "users"},
 		{"login user lookup", "users"},
-		{"login account lookup", "accounts"},
 		{"login session creation", "sessions"},
 		{"logout deletion", "sessions"},
 		{"current user lookup", "users"},
@@ -59,7 +57,7 @@ func TestService_DependencyFailures(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			pool := testutil.Postgres(t)
-			svc := auth.NewService(pool, user.NewStore(pool), account.NewStore(pool), session.NewService(session.NewStore(pool)))
+			svc := auth.NewService(user.NewStore(pool), session.NewService(session.NewStore(pool)))
 			payload := auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "password123"}
 			u, err := svc.Register(t.Context(), payload)
 			if err != nil {
@@ -104,7 +102,7 @@ func TestService_DependencyFailures(t *testing.T) {
 func TestService_RegistrationAndIdentity(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
-	svc := auth.NewService(pool, user.NewStore(pool), account.NewStore(pool), session.NewService(session.NewStore(pool)))
+	svc := auth.NewService(user.NewStore(pool), session.NewService(session.NewStore(pool)))
 	payload := auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "password123"}
 	u, err := svc.Register(t.Context(), payload)
 	if err != nil {
@@ -113,15 +111,20 @@ func TestService_RegistrationAndIdentity(t *testing.T) {
 	if u.ID == "" || u.Name != payload.Name || u.Email != payload.Email || u.CreatedAt.IsZero() || u.UpdatedAt.IsZero() {
 		t.Fatalf("Register() = %+v", u)
 	}
-	credentials, err := account.NewStore(pool).FindByUserID(t.Context(), u.ID)
-	if err != nil {
+	var password string
+	if err := pool.QueryRow(t.Context(), "SELECT password FROM users WHERE id = $1", u.ID).Scan(&password); err != nil {
 		t.Fatal(err)
 	}
-	if credentials.Password == nil || *credentials.Password == payload.Password {
+	if password == payload.Password {
 		t.Fatal("password must be stored as a hash")
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(*credentials.Password), []byte(payload.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(password), []byte(payload.Password)); err != nil {
 		t.Fatalf("stored password is not a valid bcrypt hash: %v", err)
+	}
+	_, err = pool.Exec(t.Context(), "UPDATE users SET password = NULL WHERE id = $1", u.ID)
+	var pgErr *pgconn.PgError
+	if !errors.As(err, &pgErr) || pgErr.Code != "23502" || pgErr.ColumnName != "password" {
+		t.Fatalf("null password error = %v, want required password constraint", err)
 	}
 	if got, err := svc.Register(t.Context(), payload); !errors.Is(err, user.ErrEmailTaken) || got != (user.User{}) {
 		t.Fatalf("duplicate Register() = %+v, %v", got, err)
@@ -139,12 +142,12 @@ func TestService_RegistrationAndIdentity(t *testing.T) {
 
 func TestService_LoginOutcomes(t *testing.T) {
 	t.Parallel()
-	for _, name := range []string{"valid", "unknown email", "missing account", "no password", "wrong password", "corrupt hash"} {
+	for _, name := range []string{"valid", "unknown email", "wrong password", "corrupt hash"} {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			pool := testutil.Postgres(t)
 			sessions := session.NewService(session.NewStore(pool))
-			svc := auth.NewService(pool, user.NewStore(pool), account.NewStore(pool), sessions)
+			svc := auth.NewService(user.NewStore(pool), sessions)
 			u, err := svc.Register(t.Context(), auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "password123"})
 			if err != nil {
 				t.Fatal(err)
@@ -153,14 +156,10 @@ func TestService_LoginOutcomes(t *testing.T) {
 			switch name {
 			case "unknown email":
 				payload.Email = "missing@example.com"
-			case "missing account":
-				_, err = pool.Exec(t.Context(), `DELETE FROM accounts WHERE "userId" = $1`, u.ID)
-			case "no password":
-				_, err = pool.Exec(t.Context(), `UPDATE accounts SET password = NULL WHERE "userId" = $1`, u.ID)
 			case "wrong password":
 				payload.Password = "incorrect"
 			case "corrupt hash":
-				_, err = pool.Exec(t.Context(), `UPDATE accounts SET password = 'not-a-bcrypt-hash' WHERE "userId" = $1`, u.ID)
+				_, err = pool.Exec(t.Context(), `UPDATE users SET password = 'not-a-bcrypt-hash' WHERE id = $1`, u.ID)
 			}
 			if err != nil {
 				t.Fatal(err)

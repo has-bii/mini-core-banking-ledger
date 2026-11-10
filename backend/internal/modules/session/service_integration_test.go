@@ -40,7 +40,7 @@ func TestService_StoreErrors(t *testing.T) {
 func TestService_TokenPersistence(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
-	u, err := user.NewStore(pool).Create(t.Context(), "Alice", "alice@example.com")
+	u, err := user.NewStore(pool).Create(t.Context(), "Alice", "alice@example.com", "stored-password-hash")
 	if err != nil {
 		t.Fatal(err)
 	}

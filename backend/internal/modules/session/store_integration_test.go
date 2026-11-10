@@ -15,7 +15,7 @@ import (
 func TestStore_SessionLifecycle(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
-	u, err := user.NewStore(pool).Create(t.Context(), "Alice", "alice@example.com")
+	u, err := user.NewStore(pool).Create(t.Context(), "Alice", "alice@example.com", "stored-password-hash")
 	if err != nil {
 		t.Fatal(err)
 	}

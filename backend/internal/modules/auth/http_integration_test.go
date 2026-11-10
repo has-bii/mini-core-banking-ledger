@@ -3,7 +3,6 @@
 package auth_test
 
 import (
-	"backend/internal/modules/account"
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
@@ -25,7 +24,7 @@ func realAuthHandler(t *testing.T, secure bool) (http.Handler, *auth.Service, *s
 	t.Helper()
 	pool := testutil.Postgres(t)
 	sessions := session.NewService(session.NewStore(pool))
-	svc := auth.NewService(pool, user.NewStore(pool), account.NewStore(pool), sessions)
+	svc := auth.NewService(user.NewStore(pool), sessions)
 	mux := http.NewServeMux()
 	auth.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil)), secure).Register(mux)
 	h := middleware.GetUser(func(ctx context.Context, token string) (string, error) {
@@ -119,7 +118,7 @@ func TestHandler_SessionCookiesAndResponses(t *testing.T) {
 				t.Fatalf("current user response = %s (%v)", me.Body.String(), err)
 			}
 			for _, response := range []*httptest.ResponseRecorder{registered, w, me} {
-				for _, secret := range []string{"password", "token", "session", cookie.Value} {
+				for _, secret := range []string{"password", "$2", "token", "session", cookie.Value} {
 					if strings.Contains(response.Body.String(), secret) {
 						t.Errorf("user JSON exposes %q", secret)
 					}

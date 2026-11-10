@@ -66,15 +66,13 @@ flowchart TD
     App --> Service["Auth service"]
     App --> Pool["pgxpool.Pool"]
     Handler -->|"validated payload"| Service
-    Service -->|"non-transactional reads"| ReadStore["User store: pool"]
-    Service -->|"atomic registration"| InTx["postgres.InTx(ctx, pool, fn)"]
-    Pool -.->|"supplied to service and stores"| Service
-    InTx --> Tx["shared pgx.Tx"]
-    Tx --> UserStore["User store: tx"]
-    Tx --> AccountStore["Account store: tx"]
-    ReadStore --> DB[(PostgreSQL)]
-    UserStore --> DB
-    AccountStore --> DB
+    Service -->|"registration and identity"| UserStore["User store: pool"]
+    Service --> SessionService["Session service"]
+    SessionService --> SessionStore["Session store: pool"]
+    Pool -.->|"supplied to stores"| UserStore
+    Pool -.-> SessionStore
+    UserStore --> DB[(PostgreSQL)]
+    SessionStore --> DB
 ```
 
 ## 3. Transaction Ownership
@@ -91,15 +89,13 @@ flowchart TD
 
 ### Example: Registration
 
-`AuthService.Register` checks email availability and hashes the password before starting the transaction. Inside it, `user.NewStore(tx).Create` inserts the user, then `account.NewStore(tx).Create` inserts credentials.
+`AuthService.Register` checks email availability, hashes the password, and calls the user store to insert the user and required password hash together. A single `INSERT` is atomic, so registration needs no explicit transaction or pool dependency. The password field is excluded from JSON with `json:"-"`.
 
 ```mermaid
 sequenceDiagram
     participant H as Auth handler
     participant S as Auth service
     participant U as User store
-    participant T as postgres.InTx
-    participant A as Account store
     participant DB as PostgreSQL
 
     H->>S: Register(ctx, payload)
@@ -108,30 +104,14 @@ sequenceDiagram
     DB-->>U: Result
     U-->>S: User or error
     Note over S: Reject existing email or unexpected error; otherwise hash password
-    S->>T: InTx(ctx, pool, callback)
-    T->>DB: BEGIN
-    T->>S: Run callback(tx)
-    S->>U: Create (tx)
-    U->>DB: INSERT user
+    S->>U: Create(name, email, passwordHash)
+    U->>DB: INSERT user with password hash
     DB-->>U: User or error
     U-->>S: User or error
-    opt User created successfully
-        S->>A: Create (same tx)
-        A->>DB: INSERT credentials
-        DB-->>A: Account or error
-        A-->>S: Account or error
-    end
-    S-->>T: Callback result
-    alt Callback succeeds
-        T->>DB: COMMIT
-    else Callback fails
-        T->>DB: ROLLBACK
-    end
-    T-->>S: Transaction result
     S-->>H: User or error
 ```
 
-A credentials failure must roll back the user insert. The email pre-check is only an early response: the database unique constraint remains authoritative when registrations race.
+A rejected password write must leave no user behind. The email pre-check is only an early response: the database unique constraint remains authoritative when registrations race.
 
 ## 4. Validation and Errors
 

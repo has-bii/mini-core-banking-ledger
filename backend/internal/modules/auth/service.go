@@ -1,26 +1,19 @@
 package auth
 
 import (
-	"backend/internal/modules/account"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/storage/postgres"
 	"context"
 	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type userStore interface {
+	Create(context.Context, string, string, string) (user.User, error)
 	FindByID(context.Context, string) (user.User, error)
 	FindByEmail(context.Context, string) (user.User, error)
-}
-
-type accountStore interface {
-	FindByUserID(context.Context, string) (account.Account, error)
 }
 
 type sessionService interface {
@@ -29,14 +22,12 @@ type sessionService interface {
 }
 
 type Service struct {
-	pool     *pgxpool.Pool
 	users    userStore
-	accounts accountStore
 	sessions sessionService
 }
 
-func NewService(pool *pgxpool.Pool, users userStore, accounts accountStore, sessions sessionService) *Service {
-	return &Service{pool: pool, users: users, accounts: accounts, sessions: sessions}
+func NewService(users userStore, sessions sessionService) *Service {
+	return &Service{users: users, sessions: sessions}
 }
 
 func (s *Service) Register(ctx context.Context, payload RegisterDTO) (user.User, error) {
@@ -53,16 +44,7 @@ func (s *Service) Register(ctx context.Context, payload RegisterDTO) (user.User,
 		return user.User{}, fmt.Errorf("hash password: %w", err)
 	}
 
-	var u user.User
-	err = postgres.InTx(ctx, s.pool, func(tx pgx.Tx) error {
-		var err error
-		u, err = user.NewStore(tx).Create(ctx, payload.Name, payload.Email)
-		if err != nil {
-			return err
-		}
-		_, err = account.NewStore(tx).Create(ctx, u.ID, hashedPassword)
-		return err
-	})
+	u, err := s.users.Create(ctx, payload.Name, payload.Email, hashedPassword)
 	if err != nil {
 		return user.User{}, fmt.Errorf("register user: %w", err)
 	}
@@ -83,19 +65,7 @@ func (s *Service) Login(ctx context.Context, payload LoginDTO) (user.User, sessi
 		return user.User{}, session.Session{}, "", fmt.Errorf("find login user: %w", err)
 	}
 
-	a, err := s.accounts.FindByUserID(ctx, u.ID)
-	if errors.Is(err, account.ErrNotFound) {
-		_ = comparePassword(dummyPasswordHash, payload.Password)
-		return user.User{}, session.Session{}, "", ErrInvalidCredentials
-	}
-	if err != nil {
-		return user.User{}, session.Session{}, "", fmt.Errorf("find login account: %w", err)
-	}
-	if a.Password == nil {
-		_ = comparePassword(dummyPasswordHash, payload.Password)
-		return user.User{}, session.Session{}, "", ErrInvalidCredentials
-	}
-	if err := comparePassword(*a.Password, payload.Password); err != nil {
+	if err := comparePassword(u.Password, payload.Password); err != nil {
 		return user.User{}, session.Session{}, "", ErrInvalidCredentials
 	}
 

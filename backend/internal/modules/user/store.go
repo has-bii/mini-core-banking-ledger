@@ -20,12 +20,12 @@ type scanner interface{ Scan(dest ...any) error }
 
 func scanUser(r scanner) (User, error) {
 	var u User
-	err := r.Scan(&u.ID, &u.Name, &u.Email, &u.Image, &u.CreatedAt, &u.UpdatedAt)
+	err := r.Scan(&u.ID, &u.Name, &u.Email, &u.Password, &u.Image, &u.CreatedAt, &u.UpdatedAt)
 	return u, err
 }
 
 func (s *Store) FindByID(ctx context.Context, id string) (User, error) {
-	const q = `SELECT * FROM users WHERE id = $1`
+	const q = `SELECT id, name, email, password, image, "createdAt", "updatedAt" FROM users WHERE id = $1`
 
 	u, err := scanUser(s.db.QueryRow(ctx, q, id))
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -38,7 +38,7 @@ func (s *Store) FindByID(ctx context.Context, id string) (User, error) {
 }
 
 func (s *Store) FindByEmail(ctx context.Context, email string) (User, error) {
-	const q = `SELECT * FROM users WHERE email = $1`
+	const q = `SELECT id, name, email, password, image, "createdAt", "updatedAt" FROM users WHERE email = $1`
 
 	u, err := scanUser(s.db.QueryRow(ctx, q, email))
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -50,12 +50,12 @@ func (s *Store) FindByEmail(ctx context.Context, email string) (User, error) {
 	return u, nil
 }
 
-func (s *Store) Create(ctx context.Context, name, email string) (User, error) {
-	const q = `INSERT INTO users (name, email, "createdAt", "updatedAt")
-		VALUES ($1, $2, now(), now())
-		RETURNING id, name, email, image, "createdAt", "updatedAt"`
+func (s *Store) Create(ctx context.Context, name, email, password string) (User, error) {
+	const q = `INSERT INTO users (name, email, password, "createdAt", "updatedAt")
+		VALUES ($1, $2, $3, now(), now())
+		RETURNING id, name, email, password, image, "createdAt", "updatedAt"`
 
-	u, err := scanUser(s.db.QueryRow(ctx, q, name, email))
+	u, err := scanUser(s.db.QueryRow(ctx, q, name, email, password))
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == uniqueViolation && pgErr.ConstraintName == "users_email_key" {

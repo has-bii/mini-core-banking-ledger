@@ -36,7 +36,7 @@ Keep `DATABASE_URL` and `GOOSE_DBSTRING` pointed at the same database. See `.env
 goose -env .env status
 goose -env .env up
 goose -env .env down # Rolls back the latest migration; may delete data.
-goose -env .env create add_accounts sql
+goose -env .env create add_user_field sql
 ```
 
 Edit generated files in `migrations/` under `-- +goose Up` and `-- +goose Down`.
@@ -73,7 +73,7 @@ Compose creates the `test` database when initializing a fresh volume. For an exi
 go test -race -count=1 -tags=integration ./...
 ```
 
-This runs both unit and integration tests. Integration tests use real services/stores for auth/session business outcomes, password/token hashing, persistence, expiry, rollback, and HTTP response/cookie contracts. The app test owns the wired register → login → me → logout flow without repeating lower-level input matrices or detailed storage checks. See the [testing guidelines](docs/testing_guideline.md) for contract ownership and permitted doubles. Redis and a running API server are not required.
+This runs both unit and integration tests. Integration tests use real services/stores for auth/session business outcomes, password/token hashing, persistence, expiry, atomic registration, transaction rollback, and HTTP response/cookie contracts. The app test owns the wired register → login → me → logout flow without repeating lower-level input matrices or detailed storage checks. See the [testing guidelines](docs/testing_guideline.md) for contract ownership and permitted doubles. Redis and a running API server are not required.
 
 The shared helper reads `DATABASE_URL` directly from `.env.test`, without falling back to `.env` or the shell's `DATABASE_URL`. It creates a unique schema per integration test, uses only that schema in each pool connection's `search_path`, and applies actual migrations using Goose. Cleanup closes the pool and drops only the schema it created; no shared tables are truncated. The database user needs schema creation privileges. Missing configuration, Goose, or PostgreSQL fails the tests rather than skipping them.
 
