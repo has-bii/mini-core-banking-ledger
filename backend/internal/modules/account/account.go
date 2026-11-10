@@ -22,6 +22,7 @@ const (
 
 type Account struct {
 	ID        string      `json:"id"`
+	UserID    string      `json:"user_id"`
 	Name      string      `json:"name"`
 	Type      AccountType `json:"account_type"`
 	SortOrder int16       `json:"sort_order"`

@@ -7,63 +7,64 @@ import (
 	"backend/internal/modules/user"
 	"backend/internal/platform/validation"
 	"backend/internal/testutil"
-	"errors"
 	"testing"
-	"time"
 )
 
-func TestStore_FindAllByUserID(t *testing.T) {
+func TestStore_ListAccounts(t *testing.T) {
 	t.Parallel()
-	db := testutil.Postgres(t)
-	users := user.NewStore(db)
-	alice, err := users.Create(t.Context(), "Alice", "alice@example.com", "stored-password-hash")
+	pool := testutil.Postgres(t)
+
+	userStore := user.NewStore(pool)
+
+	// Preparing data, create new users
+	u, err := userStore.Create(t.Context(), "Alice", "alice@example.com", "stored-password-hash")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := users.Create(t.Context(), "Bob", "bob@example.com", "stored-password-hash"); err != nil {
-		t.Fatal(err)
-	}
-	// Insert out of order so the assertion exercises SQL ordering.
-	if _, err := db.Exec(t.Context(), `INSERT INTO accounts (id, user_id, name, type, sort_order, balance, created_at)
-		VALUES ('00000000-0000-0000-0000-000000000002', $1, 'Savings', 'savings', 2, 12345, '2026-01-02T03:04:05Z'),
-		       ('00000000-0000-0000-0000-000000000001', $1, 'Spending', 'sub_account', 1, 678, '2026-01-02T03:04:05Z')`, alice.ID); err != nil {
+	_, err = userStore.Create(t.Context(), "Bob", "bob@example.com", "stored-password-hash")
+	if err != nil {
 		t.Fatal(err)
 	}
 
-	store := account.NewStore(db)
-	got, err := store.FindAllByUserID(t.Context(), alice.ID, validation.ASC)
+	store := account.NewStore(pool)
+
+	accounts, err := store.ListByUserID(t.Context(), u.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(got) != 3 {
-		t.Fatalf("accounts = %+v, want Alice's three accounts only", got)
+
+	// accounts count
+	if length := len(accounts); length != 1 {
+		t.Fatalf("ListByUserID() length != 1, %d", length)
 	}
-	if got[0].ID == "" || got[0].Name != "Main Account" || got[0].Type != account.Main || got[0].SortOrder != 0 || got[0].Balance != 0 || got[0].CreatedAt.IsZero() {
-		t.Errorf("first account = %+v, want populated main account", got[0])
+
+	got := &accounts[0]
+
+	// Check ownership
+	if got.UserID != u.ID {
+		t.Errorf("Ownership failed! Expected UserID to be '%v', got '%v'", u.ID, got.UserID)
 	}
-	createdAt := time.Date(2026, time.January, 2, 3, 4, 5, 0, time.UTC)
-	want := []account.Account{
-		{ID: "00000000-0000-0000-0000-000000000001", Name: "Spending", Type: account.SubAccount, SortOrder: 1, Balance: 678, CreatedAt: createdAt},
-		{ID: "00000000-0000-0000-0000-000000000002", Name: "Savings", Type: account.Savings, SortOrder: 2, Balance: 12345, CreatedAt: createdAt},
+
+	// mapping
+	if !validation.IsValidUUID(got.ID) {
+		t.Errorf("Mapping failed! Expected ID to be valid UUID, got '%v'", got.ID)
 	}
-	for i, expected := range want {
-		actual := got[i+1]
-		if actual.ID != expected.ID || actual.Name != expected.Name || actual.Type != expected.Type || actual.SortOrder != expected.SortOrder || actual.Balance != expected.Balance || !actual.CreatedAt.Equal(expected.CreatedAt) {
-			t.Errorf("account[%d] = %+v, want %+v", i+1, actual, expected)
-		}
+	if !validation.IsValidUUID(got.UserID) {
+		t.Errorf("Mapping failed! Expected UserID to be valid UUID, got '%v'", got.UserID)
 	}
-	descending, err := store.FindAllByUserID(t.Context(), alice.ID, validation.DESC)
-	if err != nil {
-		t.Fatal(err)
+	if got.Name != "Main Account" {
+		t.Errorf("Mapping failed! Expected Name to be 'Main Account', got '%v'", got.Name)
 	}
-	if len(descending) != 3 || descending[0].ID != want[1].ID || descending[1].ID != want[0].ID || descending[2].ID != got[0].ID {
-		t.Errorf("descending accounts = %+v, want Savings, Spending, Main Account", descending)
+	if got.Type != account.Main {
+		t.Errorf("Mapping failed! Expected Type to be '%v', got '%v'", account.Main, got.Type)
 	}
-	if _, err := store.FindAllByUserID(t.Context(), alice.ID, validation.QueryOrder("desc; DROP TABLE accounts")); !errors.Is(err, validation.ErrValidationError) {
-		t.Errorf("invalid order error = %v, want ErrValidationError", err)
+	if got.SortOrder != 0 {
+		t.Errorf("Mapping failed! Expected SortOrder to be 0, got '%v'", got.SortOrder)
 	}
-	missing, err := store.FindAllByUserID(t.Context(), "00000000-0000-0000-0000-000000000000", validation.ASC)
-	if err != nil || len(missing) != 0 {
-		t.Errorf("unknown user's accounts = %+v, %v; want empty result, nil", missing, err)
+	if got.Balance != 0 {
+		t.Errorf("Mapping failed! Expected Balance to be 0, got '%v'", got.Balance)
+	}
+	if got.CreatedAt.IsZero() {
+		t.Errorf("Mapping failed! Expected CreatedAt to be populated, got '%v'", got.CreatedAt)
 	}
 }

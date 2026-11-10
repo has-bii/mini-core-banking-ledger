@@ -1,10 +1,14 @@
 package validation
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 )
 
-func ValidUUID(value string) bool {
+var ErrInvalidUUID = errors.New("Invalid UUID")
+
+func IsValidUUID(value string) bool {
 	err := uuid.Validate(value)
 	return err == nil
 }

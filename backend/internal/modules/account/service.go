@@ -1,18 +1,17 @@
 package account
 
 import (
-	"backend/internal/platform/validation"
 	"context"
 )
 
 type accountStore interface {
-	FindAllByUserID(context.Context, string, validation.QueryOrder) ([]Account, error)
+	ListByUserID(ctx context.Context, userID string) ([]Account, error)
 }
 
-type Service struct{ store accountStore }
+type Service struct{ accountStore accountStore }
 
-func NewService(store accountStore) *Service { return &Service{store: store} }
+func NewService(accountStore accountStore) *Service { return &Service{accountStore: accountStore} }
 
-func (s *Service) GetAccountsByUserID(ctx context.Context, userID string, order validation.QueryOrder) ([]Account, error) {
-	return s.store.FindAllByUserID(ctx, userID, order)
+func (s *Service) GetUserAccounts(ctx context.Context, userID string) ([]Account, error) {
+	return s.accountStore.ListByUserID(ctx, userID)
 }
