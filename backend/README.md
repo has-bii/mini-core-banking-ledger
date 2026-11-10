@@ -40,7 +40,7 @@ Run commands from `backend/`.
 go test -race ./...
 ```
 
-Unit tests cover auth validation, auth/session service decisions, HTTP errors, and cookie security. They use standard Go testing, handwritten stubs, and `httptest`; no database, Redis, or environment file is required.
+Unit tests cover validation, HTTP parsing, distinct middleware contracts, and difficult-to-trigger failure handling. They use standard Go testing and `httptest`; small handwritten stubs are reserved for failure injection (middleware lookup callbacks are also permitted). No database, Redis, or environment file is required.
 
 ### Integration tests
 
@@ -62,7 +62,7 @@ Compose creates the `test` database when initializing a fresh volume. For an exi
 go test -race -count=1 -tags=integration ./...
 ```
 
-This runs both unit and integration tests. Integration tests cover stores, expiry, registration rollback, and the full register → login → me → logout flow, including password/token hashing. They do not require Redis or a running API server.
+This runs both unit and integration tests. Integration tests use real services/stores for auth/session business outcomes, password/token hashing, persistence, expiry, rollback, and HTTP response/cookie contracts. The app test owns the wired register → login → me → logout flow without repeating lower-level input matrices or detailed storage checks. See the [testing guidelines](docs/testing_guideline.md) for contract ownership and permitted doubles. Redis and a running API server are not required.
 
 The shared helper reads `DATABASE_URL` directly from `.env.test`, without falling back to `.env` or the shell's `DATABASE_URL`. It creates a unique schema per integration test, uses only that schema in each pool connection's `search_path`, and applies actual migrations using Goose. Cleanup closes the pool and drops only the schema it created; no shared tables are truncated. The database user needs schema creation privileges. Missing configuration, Goose, or PostgreSQL fails the tests rather than skipping them.
 

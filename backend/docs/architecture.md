@@ -153,8 +153,8 @@ Data flows upward as **database rows → store models → service results → ha
 
 Follow the [testing guidelines](testing_guideline.md) for coverage responsibilities, case limits, naming, assertions, isolation, and review rules.
 
-- **Unit tests** exercise validation, service decisions, and HTTP contracts without external services, using standard `testing`, handwritten interface stubs, and `httptest`.
-- **Integration tests** use `//go:build integration` and real PostgreSQL for stores, transactional rollback, and representative workflows through `app.New`. Do not change production interfaces solely for testing.
+- **Unit tests** exercise dependency-free validation/parsing and distinct middleware contracts using standard `testing` and `httptest`. Small handwritten stubs are reserved for difficult-to-trigger failures; middleware lookup callbacks may verify forwarding/context and downstream execution.
+- **Integration tests** use `//go:build integration`, real services/stores, and PostgreSQL for ordinary auth/session outcomes, hashing, persistence, expiry, rollback, and HTTP response/cookie contracts. Tests through `app.New` prove representative wiring and a complete lifecycle, without repeating lower-level matrices or storage assertions. Each behavioral contract has one primary owner; domain errors and their HTTP mapping are distinct contracts. Do not change production interfaces solely for testing.
 - **Database isolation** uses `internal/testutil.Postgres`: explicit `.env.test`, real Goose migrations, one private schema per test, schema-only `search_path`, and schema-scoped cleanup. Setup failures are fatal, not skipped.
 
 See [tests and checks](../README.md#tests-and-checks) for local setup and commands.
