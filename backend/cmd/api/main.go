@@ -11,9 +11,9 @@ import (
 
 	"backend/internal/app"
 	"backend/internal/config"
-	"backend/internal/platform/database"
-	"backend/internal/platform/logger"
-	"backend/internal/platform/redis"
+	"backend/internal/platform/observability/logger"
+	"backend/internal/platform/storage/postgres"
+	"backend/internal/platform/storage/redis"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	pool, err := database.Open(ctx, cfg.DatabaseURL)
+	pool, err := postgres.Open(ctx, cfg.DatabaseURL)
 	if err != nil {
 		return err
 	}

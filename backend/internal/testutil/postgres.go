@@ -3,7 +3,7 @@
 package testutil
 
 import (
-	"backend/internal/platform/database"
+	"backend/internal/platform/storage/postgres"
 	"context"
 	"crypto/rand"
 	"net/url"
@@ -79,7 +79,7 @@ func Postgres(t *testing.T) *pgxpool.Pool {
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("apply test migrations (Goose CLI required): %v\n%s", err, output)
 	}
-	pool, err := database.Open(ctx, dsn.String())
+	pool, err := postgres.Open(ctx, dsn.String())
 	if err != nil {
 		t.Fatalf("open isolated test pool: %v", err)
 	}

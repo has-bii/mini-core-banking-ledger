@@ -4,7 +4,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"backend/internal/platform/identifier"
+	"backend/internal/platform/validation"
 )
 
 type RegisterDTO struct {
@@ -22,7 +22,7 @@ func (p *RegisterDTO) Validate() []error {
 		errs = append(errs, ErrNameRequired)
 	}
 
-	if !identifier.IsValidEmail(p.Email) {
+	if !validation.IsValidEmail(p.Email) {
 		errs = append(errs, ErrInvalidEmail)
 	}
 
@@ -47,7 +47,7 @@ func (p *LoginDTO) Validate() []error {
 
 	var errs []error
 
-	if !identifier.IsValidEmail(p.Email) {
+	if !validation.IsValidEmail(p.Email) {
 		errs = append(errs, ErrInvalidEmail)
 	}
 

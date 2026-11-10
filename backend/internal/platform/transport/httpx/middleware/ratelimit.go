@@ -1,7 +1,7 @@
-package ratelimit
+package middleware
 
 import (
-	"backend/internal/platform/httpx"
+	"backend/internal/platform/transport/httpx"
 	"net/http"
 	"sync"
 	"time"
@@ -15,7 +15,7 @@ type TokenBucket struct {
 	mu         sync.Mutex
 }
 
-func New(capacity, refillRate float64) *TokenBucket {
+func NewTokenBucket(capacity, refillRate float64) *TokenBucket {
 	return &TokenBucket{
 		tokens:     capacity,
 		capacity:   capacity,
@@ -50,7 +50,7 @@ func (tb *TokenBucket) allow() bool {
 	return false
 }
 
-func (tb *TokenBucket) Middleware() httpx.Middleware {
+func (tb *TokenBucket) Middleware() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !tb.allow() {

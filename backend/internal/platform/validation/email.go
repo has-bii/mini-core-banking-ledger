@@ -1,4 +1,4 @@
-package identifier
+package validation
 
 import "net/mail"
 

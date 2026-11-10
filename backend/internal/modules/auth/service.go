@@ -4,7 +4,7 @@ import (
 	"backend/internal/modules/account"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/database"
+	"backend/internal/platform/storage/postgres"
 	"context"
 	"errors"
 	"fmt"
@@ -54,7 +54,7 @@ func (s *Service) Register(ctx context.Context, payload RegisterDTO) (user.User,
 	}
 
 	var u user.User
-	err = database.InTx(ctx, s.pool, func(tx pgx.Tx) error {
+	err = postgres.InTx(ctx, s.pool, func(tx pgx.Tx) error {
 		var err error
 		u, err = user.NewStore(tx).Create(ctx, payload.Name, payload.Email)
 		if err != nil {

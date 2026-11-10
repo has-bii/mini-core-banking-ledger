@@ -1,6 +1,8 @@
 package app
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -10,28 +12,34 @@ import (
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/httpx"
-	"backend/internal/platform/ratelimit"
+	"backend/internal/platform/transport/httpx/middleware"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler, error) {
-	cors, err := httpx.CORS(cfg.CORSOrigin)
+	cors, err := middleware.CORS(cfg.CORSOrigin)
 	if err != nil {
 		return nil, fmt.Errorf("CORS_ORIGIN: %w", err)
 	}
 
-	tb := ratelimit.New(20, 10)
+	tb := middleware.NewTokenBucket(20, 10)
 
 	mux := http.NewServeMux()
 
 	sessionSvc := session.NewService(session.NewStore(pool))
+	lookupUserID := func(ctx context.Context, token string) (string, error) {
+		current, err := sessionSvc.FindByToken(ctx, token)
+		if errors.Is(err, session.ErrNotFound) {
+			return "", nil
+		}
+		return current.UserID, err
+	}
 	authSvc := auth.NewService(pool, user.NewStore(pool), account.NewStore(pool), sessionSvc)
 
 	api := http.NewServeMux()
 	auth.NewHandler(authSvc, log, cfg.Env != "dev" && cfg.Env != "test").Register(api)
 	mux.Handle("/api/", http.StripPrefix("/api", api))
 
-	return httpx.Chain(mux, httpx.Recoverer(log), httpx.Logging(log), cors, httpx.GetUser(sessionSvc), tb.Middleware()), nil
+	return middleware.Chain(mux, middleware.Recoverer(log), middleware.Logging(log), cors, middleware.GetUser(lookupUserID), tb.Middleware()), nil
 }

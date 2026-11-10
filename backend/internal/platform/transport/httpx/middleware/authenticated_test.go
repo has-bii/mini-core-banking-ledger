@@ -1,25 +1,15 @@
-package httpx_test
+package middleware_test
 
 import (
-	"backend/internal/modules/session"
-	"backend/internal/platform/httpx"
+	"backend/internal/platform/transport/httpx/middleware"
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 )
-
-type sessionServiceStub struct {
-	find func(context.Context, string) (session.Session, error)
-}
-
-func (s sessionServiceStub) FindByToken(ctx context.Context, token string) (session.Session, error) {
-	return s.find(ctx, token)
-}
 
 func TestGetUser(t *testing.T) {
 	t.Parallel()
@@ -27,6 +17,7 @@ func TestGetUser(t *testing.T) {
 	for _, tt := range []struct {
 		name       string
 		cookie     *http.Cookie
+		userID     string
 		lookupErr  error
 		wantLookup bool
 		wantUserID string
@@ -34,9 +25,8 @@ func TestGetUser(t *testing.T) {
 	}{
 		{name: "missing cookie", wantStatus: http.StatusNoContent},
 		{name: "empty cookie", cookie: &http.Cookie{Name: "session"}, wantStatus: http.StatusNoContent},
-		{name: "valid session", cookie: &http.Cookie{Name: "session", Value: "token"}, wantLookup: true, wantUserID: "user-id", wantStatus: http.StatusNoContent},
-		{name: "invalid or expired session", cookie: &http.Cookie{Name: "session", Value: "token"}, lookupErr: session.ErrNotFound, wantLookup: true, wantStatus: http.StatusNoContent},
-		{name: "wrapped session error", cookie: &http.Cookie{Name: "session", Value: "token"}, lookupErr: fmt.Errorf("lookup: %w", session.ErrNotFound), wantLookup: true, wantStatus: http.StatusNoContent},
+		{name: "valid identity", cookie: &http.Cookie{Name: "session", Value: "token"}, userID: "user-id", wantLookup: true, wantUserID: "user-id", wantStatus: http.StatusNoContent},
+		{name: "anonymous identity", cookie: &http.Cookie{Name: "session", Value: "token"}, wantLookup: true, wantStatus: http.StatusNoContent},
 		{name: "database error", cookie: &http.Cookie{Name: "session", Value: "token"}, lookupErr: errors.New("private database details"), wantLookup: true, wantStatus: http.StatusInternalServerError},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
@@ -48,18 +38,18 @@ func TestGetUser(t *testing.T) {
 			}
 
 			lookupCalled := false
-			svc := sessionServiceStub{find: func(ctx context.Context, token string) (session.Session, error) {
+			lookupUserID := func(ctx context.Context, token string) (string, error) {
 				lookupCalled = true
 				if ctx != request.Context() || token != "token" {
 					t.Fatal("lookup did not receive the request context and cookie token")
 				}
-				return session.Session{UserID: "user-id"}, tt.lookupErr
-			}}
+				return tt.userID, tt.lookupErr
+			}
 
 			nextCalled := false
-			handler := httpx.GetUser(svc)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			handler := middleware.GetUser(lookupUserID)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				nextCalled = true
-				id, ok := httpx.UserIDFromContext(r.Context())
+				id, ok := middleware.UserIDFromContext(r.Context())
 				if id != tt.wantUserID || ok != (tt.wantUserID != "") {
 					t.Errorf("user identity = %q, %v; want %q, %v", id, ok, tt.wantUserID, tt.wantUserID != "")
 				}
@@ -84,7 +74,7 @@ func TestGetUser(t *testing.T) {
 					t.Errorf("unexpected error response: %s", body)
 				}
 			}
-			if _, ok := httpx.UserIDFromContext(request.Context()); ok {
+			if _, ok := middleware.UserIDFromContext(request.Context()); ok {
 				t.Error("middleware modified the original request context")
 			}
 		})
@@ -98,28 +88,26 @@ func TestAuthGuard(t *testing.T) {
 		name       string
 		cookie     bool
 		userID     string
-		lookupErr  error
 		wantStatus int
 	}{
 		{name: "missing identity", wantStatus: http.StatusUnauthorized},
-		{name: "unverified cookie", cookie: true, lookupErr: session.ErrNotFound, wantStatus: http.StatusUnauthorized},
-		{name: "empty identity", cookie: true, wantStatus: http.StatusUnauthorized},
+		{name: "unverified cookie with empty identity", cookie: true, wantStatus: http.StatusUnauthorized},
 		{name: "verified identity", cookie: true, userID: "user-id", wantStatus: http.StatusNoContent},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			svc := sessionServiceStub{find: func(context.Context, string) (session.Session, error) {
-				return session.Session{UserID: tt.userID}, tt.lookupErr
-			}}
+			lookupUserID := func(context.Context, string) (string, error) {
+				return tt.userID, nil
+			}
 			nextCalled := false
-			handler := httpx.Chain(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			handler := middleware.Chain(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				nextCalled = true
-				if id, ok := httpx.UserIDFromContext(r.Context()); !ok || id != tt.userID {
+				if id, ok := middleware.UserIDFromContext(r.Context()); !ok || id != tt.userID {
 					t.Errorf("downstream identity = %q, %v; want %q, true", id, ok, tt.userID)
 				}
 				w.WriteHeader(http.StatusNoContent)
-			}), httpx.GetUser(svc), httpx.AuthGuard())
+			}), middleware.GetUser(lookupUserID), middleware.AuthGuard())
 
 			request := httptest.NewRequest(http.MethodGet, "/private", nil)
 			if tt.cookie {

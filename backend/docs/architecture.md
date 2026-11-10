@@ -10,7 +10,7 @@
 | **Handler** | HTTP routing, decoding, payload validation, status codes, JSON responses | Business workflows, SQL, transactions |
 | **Service** | Business rules, workflow orchestration, transaction boundaries | HTTP details, SQL |
 | **Store** | Parameterized queries, row scanning, persistence error translation | Business workflows, HTTP details, transaction ownership |
-| **Database platform** | Pool setup and transaction lifecycle through `database.InTx` | Domain rules, application queries |
+| **PostgreSQL platform** | Pool setup and transaction lifecycle through `postgres.InTx` | Domain rules, application queries |
 
 ### Handlers
 
@@ -22,13 +22,13 @@
 
 - Enforce business rules and coordinate stores.
 - Decide which operations must succeed or fail together.
-- Use `database.InTx` with a pool for atomic workflows; construct participating stores with the callback's `pgx.Tx`.
+- Use `postgres.InTx` with a pool for atomic workflows; construct participating stores with the callback's `pgx.Tx`.
 - Keep expensive work that does not need a transaction, such as password hashing, outside it.
 - Return safe domain models or DTOs; never expose password hashes.
 
 ### Stores
 
-- Accept `database.DBTX`, which both `*pgxpool.Pool` and `pgx.Tx` satisfy.
+- Accept `postgres.DBTX`, which both `*pgxpool.Pool` and `pgx.Tx` satisfy.
 - Execute queries through the supplied dependency. The same store works inside or outside a transaction.
 - Translate recognized persistence errors into domain errors, such as `user.ErrEmailTaken` or `user.ErrNotFound`.
 - Wrap unexpected errors with operation context using `%w`.
@@ -38,9 +38,26 @@
 
 `internal/app/app.go` is the composition root. Wire dependencies explicitly with constructors; no IoC container is required.
 
+### Platform packages
+
+```text
+internal/platform/
+├── transport/httpx/          # JSON decoding, responses, and error codes
+│   └── middleware/           # Chaining, recovery, logging, CORS, auth, rate limiting
+├── storage/
+│   ├── postgres/             # Connection pool, DBTX, and transaction lifecycle
+│   └── redis/                # Redis connection setup
+├── observability/logger/     # Logger setup
+└── validation/               # Email and UUID validation
+```
+
+Platform packages must not import `internal/modules`. Authentication middleware accepts a user-ID lookup function; `app.New` adapts the session service, translating missing or expired sessions into an empty user ID with no error. Other lookup errors remain errors and produce a generic `500` response. User-context helpers live beside authentication middleware.
+
+### Wiring
+
 - **Handlers** receive services and supporting infrastructure such as a logger.
 - **Services** receive stores and collaborating services through consumer-defined interfaces. Construct pool-backed stores in `app.New`; additionally inject a pool when a service owns transactional workflows. Transaction-bound stores are constructed inside the transaction callback.
-- **Stores** receive `database.DBTX`.
+- **Stores** receive `postgres.DBTX`.
 - Services may depend on other services for shared business logic, but dependencies must remain acyclic. Extract shared logic when needed.
 
 ```mermaid
@@ -50,7 +67,7 @@ flowchart TD
     App --> Pool["pgxpool.Pool"]
     Handler -->|"validated payload"| Service
     Service -->|"non-transactional reads"| ReadStore["User store: pool"]
-    Service -->|"atomic registration"| InTx["database.InTx(ctx, pool, fn)"]
+    Service -->|"atomic registration"| InTx["postgres.InTx(ctx, pool, fn)"]
     Pool -.->|"supplied to service and stores"| Service
     InTx --> Tx["shared pgx.Tx"]
     Tx --> UserStore["User store: tx"]
@@ -62,7 +79,7 @@ flowchart TD
 
 ## 3. Transaction Ownership
 
-**The service owns the boundary; `database.InTx` manages the lifecycle.**
+**The service owns the boundary; `postgres.InTx` manages the lifecycle.**
 
 - `DBTX` exposes only `Exec`, `Query`, and `QueryRow`; it does not expose `Begin`.
 - `InTx` accepts a `*pgxpool.Pool`, begins a transaction, and passes `pgx.Tx` to the callback.
@@ -81,7 +98,7 @@ sequenceDiagram
     participant H as Auth handler
     participant S as Auth service
     participant U as User store
-    participant T as database.InTx
+    participant T as postgres.InTx
     participant A as Account store
     participant DB as PostgreSQL
 

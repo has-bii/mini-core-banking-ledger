@@ -3,6 +3,7 @@ package app_test
 import (
 	"backend/internal/app"
 	"backend/internal/config"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
@@ -46,4 +47,28 @@ func TestNew_RateLimitCORS(t *testing.T) {
 		return
 	}
 	t.Fatal("rate limit was never enforced")
+}
+
+func TestNew_InvalidSession(t *testing.T) {
+	t.Parallel()
+
+	handler, err := app.New(config.Config{Env: "test", CORSOrigin: "http://localhost:3000"}, nil,
+		slog.New(slog.NewTextHandler(io.Discard, nil)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := httptest.NewRequest(http.MethodGet, "/api/auth/me", nil)
+	request.AddCookie(&http.Cookie{Name: "session", Value: "malformed"})
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+
+	var body struct {
+		Error struct{ Code, Message string }
+	}
+	if err := json.Unmarshal(response.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if response.Code != http.StatusUnauthorized || body.Error.Code != "UNAUTHENTICATED" || body.Error.Message != "authentication required" {
+		t.Fatalf("invalid session: status=%d body=%s, want authentication required", response.Code, response.Body.String())
+	}
 }

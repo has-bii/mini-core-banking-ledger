@@ -112,6 +112,32 @@ func TestApp_AuthLifecycle(t *testing.T) {
 	authRequest(t, h, "POST", "/api/auth/logout", "", nil, http.StatusNoContent)
 }
 
+func TestApp_SessionLookupFailure(t *testing.T) {
+	t.Parallel()
+
+	pool := testutil.Postgres(t)
+	h, err := app.New(config.Config{Env: "test", CORSOrigin: "http://localhost:3000"}, pool,
+		slog.New(slog.NewTextHandler(io.Discard, nil)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cookie := &http.Cookie{Name: "session", Value: strings.Repeat("A", 43)}
+	authRequest(t, h, "GET", "/api/auth/me", "", cookie, http.StatusUnauthorized)
+
+	pool.Close()
+	w := authRequest(t, h, "GET", "/api/auth/me", "", cookie, http.StatusInternalServerError)
+	var body struct {
+		Error struct{ Code, Message string }
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if body.Error.Code != "INTERNAL_ERROR" || body.Error.Message != "internal error" {
+		t.Fatalf("lookup failure = %s, want a generic internal error", w.Body.String())
+	}
+}
+
 func authRequest(t *testing.T, h http.Handler, method, path, body string, cookie *http.Cookie, status int) *httptest.ResponseRecorder {
 	t.Helper()
 	r := httptest.NewRequest(method, path, strings.NewReader(body)).WithContext(t.Context())

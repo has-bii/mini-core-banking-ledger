@@ -1,7 +1,7 @@
 package user
 
 import (
-	"backend/internal/platform/database"
+	"backend/internal/platform/storage/postgres"
 	"context"
 	"errors"
 	"fmt"
@@ -12,9 +12,9 @@ import (
 
 const uniqueViolation = "23505"
 
-type Store struct{ db database.DBTX }
+type Store struct{ db postgres.DBTX }
 
-func NewStore(db database.DBTX) *Store { return &Store{db: db} }
+func NewStore(db postgres.DBTX) *Store { return &Store{db: db} }
 
 type scanner interface{ Scan(dest ...any) error }
 

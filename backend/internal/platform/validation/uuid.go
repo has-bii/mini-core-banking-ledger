@@ -1,4 +1,4 @@
-package identifier
+package validation
 
 import (
 	"github.com/google/uuid"

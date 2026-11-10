@@ -1,7 +1,7 @@
-package ratelimit_test
+package middleware_test
 
 import (
-	"backend/internal/platform/ratelimit"
+	"backend/internal/platform/transport/httpx/middleware"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -12,7 +12,7 @@ func TestTokenBucket_Middleware(t *testing.T) {
 	t.Parallel()
 
 	calls := 0
-	handler := ratelimit.New(1, 0).Middleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := middleware.NewTokenBucket(1, 0).Middleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls++
 		w.WriteHeader(http.StatusNoContent)
 	}))

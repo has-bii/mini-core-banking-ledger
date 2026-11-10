@@ -4,7 +4,7 @@ import (
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/httpx"
+	"backend/internal/platform/transport/httpx/middleware"
 	"context"
 	"encoding/json"
 	"errors"
@@ -38,7 +38,9 @@ func (s authServiceStub) Logout(ctx context.Context, token string) error { retur
 func authHandler(svc authServiceStub, secure bool) http.Handler {
 	mux := http.NewServeMux()
 	auth.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil)), secure).Register(mux)
-	return httpx.GetUser(sessionServiceStub{result: session.Session{UserID: "user-id"}})(mux)
+	return middleware.GetUser(func(context.Context, string) (string, error) {
+		return "user-id", nil
+	})(mux)
 }
 
 func TestHandler_RejectsInvalidPayload(t *testing.T) {
