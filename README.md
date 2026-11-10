@@ -5,11 +5,11 @@ Application-specific setup and configuration instructions live alongside each ap
 - [Backend](backend/README.md) — Go HTTP API backed by PostgreSQL.
 - [Design system](design/MINILEDGER-DESIGN-SYSTEM.md) — shared visual guidelines and assets.
 
-Shared PostgreSQL and Redis infrastructure is defined in [`docker-compose.yaml`](docker-compose.yaml).
+Backend PostgreSQL and Redis infrastructure is defined in [`backend/docker-compose.yaml`](backend/docker-compose.yaml).
 
 ## Local infrastructure
 
-Start PostgreSQL and Redis:
+Run these commands from `backend/`. Start PostgreSQL and Redis:
 
 ```sh
 docker compose up -d --wait

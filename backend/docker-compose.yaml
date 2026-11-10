@@ -1,3 +1,6 @@
+# Keep the existing PostgreSQL volume when running from backend/.
+name: mini-core-banking-ledger
+
 services:
   redis:
     image: redis:8-alpine
