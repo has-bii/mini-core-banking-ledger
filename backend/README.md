@@ -9,7 +9,7 @@ Run all commands from `backend/`.
 Requires Go matching `go.mod`, Docker Compose, and the [Goose CLI](https://github.com/pressly/goose) on `PATH`. PostgreSQL 18 is required for `uuidv7()`.
 
 ```sh
-docker compose -f ../docker-compose.postgres.yaml up -d --wait
+docker compose -f ../docker-compose.yaml up -d --wait
 cp .env.example .env
 goose -env .env up
 go run ./cmd/api
@@ -58,7 +58,7 @@ Unit tests cover validation, HTTP parsing, distinct middleware contracts, and di
 Requires PostgreSQL 18 and the Goose CLI. Start the existing Compose database:
 
 ```sh
-docker compose -f ../docker-compose.postgres.yaml up -d --wait
+docker compose -f ../docker-compose.yaml up -d --wait postgres
 ```
 
 Create a local `.env.test` containing a dedicated test database URL:

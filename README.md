@@ -5,20 +5,22 @@ Application-specific setup and configuration instructions live alongside each ap
 - [Backend](backend/README.md) — Go HTTP API backed by PostgreSQL.
 - [Design system](design/MINILEDGER-DESIGN-SYSTEM.md) — shared visual guidelines and assets.
 
-Shared PostgreSQL infrastructure is defined in [`docker-compose.postgres.yaml`](docker-compose.postgres.yaml).
+Shared PostgreSQL and Redis infrastructure is defined in [`docker-compose.yaml`](docker-compose.yaml).
 
-## Local Redis
+## Local infrastructure
 
-Start Redis using [`docker-compose.redis.yaml`](docker-compose.redis.yaml):
+Start PostgreSQL and Redis:
 
 ```sh
-docker compose -f docker-compose.redis.yaml up -d --wait
+docker compose up -d --wait
 ```
 
 Connect at `127.0.0.1:6379` with password `password`. Set `REDIS_PASSWORD` before starting to override it. This setup is for local development only; all Redis data is lost on restart.
 
-Stop Redis:
+To start only one service, use `docker compose up -d --wait postgres` or `docker compose up -d --wait redis`.
+
+Stop both services (PostgreSQL data is preserved in its named volume):
 
 ```sh
-docker compose -f docker-compose.redis.yaml down
+docker compose down
 ```
