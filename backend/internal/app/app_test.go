@@ -15,19 +15,27 @@ func TestNew_RateLimitCORS(t *testing.T) {
 	t.Parallel()
 
 	const origin = "http://localhost:3000"
-	handler, err := app.New(config.Config{Env: "test", CORSOrigin: origin}, nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	handler, err := app.New(config.Config{
+		Env: "test", CORSOrigin: origin, RatelimitCapacity: 1, RatelimitRefillRate: 0.001,
+	}, nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// Unregistered routes exercise middleware without touching the database.
-	for range 1000 {
+	for i := range 2 {
 		request := httptest.NewRequest(http.MethodGet, "/api/not-found", nil)
 		request.Header.Set("Origin", origin)
 		response := httptest.NewRecorder()
 		handler.ServeHTTP(response, request)
-		if response.Code != http.StatusTooManyRequests {
+		if i == 0 {
+			if response.Code != http.StatusNotFound {
+				t.Fatalf("first request status = %d, want 404", response.Code)
+			}
 			continue
+		}
+		if response.Code != http.StatusTooManyRequests {
+			t.Fatalf("second request status = %d, want 429", response.Code)
 		}
 		if got := response.Header().Get("Access-Control-Allow-Origin"); got != origin {
 			t.Fatalf("429 CORS origin = %q, want %q", got, origin)
@@ -52,7 +60,9 @@ func TestNew_RateLimitCORS(t *testing.T) {
 func TestNew_InvalidSession(t *testing.T) {
 	t.Parallel()
 
-	handler, err := app.New(config.Config{Env: "test", CORSOrigin: "http://localhost:3000"}, nil,
+	handler, err := app.New(config.Config{
+		Env: "test", CORSOrigin: "http://localhost:3000", RatelimitCapacity: 50, RatelimitRefillRate: 10,
+	}, nil,
 		slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)

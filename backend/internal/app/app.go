@@ -23,7 +23,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 		return nil, fmt.Errorf("CORS_ORIGIN: %w", err)
 	}
 
-	tb := middleware.NewTokenBucket(20, 10)
+	tb := middleware.NewTokenBucket(cfg.RatelimitCapacity, cfg.RatelimitRefillRate)
 
 	mux := http.NewServeMux()
 

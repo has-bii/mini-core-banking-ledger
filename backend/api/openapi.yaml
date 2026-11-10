@@ -12,6 +12,12 @@ info:
     never returned in JSON. Login-specific brute-force protection and automatic
     expired-session cleanup are not implemented.
 
+    A shared in-memory token bucket limits requests across all clients per API
+    process. RATE_LIMIT_CAPACITY defaults to 50 tokens (burst size) and
+    RATE_LIMIT_REFILL_RATE defaults to 10 tokens per second. Exhaustion returns
+    429 with error code TOO_MANY_REQUESTS. CORS preflight requests bypass the
+    bucket. Limits reset on restart and are not shared between instances.
+
     CORS allows one exact frontend origin configured by CORS_ORIGIN, defaulting
     to http://localhost:3000. This is separate from the API server URL below.
     Responses to that origin include Access-Control-Allow-Origin matching the

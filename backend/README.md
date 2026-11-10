@@ -17,6 +17,17 @@ go run ./cmd/api
 
 The API loads `.env`; existing environment variables take precedence.
 
+### Rate limiting
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `RATE_LIMIT_CAPACITY` | `50` | Maximum tokens (burst size); must be at least `1` |
+| `RATE_LIMIT_REFILL_RATE` | `10` | Tokens replenished per second; must be greater than `0` |
+
+Both accept finite decimal values; invalid settings prevent startup. The default burst size was previously hard-coded to `20` and is now `50`; set `RATE_LIMIT_CAPACITY=20` to retain the previous limit.
+
+Each API process has one in-memory token bucket shared by all clients and routes. It starts full, consumes one token per request, and returns HTTP `429` with error code `TOO_MANY_REQUESTS` when exhausted. CORS preflight requests bypass the bucket. Restarting resets it; separate instances do not share limits. This is not per-user or per-IP throttling.
+
 ## Migrations
 
 Keep `DATABASE_URL` and `GOOSE_DBSTRING` pointed at the same database. See `.env.example` for the required settings.

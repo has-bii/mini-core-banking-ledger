@@ -3,7 +3,9 @@ package config
 import (
 	"errors"
 	"fmt"
+	"math"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -17,6 +19,7 @@ var (
 type Config struct {
 	Env, Addr, DatabaseURL, RedisURL, LogLevel, CORSOrigin string
 	ReadTimeout, ShutdownTimeout                           time.Duration
+	RatelimitCapacity, RatelimitRefillRate                 float64
 }
 
 func Load() (Config, error) {
@@ -26,14 +29,20 @@ func Load() (Config, error) {
 	var errs []error
 
 	cfg := Config{
-		Env:             getString("APP_ENV", "dev"),
-		Addr:            getString("HTTP_ADDR", ":8080"),
-		DatabaseURL:     getString("DATABASE_URL", ""),
-		RedisURL:        getString("REDIS_URL", ""),
-		LogLevel:        getString("LOG_LEVEL", "info"),
-		CORSOrigin:      getString("CORS_ORIGIN", "http://localhost:3000"),
-		ReadTimeout:     getDuration("HTTP_READ_TIMEOUT", 5*time.Second, &errs),
-		ShutdownTimeout: getDuration("SHUTDOWN_TIMEOUT", 10*time.Second, &errs),
+		Env:                 getString("APP_ENV", "dev"),
+		Addr:                getString("HTTP_ADDR", ":8080"),
+		DatabaseURL:         getString("DATABASE_URL", ""),
+		RedisURL:            getString("REDIS_URL", ""),
+		LogLevel:            getString("LOG_LEVEL", "info"),
+		CORSOrigin:          getString("CORS_ORIGIN", "http://localhost:3000"),
+		ReadTimeout:         getDuration("HTTP_READ_TIMEOUT", 5*time.Second, &errs),
+		ShutdownTimeout:     getDuration("SHUTDOWN_TIMEOUT", 10*time.Second, &errs),
+		RatelimitCapacity:   getFloat("RATE_LIMIT_CAPACITY", 50, &errs),
+		RatelimitRefillRate: getFloat("RATE_LIMIT_REFILL_RATE", 10, &errs),
+	}
+
+	if cfg.RatelimitCapacity < 1 {
+		errs = append(errs, errors.New("RATE_LIMIT_CAPACITY must be at least 1"))
 	}
 
 	if cfg.DatabaseURL == "" {
@@ -85,4 +94,21 @@ func getDuration(key string, fallback time.Duration, errs *[]error) time.Duratio
 		return fallback
 	}
 	return parsedValue
+}
+
+func getFloat(key string, fallback float64, errs *[]error) float64 {
+	v := os.Getenv(key)
+	if v == "" {
+		return fallback
+	}
+	parsed, err := strconv.ParseFloat(v, 64)
+	if err != nil {
+		*errs = append(*errs, fmt.Errorf("%s: %w", key, err))
+		return fallback
+	}
+	if parsed <= 0 || math.IsNaN(parsed) || math.IsInf(parsed, 0) {
+		*errs = append(*errs, fmt.Errorf("%s must be finite and positive", key))
+		return fallback
+	}
+	return parsed
 }
