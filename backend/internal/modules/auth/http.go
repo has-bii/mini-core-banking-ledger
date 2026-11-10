@@ -37,7 +37,7 @@ func (h *Handler) Register(mux *http.ServeMux) {
 }
 
 func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Cache-Control", "no-store")
+	httpx.NoStoreHeader(w)
 	userID, _ := middleware.UserIDFromContext(r.Context())
 	u, err := h.svc.Me(r.Context(), userID)
 	if err != nil {
@@ -53,7 +53,7 @@ func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) logout(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Cache-Control", "no-store")
+	httpx.NoStoreHeader(w)
 	if cookie, err := r.Cookie("session"); err == nil {
 		if err := h.svc.Logout(r.Context(), cookie.Value); err != nil {
 			h.log.Error("logout failed", "err", err)
@@ -71,7 +71,7 @@ func (h *Handler) logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Cache-Control", "no-store")
+	httpx.NoStoreHeader(w)
 	var payload LoginDTO
 	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
 		httpx.WriteError(w, http.StatusBadRequest, httpx.CodeInvalidJSON, "Invalid JSON body")

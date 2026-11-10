@@ -43,7 +43,7 @@ func AuthGuard() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if id, ok := UserIDFromContext(r.Context()); !ok || id == "" {
-				w.Header().Set("Cache-Control", "no-store")
+				httpx.NoStoreHeader(w)
 				httpx.WriteError(w, http.StatusUnauthorized, httpx.CodeUnauthenticated, "authentication required")
 				return
 			}
