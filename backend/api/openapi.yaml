@@ -215,21 +215,12 @@ paths:
       summary: List the current user's accounts
       description: |
         Requires a valid, unexpired session. Returns only accounts belonging to
-        the current user, ordered by sort_order. Responses from the account
+        the current user, ordered by sort_order ascending. Query parameters
+        are ignored. Responses from the account
         handler and authentication guard include Cache-Control: no-store;
         errors from the shared middleware may omit this header.
       security:
         - sessionCookie: []
-      parameters:
-        - name: order
-          in: query
-          description: |
-            Sort direction for sort_order. Surrounding whitespace is trimmed
-            and matching is case-insensitive. An explicitly empty value is invalid.
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: asc
       responses:
         '200':
           description: Accounts for the current user; an empty array if none exist.
@@ -240,19 +231,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountsResponse'
-        '400':
-          description: Invalid order query parameter (VALIDATION_ERROR).
-          headers:
-            Cache-Control:
-              $ref: '#/components/headers/NoStore'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: VALIDATION_ERROR
-                  message: order must be either 'asc' or 'desc'
         '401':
           description: Authentication required (UNAUTHENTICATED).
           headers:
@@ -349,9 +327,12 @@ components:
           $ref: '#/components/schemas/User'
     Account:
       type: object
-      required: [id, name, account_type, sort_order, balance, created_at]
+      required: [id, user_id, name, account_type, sort_order, balance, created_at]
       properties:
         id:
+          type: string
+          format: uuid
+        user_id:
           type: string
           format: uuid
         name:

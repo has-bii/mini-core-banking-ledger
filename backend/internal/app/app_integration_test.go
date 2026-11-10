@@ -46,6 +46,7 @@ func TestApp_AuthLifecycle(t *testing.T) {
 	var accountBody struct {
 		Data []struct {
 			ID          string `json:"id"`
+			UserID      string `json:"user_id"`
 			AccountType string `json:"account_type"`
 		}
 	}
@@ -58,24 +59,34 @@ func TestApp_AuthLifecycle(t *testing.T) {
 	if accounts.Header().Get("Cache-Control") != "no-store" {
 		t.Error("accounts response must not be cached")
 	}
+	mainID := accountBody.Data[0].ID
 	var savingsID string
 	if err := pool.QueryRow(t.Context(), `INSERT INTO accounts (user_id, name, type, sort_order)
 		VALUES ($1, 'Savings', 'savings', 1) RETURNING id`, u.ID).Scan(&savingsID); err != nil {
 		t.Fatal(err)
 	}
-	descending := authRequest(t, h, "GET", "/api/accounts?order=%20DESC%20", "", cookie, http.StatusOK)
-	if err := json.Unmarshal(descending.Body.Bytes(), &accountBody); err != nil || len(accountBody.Data) != 2 {
-		t.Fatalf("descending response = %s (%v), want two accounts", descending.Body.String(), err)
-	}
-	if accountBody.Data[0].ID != savingsID {
-		t.Errorf("descending response = %s, want savings first", descending.Body.String())
-	}
-	invalidOrder := authRequest(t, h, "GET", "/api/accounts?order=invalid", "", cookie, http.StatusBadRequest)
-	var errorBody struct {
-		Error struct{ Code, Message string }
-	}
-	if err := json.Unmarshal(invalidOrder.Body.Bytes(), &errorBody); err != nil || errorBody.Error.Code != "VALIDATION_ERROR" || errorBody.Error.Message != "order must be either 'asc' or 'desc'" {
-		t.Errorf("invalid order response = %s (%v)", invalidOrder.Body.String(), err)
+	for _, tt := range []struct {
+		name string
+		path string
+	}{
+		{name: "ascending accounts", path: "/api/accounts"},
+		{name: "ignore descending order", path: "/api/accounts?order=%20DESC%20"},
+		{name: "ignore invalid order", path: "/api/accounts?order=invalid"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			response := authRequest(t, h, "GET", tt.path, "", cookie, http.StatusOK)
+			if err := json.Unmarshal(response.Body.Bytes(), &accountBody); err != nil || len(accountBody.Data) != 2 {
+				t.Fatalf("accounts response = %s (%v), want two accounts", response.Body.String(), err)
+			}
+			if accountBody.Data[0].ID != mainID || accountBody.Data[1].ID != savingsID {
+				t.Errorf("accounts response = %s, want main then savings", response.Body.String())
+			}
+			for _, a := range accountBody.Data {
+				if a.UserID != u.ID {
+					t.Errorf("account user_id = %q, want %q", a.UserID, u.ID)
+				}
+			}
+		})
 	}
 	authRequest(t, h, "POST", "/api/auth/logout", "", cookie, http.StatusNoContent)
 	authRequest(t, h, "GET", "/api/auth/me", "", cookie, http.StatusUnauthorized)
