@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"backend/internal/config"
+	"backend/internal/modules/account"
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
@@ -36,8 +37,13 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 	}
 	authSvc := auth.NewService(user.NewStore(pool), sessionSvc)
 
+	accountService := account.NewService(account.NewStore(pool))
+
 	api := http.NewServeMux()
+
 	auth.NewHandler(authSvc, log, cfg.Env != "dev" && cfg.Env != "test").Register(api)
+	account.NewHandler(accountService, log).Register(api)
+
 	mux.Handle("/api/", http.StripPrefix("/api", api))
 
 	return middleware.Chain(mux, middleware.Recoverer(log), middleware.Logging(log), cors, middleware.GetUser(lookupUserID), tb.Middleware()), nil
