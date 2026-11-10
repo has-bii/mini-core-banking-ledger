@@ -42,7 +42,7 @@ func TestPostgres_IsolatesSchemasAndConnections(t *testing.T) {
 				t.Fatalf("connections escaped their schema: %q, %q, search_path=%q", a, b, path)
 			}
 		}
-		if _, err := first.Exec(t.Context(), `INSERT INTO users (name, email, password, "createdAt", "updatedAt") VALUES ('Alice', 'alice@example.com', 'stored-password-hash', now(), now())`); err != nil {
+		if _, err := first.Exec(t.Context(), `INSERT INTO users (name, email, password) VALUES ('Alice', 'alice@example.com', 'stored-password-hash')`); err != nil {
 			t.Fatal(err)
 		}
 		var count int

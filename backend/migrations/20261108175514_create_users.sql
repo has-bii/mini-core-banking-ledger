@@ -1,27 +1,28 @@
 -- +goose Up
-CREATE TABLE IF NOT EXISTS users (
-    "id" uuid NOT NULL PRIMARY KEY DEFAULT uuidv7(),
-    "name" text NOT NULL,
-    "email" text UNIQUE NOT NULL,
-    "password" text NOT NULL,
-    "image" text,
-    "createdAt" timestamptz NOT NULL,
-    "updatedAt" timestamptz NOT NULL
+CREATE TABLE users (
+    id uuid PRIMARY KEY DEFAULT uuidv7(),
+    name text NOT NULL,
+    email text UNIQUE NOT NULL,
+    password text NOT NULL,
+    image text,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS "sessions" (
-	"id" uuid NOT NULL PRIMARY KEY DEFAULT uuidv7(),
-	"userId" uuid NOT NULL,
-	"token" text NOT NULL UNIQUE,
-	"expiresAt" timestamptz NOT NULL,
-	"ipAddress" text,
-	"userAgent" text,
-	"createdAt" timestamptz NOT NULL,
-	"updatedAt" timestamptz NOT NULL,
-	FOREIGN KEY ("userId") REFERENCES users ("id") ON DELETE CASCADE
+CREATE TABLE sessions (
+    id uuid PRIMARY KEY DEFAULT uuidv7(),
+    user_id uuid NOT NULL,
+    token text NOT NULL UNIQUE,
+    expires_at timestamptz NOT NULL,
+    ip_address text,
+    user_agent text,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
-CREATE INDEX IF NOT EXISTS "sessions_userId_idx" ON "sessions" ("userId");
+
+CREATE INDEX sessions_user_id_idx ON sessions (user_id);
 
 -- +goose Down
-DROP TABLE IF EXISTS "sessions";
+DROP TABLE IF EXISTS sessions;
 DROP TABLE IF EXISTS users;

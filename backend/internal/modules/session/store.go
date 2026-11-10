@@ -15,9 +15,9 @@ type Store struct{ db postgres.DBTX }
 func NewStore(db postgres.DBTX) *Store { return &Store{db: db} }
 
 func (s *Store) Create(ctx context.Context, userID, tokenHash string, expiresAt time.Time) (Session, error) {
-	const q = `INSERT INTO sessions ("userId", token, "expiresAt", "createdAt", "updatedAt")
-		VALUES ($1, $2, $3, now(), now())
-		RETURNING id, "userId", "expiresAt"`
+	const q = `INSERT INTO sessions (user_id, token, expires_at)
+		VALUES ($1, $2, $3)
+		RETURNING id, user_id, expires_at`
 	var session Session
 	err := s.db.QueryRow(ctx, q, userID, tokenHash, expiresAt).Scan(&session.ID, &session.UserID, &session.ExpiresAt)
 	if err != nil {
@@ -27,7 +27,7 @@ func (s *Store) Create(ctx context.Context, userID, tokenHash string, expiresAt 
 }
 
 func (s *Store) FindByTokenHash(ctx context.Context, tokenHash string) (Session, error) {
-	const q = `SELECT id, "userId", "expiresAt" FROM sessions WHERE token = $1 AND "expiresAt" > now()`
+	const q = `SELECT id, user_id, expires_at FROM sessions WHERE token = $1 AND expires_at > now()`
 	var session Session
 	err := s.db.QueryRow(ctx, q, tokenHash).Scan(&session.ID, &session.UserID, &session.ExpiresAt)
 	if errors.Is(err, pgx.ErrNoRows) {

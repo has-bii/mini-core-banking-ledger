@@ -25,7 +25,7 @@ func scanUser(r scanner) (User, error) {
 }
 
 func (s *Store) FindByID(ctx context.Context, id string) (User, error) {
-	const q = `SELECT id, name, email, password, image, "createdAt", "updatedAt" FROM users WHERE id = $1`
+	const q = `SELECT id, name, email, password, image, created_at, updated_at FROM users WHERE id = $1`
 
 	u, err := scanUser(s.db.QueryRow(ctx, q, id))
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -38,7 +38,7 @@ func (s *Store) FindByID(ctx context.Context, id string) (User, error) {
 }
 
 func (s *Store) FindByEmail(ctx context.Context, email string) (User, error) {
-	const q = `SELECT id, name, email, password, image, "createdAt", "updatedAt" FROM users WHERE email = $1`
+	const q = `SELECT id, name, email, password, image, created_at, updated_at FROM users WHERE email = $1`
 
 	u, err := scanUser(s.db.QueryRow(ctx, q, email))
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -51,9 +51,9 @@ func (s *Store) FindByEmail(ctx context.Context, email string) (User, error) {
 }
 
 func (s *Store) Create(ctx context.Context, name, email, password string) (User, error) {
-	const q = `INSERT INTO users (name, email, password, "createdAt", "updatedAt")
-		VALUES ($1, $2, $3, now(), now())
-		RETURNING id, name, email, password, image, "createdAt", "updatedAt"`
+	const q = `INSERT INTO users (name, email, password)
+		VALUES ($1, $2, $3)
+		RETURNING id, name, email, password, image, created_at, updated_at`
 
 	u, err := scanUser(s.db.QueryRow(ctx, q, name, email, password))
 	if err != nil {
