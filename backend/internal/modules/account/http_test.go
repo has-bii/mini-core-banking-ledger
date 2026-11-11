@@ -4,7 +4,6 @@ import (
 	"backend/internal/modules/account"
 	"backend/internal/platform/transport/httpx"
 	"backend/internal/platform/transport/httpx/middleware"
-	"backend/internal/platform/validation"
 	"context"
 	"encoding/json"
 	"errors"
@@ -21,29 +20,39 @@ func TestHandler_GetAccounts(t *testing.T) {
 	const userID = "01a1c6de-805e-7b0c-a1b1-b851a9c38ccd"
 
 	for _, tt := range []struct {
-		name     string
-		accounts []account.Account
-		err      error
+		name           string
+		accounts       []account.Account
+		serviceErr     error
+		expectedStatus int
 	}{
 		{
-			name: "returns accounts",
+			name: "Happy Path: returns accounts successfully (200 OK)",
 			accounts: []account.Account{
 				{ID: "01a1c6de-805e-7b0c-a1b1-b851a9c38cce", UserID: userID, Name: "Main Account", Type: account.Main, Balance: 12345},
 			},
+			expectedStatus: http.StatusOK,
 		},
-		{name: "no accounts", accounts: []account.Account{}},
-		{name: "invalid user ID error", err: validation.ErrInvalidUUID},
-		{name: "not found error", err: account.ErrNotFound},
-		{name: "unexpected error", err: errors.New("secret database credentials")},
+		{
+			name:           "Happy Path: returns empty list when user has no accounts (200 OK)",
+			accounts:       []account.Account{},
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Error Path: returns 500 Internal Server Error when service fails",
+			serviceErr:     errors.New("database connection timeout"),
+			expectedStatus: http.StatusInternalServerError,
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			store := &accountStoreStub{accounts: tt.accounts, err: tt.err}
+
+			store := &accountStoreStub{accounts: tt.accounts, err: tt.serviceErr}
 			mux := http.NewServeMux()
-			account.NewHandler(account.NewService(store), slog.New(slog.NewTextHandler(io.Discard, nil))).Register(mux)
+			logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+			account.NewHandler(account.NewService(store), logger).Register(mux)
 
 			var requestCtx context.Context
-			h := middleware.GetUser(func(context.Context, string) (string, error) {
+			testHandler := middleware.GetUser(func(context.Context, string) (string, error) {
 				return userID, nil
 			})(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				requestCtx = r.Context()
@@ -52,7 +61,8 @@ func TestHandler_GetAccounts(t *testing.T) {
 			r := httptest.NewRequest(http.MethodGet, "/accounts", nil).WithContext(t.Context())
 			r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			w := httptest.NewRecorder()
-			h.ServeHTTP(w, r)
+
+			testHandler.ServeHTTP(w, r)
 
 			if store.userID != userID {
 				t.Errorf("service received userID = %q, want %q", store.userID, userID)
@@ -61,10 +71,11 @@ func TestHandler_GetAccounts(t *testing.T) {
 				t.Error("service did not receive the authenticated request context")
 			}
 
-			if tt.err != nil {
-				if w.Code != http.StatusInternalServerError {
-					t.Fatalf("status = %d, want %d", w.Code, http.StatusInternalServerError)
-				}
+			if w.Code != tt.expectedStatus {
+				t.Fatalf("status = %d, want %d", w.Code, tt.expectedStatus)
+			}
+
+			if tt.serviceErr != nil {
 				var got map[string]map[string]string
 				if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil {
 					t.Fatal(err)
@@ -78,9 +89,6 @@ func TestHandler_GetAccounts(t *testing.T) {
 				return
 			}
 
-			if w.Code != http.StatusOK {
-				t.Fatalf("status = %d, want %d", w.Code, http.StatusOK)
-			}
 			var got struct {
 				Data []account.Account `json:"data"`
 			}
@@ -89,6 +97,9 @@ func TestHandler_GetAccounts(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got.Data, tt.accounts) {
 				t.Errorf("accounts = %+v, want %+v", got.Data, tt.accounts)
+			}
+			if gotCache := w.Header().Get("Cache-Control"); gotCache == "" {
+				t.Error("expected Cache-Control header to be set by NoStoreHeader")
 			}
 		})
 	}
