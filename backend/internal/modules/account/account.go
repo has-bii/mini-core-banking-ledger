@@ -6,10 +6,8 @@ import (
 )
 
 var (
-	ErrNotFound         = errors.New("account not found")
-	ErrSortOrderTaken   = errors.New("account sort order already taken")
-	ErrInvalidSortOrder = errors.New("account sort order must be non-negative")
-	ErrInvalidType      = errors.New("invalid account type")
+	ErrNotFound    = errors.New("account not found")
+	ErrInvalidType = errors.New("invalid account type")
 )
 
 type AccountType string
