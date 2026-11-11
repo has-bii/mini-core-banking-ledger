@@ -10,9 +10,9 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type Store struct{ db postgres.DBTX }
+type Store struct{ db postgres.Beginner }
 
-func NewStore(db postgres.DBTX) *Store { return &Store{db: db} }
+func NewStore(db postgres.Beginner) *Store { return &Store{db: db} }
 
 func (s *Store) Create(ctx context.Context, userID, tokenHash string, expiresAt time.Time) (Session, error) {
 	const q = `INSERT INTO sessions (user_id, token, expires_at)

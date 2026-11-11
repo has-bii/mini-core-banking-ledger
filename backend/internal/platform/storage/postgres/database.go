@@ -17,6 +17,11 @@ type DBTX interface {
 	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
 }
 
+type Beginner interface {
+	DBTX
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
 func Open(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	cfg, err := pgxpool.ParseConfig(url)
 	if err != nil {
@@ -41,19 +46,15 @@ func Open(ctx context.Context, url string) (*pgxpool.Pool, error) {
 }
 
 // InTx commits if fn returns nil and rolls back otherwise.
-func InTx(ctx context.Context, pool *pgxpool.Pool, fn func(tx pgx.Tx) error) error {
-	tx, err := pool.Begin(ctx)
+func InTx(ctx context.Context, db Beginner, fn func(tx pgx.Tx) error) error {
+	tx, err := db.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("begin tx: %w", err)
 	}
-	// Rollback is a no-op after commit; pgx closes the connection if rollback fails.
-	defer func() { _ = tx.Rollback(context.WithoutCancel(ctx)) }()
+	defer func() { _ = tx.Rollback(ctx) }()
 
 	if err := fn(tx); err != nil {
 		return err
 	}
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("commit tx: %w", err)
-	}
-	return nil
+	return tx.Commit(ctx)
 }
