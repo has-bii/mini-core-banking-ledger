@@ -4,6 +4,7 @@ import (
 	"backend/internal/platform/storage/postgres"
 	"backend/internal/platform/validation"
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
@@ -37,4 +38,25 @@ func (s *Store) ListByUserID(ctx context.Context, userID string) ([]Account, err
 	return pgx.CollectRows(rows, func(r pgx.CollectableRow) (Account, error) {
 		return scanAccount(r)
 	})
+}
+
+func (s *Store) GetByID(ctx context.Context, ID, userID string) (Account, error) {
+	if !validation.IsValidUUID(ID) {
+		return Account{}, fmt.Errorf("account by id: ID %w", validation.ErrInvalidUUID)
+	}
+	if !validation.IsValidUUID(userID) {
+		return Account{}, fmt.Errorf("account by id: userID %w", validation.ErrInvalidUUID)
+	}
+
+	const q = `SELECT id, user_id, name, type, sort_order, balance, created_at FROM accounts
+	WHERE id = $1 AND user_id = $2`
+
+	a, err := scanAccount(s.db.QueryRow(ctx, q, ID, userID))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Account{}, ErrNotFound
+	}
+	if err != nil {
+		return Account{}, fmt.Errorf("account by id: %w", err)
+	}
+	return a, nil
 }

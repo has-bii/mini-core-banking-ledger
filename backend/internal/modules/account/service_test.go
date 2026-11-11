@@ -11,6 +11,8 @@ import (
 
 type accountStoreStub struct {
 	accounts []account.Account
+	account  account.Account
+	id       string
 	err      error
 	ctx      context.Context
 	userID   string
@@ -19,6 +21,48 @@ type accountStoreStub struct {
 func (s *accountStoreStub) ListByUserID(ctx context.Context, userID string) ([]account.Account, error) {
 	s.ctx, s.userID = ctx, userID
 	return s.accounts, s.err
+}
+
+func (s *accountStoreStub) GetByID(ctx context.Context, id, userID string) (account.Account, error) {
+	s.ctx, s.id, s.userID = ctx, id, userID
+	return s.account, s.err
+}
+
+func TestService_GetUserAccount(t *testing.T) {
+	t.Parallel()
+	const userID = "01a1c6de-805e-7b0c-a1b1-b851a9c38ccd"
+	const id = "01a1c6de-805e-7b0c-a1b1-b851a9c38cce"
+
+	for _, tt := range []struct {
+		name    string
+		id      string
+		userID  string
+		account account.Account
+		err     error
+	}{
+		{name: "returns account", id: id, userID: userID, account: account.Account{ID: id, UserID: userID, Name: "Main Account", Type: account.Main, Balance: 12345}},
+		{name: "not found", id: id, userID: userID, err: account.ErrNotFound},
+		{name: "invalid account ID", id: "invalid", userID: userID, err: validation.ErrInvalidUUID},
+		{name: "invalid user ID", id: id, userID: "invalid", err: validation.ErrInvalidUUID},
+		{name: "store error", id: id, userID: userID, err: errors.New("store unavailable")},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			store := &accountStoreStub{account: tt.account, err: tt.err}
+			ctx := t.Context()
+
+			got, err := account.NewService(store).GetUserAccount(ctx, tt.id, tt.userID)
+			if !errors.Is(err, tt.err) {
+				t.Errorf("GetUserAccount() error = %v, want %v", err, tt.err)
+			}
+			if !reflect.DeepEqual(got, tt.account) {
+				t.Errorf("GetUserAccount() = %+v, want %+v", got, tt.account)
+			}
+			if store.id != tt.id || store.userID != tt.userID || store.ctx != ctx {
+				t.Errorf("GetByID() did not receive original arguments: id = %q, userID = %q, ctx = %v", store.id, store.userID, store.ctx)
+			}
+		})
+	}
 }
 
 func TestService_GetUserAccounts(t *testing.T) {

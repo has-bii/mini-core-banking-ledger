@@ -248,6 +248,91 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalError'
+  /accounts/{id}:
+    get:
+      tags: [Accounts]
+      operationId: getAccount
+      summary: Get one of the current user's accounts
+      description: |
+        Requires a valid, unexpired session. Returns 404 for both missing
+        accounts and accounts belonging to another user. Query parameters
+        are ignored. Responses from the account handler and authentication
+        guard include Cache-Control: no-store; errors from shared middleware
+        may omit this header.
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of an account belonging to the current user.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The requested account belonging to the current user.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        '400':
+          description: Invalid account ID (VALIDATION_ERROR).
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: VALIDATION_ERROR
+                  message: invalid account ID
+        '401':
+          description: Authentication required (UNAUTHENTICATED).
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: UNAUTHENTICATED
+                  message: authentication required
+        '404':
+          description: Account does not exist or belongs to another user (NOT_FOUND).
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: NOT_FOUND
+                  message: account not found
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          description: Unexpected server error (INTERNAL_ERROR).
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: INTERNAL_ERROR
+                  message: internal server error
 components:
   securitySchemes:
     sessionCookie:
@@ -350,6 +435,12 @@ components:
         created_at:
           type: string
           format: date-time
+    AccountResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Account'
     AccountsResponse:
       type: object
       required: [data]
@@ -376,6 +467,7 @@ components:
                 - UNAUTHENTICATED
                 - TOO_MANY_REQUESTS
                 - INTERNAL_ERROR
+                - NOT_FOUND
             message:
               type: string
               description: Human-readable detail; multiple validation errors are joined by newlines.
