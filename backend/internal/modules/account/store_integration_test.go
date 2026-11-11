@@ -136,3 +136,91 @@ func TestStore_ListAccounts(t *testing.T) {
 		t.Errorf("Mapping failed! Expected CreatedAt to be populated, got '%v'", got.CreatedAt)
 	}
 }
+
+func TestStore_Create(t *testing.T) {
+	t.Parallel()
+	pool := testutil.Postgres(t)
+	owner, err := user.NewStore(pool).Create(t.Context(), "Alice", "alice@example.com", "stored-password-hash")
+	if err != nil {
+		t.Fatal(err)
+	}
+	store := account.NewStore(pool)
+
+	t.Run("concurrent creates commit with distinct sort orders", func(t *testing.T) {
+		const count = 4
+		type result struct {
+			account account.Account
+			err     error
+		}
+		results := make(chan result, count)
+		start := make(chan struct{})
+		for range count {
+			go func() {
+				<-start
+				a, err := store.Create(t.Context(), owner.ID, &account.CreateAccountDTO{Name: "Savings", Type: account.Savings})
+				results <- result{a, err}
+			}()
+		}
+		close(start)
+
+		orders := make(map[int16]bool)
+		for range count {
+			got := <-results
+			if got.err != nil {
+				t.Errorf("Create() error = %v", got.err)
+				continue
+			}
+			a := got.account
+			if a.UserID != owner.ID || a.Name != "Savings" || a.Type != account.Savings || a.Balance != 0 || a.CreatedAt.IsZero() {
+				t.Errorf("Create() = %+v, unexpected fields", a)
+			}
+			if a.SortOrder < 1 || a.SortOrder > count || orders[a.SortOrder] {
+				t.Errorf("Create() sort order = %d, want distinct order in [1, %d]", a.SortOrder, count)
+			}
+			orders[a.SortOrder] = true
+			persisted, err := store.GetByID(t.Context(), a.ID, owner.ID)
+			if err != nil || !reflect.DeepEqual(persisted, a) {
+				t.Errorf("persisted account = %+v, %v; want %+v", persisted, err, a)
+			}
+		}
+		accounts, err := store.ListByUserID(t.Context(), owner.ID)
+		if err != nil || len(accounts) != count+1 {
+			t.Errorf("ListByUserID() count = %d, error = %v; want %d accounts including main", len(accounts), err, count+1)
+		}
+	})
+
+	for _, tt := range []struct {
+		name      string
+		typeValue account.AccountType
+	}{
+		{name: "main type", typeValue: account.Main},
+		{name: "empty type", typeValue: ""},
+		{name: "unknown type", typeValue: "other"},
+		{name: "uppercase type", typeValue: "SAVINGS"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := store.Create(t.Context(), owner.ID, &account.CreateAccountDTO{
+				Name: "Travel", Type: tt.typeValue,
+			})
+			if !errors.Is(err, account.ErrInvalidType) || got != (account.Account{}) {
+				t.Errorf("Create() = %+v, %v; want zero account, ErrInvalidType", got, err)
+			}
+		})
+	}
+
+	for _, tt := range []struct {
+		name   string
+		userID string
+		err    error
+	}{
+		{name: "missing user", userID: "00000000-0000-0000-0000-000000000000", err: account.ErrNotFound},
+		{name: "invalid user ID", userID: "invalid", err: validation.ErrInvalidUUID},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := store.Create(t.Context(), tt.userID, &account.CreateAccountDTO{Name: "Savings", Type: account.Savings})
+			if !errors.Is(err, tt.err) || !reflect.DeepEqual(got, account.Account{}) {
+				t.Errorf("Create() = %+v, %v; want zero account, %v", got, err, tt.err)
+			}
+		})
+	}
+}

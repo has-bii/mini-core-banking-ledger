@@ -19,8 +19,31 @@ func NewHandler(accountService *Service, log *slog.Logger) *Handler {
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
+	mux.Handle("POST /accounts", middleware.AuthGuard()(http.HandlerFunc(h.createAccount)))
 	mux.Handle("GET /accounts", middleware.AuthGuard()(http.HandlerFunc(h.getAccounts)))
 	mux.Handle("GET /accounts/{id}", middleware.AuthGuard()(http.HandlerFunc(h.getAccount)))
+}
+
+func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
+	httpx.NoStoreHeader(w)
+	var payload CreateAccountDTO
+	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
+		httpx.WriteError(w, http.StatusBadRequest, httpx.CodeInvalidJSON, "Invalid JSON body")
+		return
+	}
+	if errs := payload.Validate(); len(errs) > 0 {
+		httpx.WriteError(w, http.StatusBadRequest, httpx.CodeValidationError, errors.Join(errs...).Error())
+		return
+	}
+
+	userID, _ := middleware.UserIDFromContext(r.Context())
+	data, err := h.accountService.CreateUserAccount(r.Context(), userID, &payload)
+	if err != nil {
+		h.log.Error("create account failed", "err", err)
+		httpx.WriteError(w, http.StatusInternalServerError, httpx.CodeInternalError, "internal server error")
+		return
+	}
+	httpx.WriteJSON(w, http.StatusCreated, data)
 }
 
 func (h *Handler) getAccount(w http.ResponseWriter, r *http.Request) {

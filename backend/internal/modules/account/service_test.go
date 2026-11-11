@@ -16,6 +16,7 @@ type accountStoreStub struct {
 	err      error
 	ctx      context.Context
 	userID   string
+	data     *account.CreateAccountDTO
 }
 
 func (s *accountStoreStub) ListByUserID(ctx context.Context, userID string) ([]account.Account, error) {
@@ -25,6 +26,11 @@ func (s *accountStoreStub) ListByUserID(ctx context.Context, userID string) ([]a
 
 func (s *accountStoreStub) GetByID(ctx context.Context, id, userID string) (account.Account, error) {
 	s.ctx, s.id, s.userID = ctx, id, userID
+	return s.account, s.err
+}
+
+func (s *accountStoreStub) Create(ctx context.Context, userID string, data *account.CreateAccountDTO) (account.Account, error) {
+	s.ctx, s.userID, s.data = ctx, userID, data
 	return s.account, s.err
 }
 
@@ -118,5 +124,21 @@ func TestService_GetUserAccounts(t *testing.T) {
 				t.Error("ListByUserID() did not receive the original context")
 			}
 		})
+	}
+}
+
+func TestService_CreateUserAccount(t *testing.T) {
+	t.Parallel()
+	const userID = "01a1c6de-805e-7b0c-a1b1-b851a9c38ccd"
+	storeErr := errors.New("store unavailable")
+	store := &accountStoreStub{err: storeErr}
+	ctx := t.Context()
+	data := &account.CreateAccountDTO{Name: "Travel", Type: account.Savings}
+	got, err := account.NewService(store).CreateUserAccount(ctx, userID, data)
+	if !errors.Is(err, storeErr) || got != (account.Account{}) {
+		t.Errorf("CreateUserAccount() = %+v, %v; want zero account, %v", got, err, storeErr)
+	}
+	if store.ctx != ctx || store.userID != userID || store.data != data {
+		t.Error("Create() did not receive original context, authenticated user ID and payload")
 	}
 }

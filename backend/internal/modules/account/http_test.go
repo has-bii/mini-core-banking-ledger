@@ -14,8 +14,104 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 )
+
+func TestHandler_CreateAccountRejectsInvalidPayload(t *testing.T) {
+	t.Parallel()
+	for _, tt := range []struct {
+		name    string
+		body    string
+		code    string
+		message string
+	}{
+		{name: "malformed JSON", body: `{`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
+		{name: "empty body", body: ``, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
+		{name: "wrong field type", body: `{"name":123,"account_type":"savings"}`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
+		{name: "multiple JSON values", body: `{} {}`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
+		{name: "client supplied owner", body: `{"name":"Travel","account_type":"savings","user_id":"another-user"}`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
+		{name: "client supplied balance", body: `{"name":"Travel","account_type":"savings","balance":100}`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
+		{name: "oversized body", body: `{"name":"` + strings.Repeat("A", 1<<20) + `","account_type":"savings"}`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
+		{name: "missing fields", body: `{}`, code: httpx.CodeValidationError, message: "name is required\ninvalid account type"},
+		{name: "null body", body: `null`, code: httpx.CodeValidationError, message: "name is required\ninvalid account type"},
+		{name: "invalid name", body: `{"name":"12","account_type":"savings"}`, code: httpx.CodeValidationError, message: "name must contain 3 to 32 ASCII letters or spaces"},
+		{name: "main account type", body: `{"name":"Travel","account_type":"main"}`, code: httpx.CodeValidationError, message: "invalid account type"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			mux := http.NewServeMux()
+			account.NewHandler(nil, nil).Register(mux)
+			handler := middleware.GetUser(func(context.Context, string) (string, error) {
+				return "01a1c6de-805e-7b0c-a1b1-b851a9c38ccd", nil
+			})(mux)
+			r := httptest.NewRequest(http.MethodPost, "/accounts", strings.NewReader(tt.body)).WithContext(t.Context())
+			r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
+			w := httptest.NewRecorder()
+			handler.ServeHTTP(w, r)
+			if w.Code != http.StatusBadRequest {
+				t.Fatalf("status = %d, want 400; body = %s", w.Code, w.Body.String())
+			}
+			if got := w.Header().Get("Cache-Control"); got != "no-store" {
+				t.Errorf("Cache-Control = %q, want no-store", got)
+			}
+			var got map[string]map[string]string
+			if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil {
+				t.Fatal(err)
+			}
+			want := map[string]map[string]string{"error": {"code": tt.code, "message": tt.message}}
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("response = %v, want %v", got, want)
+			}
+		})
+	}
+}
+
+func TestHandler_CreateAccountErrors(t *testing.T) {
+	t.Parallel()
+	for _, tt := range []struct {
+		name            string
+		unauthenticated bool
+		storeErr        error
+		status          int
+		code            string
+		message         string
+	}{
+		{name: "unauthenticated", unauthenticated: true, status: http.StatusUnauthorized, code: httpx.CodeUnauthenticated, message: "authentication required"},
+		{name: "store error", storeErr: errors.New("database password must not leak"), status: http.StatusInternalServerError, code: httpx.CodeInternalError, message: "internal server error"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			store := &accountStoreStub{err: tt.storeErr}
+			mux := http.NewServeMux()
+			logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+			account.NewHandler(account.NewService(store), logger).Register(mux)
+			handler := middleware.GetUser(func(context.Context, string) (string, error) {
+				return "01a1c6de-805e-7b0c-a1b1-b851a9c38ccd", nil
+			})(mux)
+			r := httptest.NewRequest(http.MethodPost, "/accounts", strings.NewReader(`{"name":"Travel","account_type":"savings"}`)).WithContext(t.Context())
+			if !tt.unauthenticated {
+				r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
+			}
+			w := httptest.NewRecorder()
+			handler.ServeHTTP(w, r)
+			if w.Code != tt.status {
+				t.Fatalf("status = %d, want %d; body = %s", w.Code, tt.status, w.Body.String())
+			}
+			if tt.unauthenticated && store.ctx != nil {
+				t.Error("unauthenticated request reached store")
+			}
+			var got map[string]map[string]string
+			if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil {
+				t.Fatal(err)
+			}
+			want := map[string]map[string]string{"error": {"code": tt.code, "message": tt.message}}
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("response = %v, want %v", got, want)
+			}
+		})
+	}
+}
 
 func TestHandler_GetAccount(t *testing.T) {
 	t.Parallel()

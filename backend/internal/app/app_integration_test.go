@@ -5,6 +5,7 @@ package app_test
 import (
 	"backend/internal/app"
 	"backend/internal/config"
+	"backend/internal/modules/account"
 	"backend/internal/modules/user"
 	"backend/internal/testutil"
 	"encoding/json"
@@ -60,11 +61,21 @@ func TestApp_AuthLifecycle(t *testing.T) {
 		t.Error("accounts response must not be cached")
 	}
 	mainID := accountBody.Data[0].ID
-	var savingsID string
-	if err := pool.QueryRow(t.Context(), `INSERT INTO accounts (user_id, name, type, sort_order)
-		VALUES ($1, 'Savings', 'savings', 1) RETURNING id`, u.ID).Scan(&savingsID); err != nil {
+	created := authRequest(t, h, "POST", "/api/accounts", `{"name":" Savings ","account_type":" savings "}`, cookie, http.StatusCreated)
+	var createdBody struct {
+		Data account.Account `json:"data"`
+	}
+	if err := json.Unmarshal(created.Body.Bytes(), &createdBody); err != nil {
 		t.Fatal(err)
 	}
+	savings := createdBody.Data
+	if savings.ID == "" || savings.UserID != u.ID || savings.Name != "Savings" || savings.Type != account.Savings || savings.SortOrder != 1 || savings.Balance != 0 || savings.CreatedAt.IsZero() {
+		t.Errorf("created account = %+v, unexpected fields", savings)
+	}
+	if created.Header().Get("Cache-Control") != "no-store" {
+		t.Error("created account response must not be cached")
+	}
+	savingsID := savings.ID
 	for _, tt := range []struct {
 		name string
 		path string

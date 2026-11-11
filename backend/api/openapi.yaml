@@ -209,6 +209,91 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
   /accounts:
+    post:
+      tags: [Accounts]
+      operationId: createAccount
+      summary: Create an account for the current user
+      description: |
+        Requires a valid, unexpired session. Creates a sub_account or savings
+        account owned by the current user, with a zero balance and the next
+        sort_order. Main accounts cannot be created through this endpoint.
+        Ownership, balance, and sort_order are assigned by the server and must
+        not be supplied in the request. Responses from the account handler
+        and authentication guard include Cache-Control: no-store; errors from
+        shared middleware may omit this header.
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequest'
+            example:
+              name: Travel
+              account_type: savings
+      responses:
+        '201':
+          description: Account created for the current user.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        '400':
+          description: |
+            INVALID_JSON for malformed JSON, unknown fields, type mismatches,
+            multiple JSON values, empty bodies, or bodies exceeding 1 MiB.
+            VALIDATION_ERROR for invalid field values or missing required fields.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidJSON:
+                  value:
+                    error:
+                      code: INVALID_JSON
+                      message: Invalid JSON body
+                validationError:
+                  value:
+                    error:
+                      code: VALIDATION_ERROR
+                      message: name is required
+        '401':
+          description: Authentication required (UNAUTHENTICATED).
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: UNAUTHENTICATED
+                  message: authentication required
+        '403':
+          $ref: '#/components/responses/CrossOriginForbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          description: |
+            Unexpected server error (INTERNAL_ERROR). Account handler responses
+            include Cache-Control: no-store; shared middleware errors may omit it.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: INTERNAL_ERROR
+                  message: internal server error
     get:
       tags: [Accounts]
       operationId: getAccounts
@@ -410,6 +495,23 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/User'
+    CreateAccountRequest:
+      type: object
+      additionalProperties: false
+      required: [name, account_type]
+      properties:
+        name:
+          type: string
+          description: |
+            Surrounding whitespace is trimmed before validation. The result
+            must contain 3 to 32 ASCII letters or spaces and must not be empty.
+          example: Travel
+        account_type:
+          type: string
+          description: |
+            Surrounding whitespace is trimmed before validation. The result
+            must be sub_account or savings (case-sensitive); main is rejected.
+          example: savings
     Account:
       type: object
       required: [id, user_id, name, account_type, sort_order, balance, created_at]

@@ -5,8 +5,9 @@ import (
 )
 
 type accountStore interface {
-	ListByUserID(ctx context.Context, userID string) ([]Account, error)
-	GetByID(ctx context.Context, ID, userID string) (Account, error)
+	ListByUserID(context.Context, string) ([]Account, error)
+	GetByID(context.Context, string, string) (Account, error)
+	Create(context.Context, string, *CreateAccountDTO) (Account, error)
 }
 
 type Service struct{ accountStore accountStore }
@@ -19,4 +20,8 @@ func (s *Service) GetUserAccounts(ctx context.Context, userID string) ([]Account
 
 func (s *Service) GetUserAccount(ctx context.Context, ID, userID string) (Account, error) {
 	return s.accountStore.GetByID(ctx, ID, userID)
+}
+
+func (s *Service) CreateUserAccount(ctx context.Context, userID string, data *CreateAccountDTO) (Account, error) {
+	return s.accountStore.Create(ctx, userID, data)
 }
