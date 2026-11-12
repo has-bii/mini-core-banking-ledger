@@ -44,9 +44,8 @@ func WriteValidationError(w http.ResponseWriter, errs validation.Errors) {
 }
 
 func WriteDecodeError(w http.ResponseWriter, err error) {
-	var maxBytesErr *http.MaxBytesError
 	var typeErr *json.UnmarshalTypeError
-	if errors.As(err, &maxBytesErr) {
+	if _, ok := errors.AsType[*http.MaxBytesError](err); ok {
 		WriteError(w, http.StatusRequestEntityTooLarge, CodePayloadTooLarge, "Request body must not exceed 1 MiB.")
 		return
 	}
