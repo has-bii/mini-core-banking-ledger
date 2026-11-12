@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"backend/internal/platform/apperror"
 	"backend/internal/platform/transport/httpx"
 	"context"
 	"net/http"
@@ -25,7 +26,7 @@ func GetUser(lookupUserID func(context.Context, string) (string, error)) Middlew
 
 			userID, err := lookupUserID(r.Context(), cookie.Value)
 			if err != nil {
-				httpx.WriteError(w, http.StatusInternalServerError, httpx.CodeInternalError, "internal error")
+				httpx.HandleError(w, r, apperror.New(apperror.CodeInternalError, "session lookup failed", nil, err), nil)
 				return
 			}
 			if userID == "" {
@@ -43,7 +44,7 @@ func AuthGuard(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if id, ok := UserIDFromContext(r.Context()); !ok || id == "" {
 			httpx.NoStoreHeader(w)
-			httpx.WriteError(w, http.StatusUnauthorized, httpx.CodeUnauthenticated, "authentication required")
+			httpx.HandleError(w, r, apperror.New(apperror.CodeUnauthenticated, "authentication required", nil, nil), nil)
 			return
 		}
 		next.ServeHTTP(w, r)

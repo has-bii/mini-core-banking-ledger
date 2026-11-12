@@ -1,6 +1,7 @@
 package httpx
 
 import (
+	"backend/internal/platform/apperror"
 	"backend/internal/platform/validation"
 	"bytes"
 	"encoding/json"
@@ -31,42 +32,47 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 }
 
 func WriteError(w http.ResponseWriter, status int, code, msg string, details ...validation.FieldError) {
-	body := struct {
-		Code    string                  `json:"code"`
-		Message string                  `json:"message"`
-		Details []validation.FieldError `json:"details,omitempty"`
-	}{Code: code, Message: msg, Details: details}
-	writeJSON(w, status, map[string]any{"error": body})
+	var fields any
+	if len(details) > 0 {
+		fields = details
+	}
+	writeJSON(w, status, map[string]any{"error": apperror.New(code, msg, fields, nil)})
 }
 
 func WriteValidationError(w http.ResponseWriter, errs validation.Errors) {
-	WriteError(w, http.StatusBadRequest, CodeValidationError, "Some fields are invalid.", errs...)
+	WriteError(w, http.StatusBadRequest, apperror.CodeValidationError, "Some fields are invalid.", errs...)
+}
+
+func ValidationError(errs validation.Errors) error {
+	return apperror.New(apperror.CodeValidationError, "Some fields are invalid.", errs, errs)
 }
 
 func WriteDecodeError(w http.ResponseWriter, err error) {
+	appErr := DecodeError(err)
+	writeJSON(w, errorStatus(appErr.Code), map[string]any{"error": appErr})
+}
+
+func DecodeError(err error) *apperror.Error {
 	var typeErr *json.UnmarshalTypeError
 	if _, ok := errors.AsType[*http.MaxBytesError](err); ok {
-		WriteError(w, http.StatusRequestEntityTooLarge, CodePayloadTooLarge, "Request body must not exceed 1 MiB.")
-		return
+		return apperror.New(apperror.CodePayloadTooLarge, "Request body must not exceed 1 MiB.", nil, err)
 	}
 	if errors.As(err, &typeErr) && typeErr.Field != "" {
 		message := fmt.Sprintf("Field %q has an invalid type.", typeErr.Field)
 		if typeErr.Type.Kind() == reflect.String {
 			message = fmt.Sprintf("Field %q must be a string.", typeErr.Field)
 		}
-		WriteError(w, http.StatusBadRequest, CodeInvalidJSON, message, validation.FieldError{
+		return apperror.New(apperror.CodeInvalidJSON, message, []validation.FieldError{{
 			Field: typeErr.Field, Code: validation.CodeInvalidType, Message: message,
-		})
-		return
+		}}, err)
 	}
 	// encoding/json exposes unknown fields only through its quoted error message.
 	if quoted, ok := strings.CutPrefix(err.Error(), "json: unknown field "); ok {
 		if field, unquoteErr := strconv.Unquote(quoted); unquoteErr == nil {
 			message := fmt.Sprintf("Field %q is not allowed.", field)
-			WriteError(w, http.StatusBadRequest, CodeInvalidJSON, message, validation.FieldError{
+			return apperror.New(apperror.CodeInvalidJSON, message, []validation.FieldError{{
 				Field: field, Code: validation.CodeUnknownField, Message: message,
-			})
-			return
+			}}, err)
 		}
 	}
 	message := "Request body contains malformed JSON."
@@ -78,7 +84,7 @@ func WriteDecodeError(w http.ResponseWriter, err error) {
 	case errors.Is(err, ErrSingleJSONValueRequired):
 		message = "Request body must contain one JSON object."
 	}
-	WriteError(w, http.StatusBadRequest, CodeInvalidJSON, message)
+	return apperror.New(apperror.CodeInvalidJSON, message, nil, err)
 }
 
 func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {

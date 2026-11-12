@@ -15,8 +15,8 @@
 ### Handlers
 
 - Decode and validate request payloads before calling a service.
-- Translate domain errors into HTTP responses.
-- Log unexpected errors and return a generic response without leaking internals.
+- Return errors before writing a response; register error-returning handlers through `httpx.Adapt`.
+- Let the HTTP adapter map application codes to statuses, log unexpected errors once, and return safe JSON responses.
 
 ### Services
 
@@ -25,6 +25,7 @@
 - Use `postgres.InTx` with a pool for atomic workflows; construct participating stores with the callback's `pgx.Tx`.
 - Keep expensive work that does not need a transaction, such as password hashing, outside it.
 - Return safe domain models or DTOs; never expose password hashes.
+- Translate expected domain failures into `apperror.Error`, preserving the original cause. Propagate unexpected errors with useful `%w` context.
 
 ### Stores
 
@@ -42,7 +43,8 @@
 
 ```text
 internal/platform/
-├── transport/httpx/          # JSON decoding, responses, and error codes
+├── apperror/                 # Client-safe application errors and stable public codes
+├── transport/httpx/          # JSON decoding, responses, error adapter, and HTTP status mapping
 │   └── middleware/           # Chaining, recovery, logging, CORS, auth, rate limiting
 ├── storage/
 │   ├── postgres/             # Connection pool, DBTX, and transaction lifecycle
@@ -118,18 +120,20 @@ A rejected password write must leave no user behind. The email pre-check is only
 | Layer | Validates | Failure handling |
 | --- | --- | --- |
 | **Handler** | JSON shape, required fields, lengths, basic formats | Return `400 Bad Request` |
-| **Service** | Business rules, permissions, application state | Return domain errors |
+| **Service** | Business rules, permissions, application state | Translate expected domain failures into application errors |
 | **Store / database** | Unique keys, foreign keys, not-null and other integrity constraints | Translate known violations; wrap unexpected failures |
 
 Request validation uses `validation.FieldError` (`field`, `code`, `message`) and `validation.Errors`, an ordered collection that also implements `error`. Modules use `go-playground/validator/v10` built-in tags and translate its failures into these types; no custom validation rules are registered. Email follows the library's `email` rule. Password validation uses built-in `Var` checks on a trimmed copy for `required` and on `[]byte(password)` for `max=72`, so whitespace-only passwords are rejected and bcrypt's byte limit is enforced without modifying the password. Modules own normalization and error messages; platform validation types contain no HTTP details. DTO validation reports all invalid fields in declaration order, with only the first failed rule per field. Account-store defensive validation preserves these errors with `%w`; callers can recover them with `errors.As` rather than receiving a misleading account-type error.
 
-`httpx.DecodeJSON` accepts exactly one JSON object with no unknown fields and enforces a 1 MiB limit over the complete body, including trailing data. Handlers use `WriteDecodeError` for safe, actionable decode responses and `WriteValidationError` for field validation. Invalid bodies and fields return `400`; oversized bodies return `413 PAYLOAD_TOO_LARGE`. The existing `error.code` and `error.message` envelope gains optional `details` for field-specific failures. Body-wide failures omit `details`. Do not echo submitted values or raw decoder errors, and do not make clients parse message text. See [OpenAPI](../api/openapi.yaml) for the complete contract and stable field codes.
+`httpx.DecodeJSON` accepts exactly one JSON object with no unknown fields and enforces a 1 MiB limit over the complete body, including trailing data. Handlers return `httpx.DecodeError` for safe, actionable decode responses and `httpx.ValidationError` for field validation; the adapter writes the response. Invalid bodies and fields return `400`; oversized bodies return `413 PAYLOAD_TOO_LARGE`. The existing `error.code` and `error.message` envelope gains optional `details` for field-specific failures. Body-wide failures omit `details`. Do not echo submitted values or raw decoder errors, and do not make clients parse message text. See [OpenAPI](../api/openapi.yaml) for the complete contract and stable field codes.
 
 Errors travel upward through normal Go returns, not exceptions:
 
 1. The store translates recognized database failures into domain errors.
-2. The service returns or wraps errors with `%w`, preserving `errors.Is` and `errors.As` behavior.
-3. The handler maps domain errors to appropriate HTTP status codes, such as `409 Conflict` for an email already taken. Unexpected failures are logged and become a generic `500 Internal Server Error`.
+2. Domain sentinels stay beside their domains. Services translate expected failures into `apperror.Error` (`Code`, `Message`, optional `Details`) with a private cause accessible through `Unwrap`. Unexpected errors propagate, optionally wrapped with `%w`; `errors.Is` and `errors.As` continue to work.
+3. Handlers return errors to `httpx.Adapt`; standard middleware can call `httpx.HandleError`. The transport maps known public codes to statuses, such as `409 Conflict` for `EMAIL_TAKEN`. Unknown codes, internal errors, and non-serializable details are logged and become `500 INTERNAL_ERROR` with message `internal error`; underlying causes never enter JSON.
+
+Top-level public codes live in `apperror`; existing string values remain stable. Field-validation codes remain in `validation`. Application error messages and details must be client-safe, and details must be JSON-serializable. Validation continues to use ordered field-error arrays; other application errors may supply other JSON values. HTTP status codes belong only to the transport. A handler must not return an error after committing headers or a body; the adapter cannot replace an already-written response.
 
 Data flows upward as **database rows → store models → service results → handler JSON**. Keep sensitive persistence fields out of public responses.
 

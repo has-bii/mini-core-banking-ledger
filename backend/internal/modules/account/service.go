@@ -1,7 +1,10 @@
 package account
 
 import (
+	"backend/internal/platform/apperror"
+	"backend/internal/platform/validation"
 	"context"
+	"errors"
 )
 
 type accountStore interface {
@@ -19,9 +22,26 @@ func (s *Service) GetUserAccounts(ctx context.Context, userID string) ([]Account
 }
 
 func (s *Service) GetUserAccount(ctx context.Context, ID, userID string) (Account, error) {
-	return s.accountStore.GetByID(ctx, ID, userID)
+	a, err := s.accountStore.GetByID(ctx, ID, userID)
+	switch {
+	case errors.Is(err, validation.ErrInvalidUUID):
+		return Account{}, apperror.New(apperror.CodeValidationError, "invalid account ID", nil, err)
+	case errors.Is(err, ErrNotFound):
+		return Account{}, apperror.New(apperror.CodeNotFound, ErrNotFound.Error(), nil, err)
+	default:
+		return a, err
+	}
 }
 
 func (s *Service) CreateUserAccount(ctx context.Context, userID string, data *CreateAccountDTO) (Account, error) {
-	return s.accountStore.Create(ctx, userID, data)
+	a, err := s.accountStore.Create(ctx, userID, data)
+	var fields validation.Errors
+	switch {
+	case errors.As(err, &fields):
+		return Account{}, apperror.New(apperror.CodeValidationError, "Some fields are invalid.", fields, err)
+	case errors.Is(err, ErrNotFound):
+		return Account{}, apperror.New(apperror.CodeNotFound, ErrNotFound.Error(), nil, err)
+	default:
+		return a, err
+	}
 }

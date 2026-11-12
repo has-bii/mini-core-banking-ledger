@@ -6,7 +6,6 @@ import (
 	"backend/internal/platform/transport/httpx"
 	"backend/internal/platform/transport/httpx/middleware"
 	"context"
-	"errors"
 	"log/slog"
 	"net/http"
 	"time"
@@ -30,35 +29,28 @@ func NewHandler(svc authService, log *slog.Logger, secureCookie bool) *Handler {
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
-	mux.HandleFunc("POST /auth/register", h.register)
-	mux.HandleFunc("POST /auth/login", h.login)
-	mux.HandleFunc("POST /auth/logout", h.logout)
-	mux.Handle("GET /auth/me", middleware.AuthGuard(http.HandlerFunc(h.me)))
+	mux.HandleFunc("POST /auth/register", httpx.Adapt(h.register, h.log))
+	mux.HandleFunc("POST /auth/login", httpx.Adapt(h.login, h.log))
+	mux.HandleFunc("POST /auth/logout", httpx.Adapt(h.logout, h.log))
+	mux.Handle("GET /auth/me", middleware.AuthGuard(httpx.Adapt(h.me, h.log)))
 }
 
-func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) me(w http.ResponseWriter, r *http.Request) error {
 	httpx.NoStoreHeader(w)
 	userID, _ := middleware.UserIDFromContext(r.Context())
 	u, err := h.svc.Me(r.Context(), userID)
 	if err != nil {
-		if errors.Is(err, ErrUnauthenticated) {
-			httpx.WriteError(w, http.StatusUnauthorized, httpx.CodeUnauthenticated, ErrUnauthenticated.Error())
-		} else {
-			h.log.Error("current user lookup failed", "err", err)
-			httpx.WriteError(w, http.StatusInternalServerError, httpx.CodeInternalError, "internal error")
-		}
-		return
+		return err
 	}
 	httpx.WriteJSON(w, http.StatusOK, u)
+	return nil
 }
 
-func (h *Handler) logout(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) logout(w http.ResponseWriter, r *http.Request) error {
 	httpx.NoStoreHeader(w)
 	if cookie, err := r.Cookie("session"); err == nil {
 		if err := h.svc.Logout(r.Context(), cookie.Value); err != nil {
-			h.log.Error("logout failed", "err", err)
-			httpx.WriteError(w, http.StatusInternalServerError, httpx.CodeInternalError, "internal error")
-			return
+			return err
 		}
 	}
 
@@ -68,29 +60,22 @@ func (h *Handler) logout(w http.ResponseWriter, r *http.Request) {
 		Expires: time.Unix(1, 0).UTC(), MaxAge: -1,
 	})
 	w.WriteHeader(http.StatusNoContent)
+	return nil
 }
 
-func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) login(w http.ResponseWriter, r *http.Request) error {
 	httpx.NoStoreHeader(w)
 	var payload LoginDTO
 	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
-		httpx.WriteDecodeError(w, err)
-		return
+		return httpx.DecodeError(err)
 	}
 	if errs := payload.Validate(); len(errs) > 0 {
-		httpx.WriteValidationError(w, errs)
-		return
+		return httpx.ValidationError(errs)
 	}
 
 	u, created, token, err := h.svc.Login(r.Context(), payload)
 	if err != nil {
-		if errors.Is(err, ErrInvalidCredentials) {
-			httpx.WriteError(w, http.StatusUnauthorized, httpx.CodeInvalidCredentials, ErrInvalidCredentials.Error())
-		} else {
-			h.log.Error("login failed", "err", err)
-			httpx.WriteError(w, http.StatusInternalServerError, httpx.CodeInternalError, "internal error")
-		}
-		return
+		return err
 	}
 
 	http.SetCookie(w, &http.Cookie{
@@ -99,30 +84,22 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 		Expires: created.ExpiresAt, MaxAge: int(session.Lifetime.Seconds()),
 	})
 	httpx.WriteJSON(w, http.StatusOK, u)
+	return nil
 }
 
-func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) register(w http.ResponseWriter, r *http.Request) error {
 	var payload RegisterDTO
-
 	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
-		httpx.WriteDecodeError(w, err)
-		return
+		return httpx.DecodeError(err)
 	}
 	if errs := payload.Validate(); len(errs) > 0 {
-		httpx.WriteValidationError(w, errs)
-		return
+		return httpx.ValidationError(errs)
 	}
 
 	u, err := h.svc.Register(r.Context(), payload)
 	if err != nil {
-		switch {
-		case errors.Is(err, user.ErrEmailTaken):
-			httpx.WriteError(w, http.StatusConflict, httpx.CodeEmailTaken, err.Error())
-		default:
-			h.log.Error("registration failed", "err", err)
-			httpx.WriteError(w, http.StatusInternalServerError, httpx.CodeInternalError, "internal error")
-		}
-		return
+		return err
 	}
 	httpx.WriteJSON(w, http.StatusCreated, u)
+	return nil
 }

@@ -2,7 +2,7 @@ package account_test
 
 import (
 	"backend/internal/modules/account"
-	"backend/internal/platform/transport/httpx"
+	"backend/internal/platform/apperror"
 	"backend/internal/platform/transport/httpx/middleware"
 	"backend/internal/platform/validation"
 	"context"
@@ -84,8 +84,8 @@ func TestHandler_CreateAccountErrors(t *testing.T) {
 		code            string
 		message         string
 	}{
-		{name: "unauthenticated", unauthenticated: true, status: http.StatusUnauthorized, code: httpx.CodeUnauthenticated, message: "authentication required"},
-		{name: "store error", storeErr: errors.New("database password must not leak"), status: http.StatusInternalServerError, code: httpx.CodeInternalError, message: "internal server error"},
+		{name: "unauthenticated", unauthenticated: true, status: http.StatusUnauthorized, code: apperror.CodeUnauthenticated, message: "authentication required"},
+		{name: "store error", storeErr: errors.New("database password must not leak"), status: http.StatusInternalServerError, code: apperror.CodeInternalError, message: "internal error"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
@@ -136,10 +136,10 @@ func TestHandler_GetAccount(t *testing.T) {
 		message         string
 	}{
 		{name: "returns account", id: id, status: http.StatusOK},
-		{name: "invalid account ID", id: "invalid", serviceErr: fmt.Errorf("account by id: ID %w", validation.ErrInvalidUUID), status: http.StatusBadRequest, code: httpx.CodeValidationError, message: "invalid account ID"},
-		{name: "missing or unowned account", id: id, serviceErr: fmt.Errorf("lookup: %w", account.ErrNotFound), status: http.StatusNotFound, code: httpx.CodeNotFound, message: "account not found"},
-		{name: "store error", id: id, serviceErr: errors.New("database connection timeout"), status: http.StatusInternalServerError, code: httpx.CodeInternalError, message: "internal server error"},
-		{name: "unauthenticated", id: id, unauthenticated: true, status: http.StatusUnauthorized, code: httpx.CodeUnauthenticated, message: "authentication required"},
+		{name: "invalid account ID", id: "invalid", serviceErr: fmt.Errorf("account by id: ID %w", validation.ErrInvalidUUID), status: http.StatusBadRequest, code: apperror.CodeValidationError, message: "invalid account ID"},
+		{name: "missing or unowned account", id: id, serviceErr: fmt.Errorf("lookup: %w", account.ErrNotFound), status: http.StatusNotFound, code: apperror.CodeNotFound, message: "account not found"},
+		{name: "store error", id: id, serviceErr: errors.New("database connection timeout"), status: http.StatusInternalServerError, code: apperror.CodeInternalError, message: "internal error"},
+		{name: "unauthenticated", id: id, unauthenticated: true, status: http.StatusUnauthorized, code: apperror.CodeUnauthenticated, message: "authentication required"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
@@ -269,7 +269,7 @@ func TestHandler_GetAccounts(t *testing.T) {
 					t.Fatal(err)
 				}
 				want := map[string]map[string]string{
-					"error": {"code": httpx.CodeInternalError, "message": "internal server error"},
+					"error": {"code": apperror.CodeInternalError, "message": "internal error"},
 				}
 				if !reflect.DeepEqual(got, want) {
 					t.Errorf("response = %v, want %v", got, want)

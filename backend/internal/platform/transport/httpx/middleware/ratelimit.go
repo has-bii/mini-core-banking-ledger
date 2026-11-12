@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"backend/internal/platform/apperror"
 	"backend/internal/platform/transport/httpx"
 	"net/http"
 	"sync"
@@ -54,7 +55,7 @@ func (tb *TokenBucket) Middleware() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !tb.allow() {
-				httpx.WriteError(w, http.StatusTooManyRequests, httpx.CodeTooManyRequests, "too many requests")
+				httpx.HandleError(w, r, apperror.New(apperror.CodeTooManyRequests, "too many requests", nil, nil), nil)
 				return
 			}
 			next.ServeHTTP(w, r)

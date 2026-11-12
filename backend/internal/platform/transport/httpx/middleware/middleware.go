@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"backend/internal/platform/apperror"
 	"backend/internal/platform/transport/httpx"
 	"log/slog"
 	"net/http"
@@ -24,7 +25,7 @@ func Recoverer(log *slog.Logger) Middleware {
 			defer func() {
 				if v := recover(); v != nil {
 					log.Error("panic", "value", v, "path", r.URL.Path, "stack", string(debug.Stack()))
-					httpx.WriteError(w, http.StatusInternalServerError, httpx.CodeInternalError, "internal error")
+					httpx.WriteError(w, http.StatusInternalServerError, apperror.CodeInternalError, "internal error")
 				}
 			}()
 			next.ServeHTTP(w, r)

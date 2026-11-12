@@ -2,6 +2,7 @@ package account_test
 
 import (
 	"backend/internal/modules/account"
+	"backend/internal/platform/apperror"
 	"backend/internal/platform/validation"
 	"context"
 	"errors"
@@ -32,6 +33,17 @@ func (s *accountStoreStub) GetByID(ctx context.Context, id, userID string) (acco
 func (s *accountStoreStub) Create(ctx context.Context, userID string, data *account.CreateAccountDTO) (account.Account, error) {
 	s.ctx, s.userID, s.data = ctx, userID, data
 	return s.account, s.err
+}
+
+func TestService_GetUserAccountApplicationError(t *testing.T) {
+	t.Parallel()
+	cause := errors.New("lookup failed")
+	store := &accountStoreStub{err: errors.Join(cause, account.ErrNotFound)}
+	_, err := account.NewService(store).GetUserAccount(t.Context(), "id", "user")
+	var appErr *apperror.Error
+	if !errors.As(err, &appErr) || appErr.Code != "NOT_FOUND" || appErr.Message != "account not found" || !errors.Is(err, cause) {
+		t.Fatalf("GetUserAccount() error = %v; want NOT_FOUND preserving cause", err)
+	}
 }
 
 func TestService_GetUserAccount(t *testing.T) {
@@ -122,6 +134,29 @@ func TestService_GetUserAccounts(t *testing.T) {
 			}
 			if store.ctx != ctx {
 				t.Error("ListByUserID() did not receive the original context")
+			}
+		})
+	}
+}
+
+func TestService_CreateUserAccountApplicationErrors(t *testing.T) {
+	t.Parallel()
+	fields := validation.Errors{{Field: "name", Code: "REQUIRED", Message: "Name is required."}}
+	for _, tt := range []struct {
+		name    string
+		cause   error
+		code    string
+		details any
+	}{
+		{name: "missing owner", cause: account.ErrNotFound, code: "NOT_FOUND"},
+		{name: "invalid fields", cause: fields, code: "VALIDATION_ERROR", details: fields},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			_, err := account.NewService(&accountStoreStub{err: tt.cause}).CreateUserAccount(t.Context(), "user", &account.CreateAccountDTO{})
+			var appErr *apperror.Error
+			if !errors.As(err, &appErr) || appErr.Code != tt.code || !reflect.DeepEqual(appErr.Details, tt.details) || appErr.Unwrap() == nil {
+				t.Fatalf("CreateUserAccount() error = %v; want %s with details %+v and cause", err, tt.code, tt.details)
 			}
 		})
 	}

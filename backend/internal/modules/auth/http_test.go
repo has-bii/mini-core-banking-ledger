@@ -4,6 +4,7 @@ import (
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
+	"backend/internal/platform/apperror"
 	"backend/internal/platform/transport/httpx/middleware"
 	"context"
 	"encoding/json"
@@ -144,7 +145,7 @@ func TestHandler_MeRequiresResolvedIdentity(t *testing.T) {
 func TestHandler_DeletedUserAfterResolution(t *testing.T) {
 	t.Parallel()
 	mux := http.NewServeMux()
-	auth.NewHandler(authServiceStub{err: auth.ErrUnauthenticated}, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+	auth.NewHandler(authServiceStub{err: apperror.New(apperror.CodeUnauthenticated, auth.ErrUnauthenticated.Error(), nil, auth.ErrUnauthenticated)}, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
 	h := middleware.GetUser(func(context.Context, string) (string, error) { return "deleted-user", nil })(mux)
 	r := httptest.NewRequest("GET", "/auth/me", nil)
 	r.AddCookie(&http.Cookie{Name: "session", Value: "raw-token"})

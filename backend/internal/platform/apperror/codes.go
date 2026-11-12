@@ -1,4 +1,4 @@
-package httpx
+package apperror
 
 const (
 	CodeInternalError       = "INTERNAL_ERROR"
@@ -6,8 +6,8 @@ const (
 	CodeInvalidJSON         = "INVALID_JSON"
 	CodePayloadTooLarge     = "PAYLOAD_TOO_LARGE"
 	CodeValidationError     = "VALIDATION_ERROR"
-	CodeUnauthenticated     = "UNAUTHENTICATED" // HTTP 401: identity is missing or invalid.
-	CodeForbidden           = "FORBIDDEN"       // HTTP 403: authenticated but lacks permission.
+	CodeUnauthenticated     = "UNAUTHENTICATED"
+	CodeForbidden           = "FORBIDDEN"
 	CodeInvalidCredentials  = "INVALID_CREDENTIALS"
 	CodeEmailTaken          = "EMAIL_TAKEN"
 	CodeTooManyRequests     = "TOO_MANY_REQUESTS"
