@@ -1,34 +1,44 @@
 package account
 
 import (
-	"regexp"
+	"errors"
 	"strings"
+
+	"github.com/go-playground/validator/v10"
 )
 
-var accountNamePattern = regexp.MustCompile(`^[a-zA-Z ]{3,32}$`)
+var accountValidator = validator.New(validator.WithRequiredStructEnabled())
 
 type CreateAccountDTO struct {
-	Name string      `json:"name"`
-	Type AccountType `json:"account_type"`
+	Name string      `json:"name" validate:"required,min=3,max=32,alphaspace"`
+	Type AccountType `json:"account_type" validate:"oneof=sub_account savings"`
 }
 
 func (p *CreateAccountDTO) Validate() []error {
 	p.Name = strings.TrimSpace(p.Name)
 	p.Type = AccountType(strings.TrimSpace(string(p.Type)))
 
+	err := accountValidator.Struct(p)
+	if err == nil {
+		return nil
+	}
+	var validationErrors validator.ValidationErrors
+	if !errors.As(err, &validationErrors) {
+		return []error{err}
+	}
+
 	var errs []error
-
-	if p.Name == "" {
-		errs = append(errs, ErrNameRequired)
-	} else if !accountNamePattern.MatchString(p.Name) {
-		errs = append(errs, ErrInvalidName)
+	for _, field := range validationErrors {
+		switch field.StructField() {
+		case "Name":
+			if field.Tag() == "required" {
+				errs = append(errs, ErrNameRequired)
+			} else {
+				errs = append(errs, ErrInvalidName)
+			}
+		case "Type":
+			errs = append(errs, ErrInvalidType)
+		}
 	}
-
-	switch p.Type {
-	case SubAccount, Savings:
-	default:
-		errs = append(errs, ErrInvalidType)
-	}
-
 	return errs
 }
