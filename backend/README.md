@@ -93,6 +93,6 @@ No coverage threshold is enforced.
 
 See [api/openapi.yaml](api/openapi.yaml) (OpenAPI 3.0.3) for implemented endpoints, request and response schemas, validation, errors, and session cookies.
 
-Registration, login, and account creation return actionable `400` errors for invalid JSON objects or fields. Field-specific failures include `error.details` entries with JSON field names, stable codes, and messages; clients should use codes instead of parsing message text. Validation reports all invalid fields, first failed rule per field. Bodies exceeding 1 MiB return `413 PAYLOAD_TOO_LARGE`, not `400 INVALID_JSON`.
+Registration, login, and account creation use `go-playground/validator/v10` built-in rules and return actionable `400` errors for invalid JSON objects or fields. Field-specific failures include `error.details` entries with JSON field names, stable codes, and messages; clients should use codes instead of parsing message text. Validation reports all invalid fields, first failed rule per field. Bodies exceeding 1 MiB return `413 PAYLOAD_TOO_LARGE`, not `400 INVALID_JSON`.
 
 See [architecture guidelines](docs/architecture.md) for layer responsibilities, transactions, and validation rules.

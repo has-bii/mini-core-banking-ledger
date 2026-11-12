@@ -465,8 +465,9 @@ components:
           type: string
           description: |
             Surrounding whitespace is trimmed before validation and lookup.
-            Must be a plain email address accepted by Go net/mail.ParseAddress,
-            without a display name. Case is preserved.
+            Must satisfy go-playground/validator/v10's built-in email rule.
+            Display names, unqualified domains, and IP-literal domains are
+            rejected; quoted local parts are permitted. Case is preserved.
           example: alice@example.com
         password:
           type: string

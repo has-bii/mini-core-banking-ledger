@@ -2,37 +2,47 @@ package account
 
 import (
 	"backend/internal/platform/validation"
-	"regexp"
 	"strings"
-	"unicode/utf8"
+
+	"github.com/go-playground/validator/v10"
 )
 
-var accountNamePattern = regexp.MustCompile(`^[A-Za-z ]+$`)
+var accountValidator = validator.New(validator.WithRequiredStructEnabled())
 
 type CreateAccountDTO struct {
-	Name string      `json:"name"`
-	Type AccountType `json:"account_type"`
+	Name string      `json:"name" validate:"required,min=3,max=32,alphaspace"`
+	Type AccountType `json:"account_type" validate:"required,oneof=sub_account savings"`
 }
 
 func (p *CreateAccountDTO) Validate() validation.Errors {
 	p.Name = strings.TrimSpace(p.Name)
 	p.Type = AccountType(strings.TrimSpace(string(p.Type)))
-	var errs validation.Errors
-	switch {
-	case p.Name == "":
-		errs = append(errs, validation.FieldError{Field: "name", Code: validation.CodeRequired, Message: "Name is required."})
-	case utf8.RuneCountInString(p.Name) < 3:
-		errs = append(errs, validation.FieldError{Field: "name", Code: validation.CodeMinLength, Message: "Name must contain at least 3 characters."})
-	case utf8.RuneCountInString(p.Name) > 32:
-		errs = append(errs, validation.FieldError{Field: "name", Code: validation.CodeMaxLength, Message: "Name must contain at most 32 characters."})
-	case !accountNamePattern.MatchString(p.Name):
-		errs = append(errs, validation.FieldError{Field: "name", Code: validation.CodeInvalidFormat, Message: "Name must contain only ASCII letters or spaces."})
+	err := accountValidator.Struct(p)
+	if err == nil {
+		return nil
 	}
-
-	if p.Type == "" {
-		errs = append(errs, validation.FieldError{Field: "account_type", Code: validation.CodeRequired, Message: "Account type is required."})
-	} else if p.Type != SubAccount && p.Type != Savings {
-		errs = append(errs, validation.FieldError{Field: "account_type", Code: validation.CodeInvalidChoice, Message: `Account type must be "sub_account" or "savings".`})
+	var errs validation.Errors
+	// Struct receives the concrete, non-nil DTO above.
+	for _, field := range err.(validator.ValidationErrors) {
+		switch field.StructField() {
+		case "Name":
+			switch field.Tag() {
+			case "required":
+				errs = append(errs, validation.FieldError{Field: "name", Code: validation.CodeRequired, Message: "Name is required."})
+			case "min":
+				errs = append(errs, validation.FieldError{Field: "name", Code: validation.CodeMinLength, Message: "Name must contain at least 3 characters."})
+			case "max":
+				errs = append(errs, validation.FieldError{Field: "name", Code: validation.CodeMaxLength, Message: "Name must contain at most 32 characters."})
+			case "alphaspace":
+				errs = append(errs, validation.FieldError{Field: "name", Code: validation.CodeInvalidFormat, Message: "Name must contain only ASCII letters or spaces."})
+			}
+		case "Type":
+			if field.Tag() == "required" {
+				errs = append(errs, validation.FieldError{Field: "account_type", Code: validation.CodeRequired, Message: "Account type is required."})
+			} else {
+				errs = append(errs, validation.FieldError{Field: "account_type", Code: validation.CodeInvalidChoice, Message: `Account type must be "sub_account" or "savings".`})
+			}
+		}
 	}
 	return errs
 }

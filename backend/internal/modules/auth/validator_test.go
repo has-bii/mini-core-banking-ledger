@@ -34,7 +34,7 @@ func TestRegisterDTO_Validate(t *testing.T) {
 		{"seven multibyte characters", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "ééééééé"}, validation.Errors{passwordShort}, "Alice", "alice@example.com"},
 		{"72 bytes", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: strings.Repeat("é", 36)}, nil, "Alice", "alice@example.com"},
 		{"over 72 bytes", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: strings.Repeat("é", 37)}, validation.Errors{passwordLong}, "Alice", "alice@example.com"},
-		{"password whitespace preserved", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: " password "}, nil, "Alice", "alice@example.com"},
+		{"password whitespace preserved", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: " 123456 "}, nil, "Alice", "alice@example.com"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
@@ -44,6 +44,37 @@ func TestRegisterDTO_Validate(t *testing.T) {
 			}
 			if tt.payload.Name != tt.wantName || tt.payload.Email != tt.wantMail || tt.payload.Password != password {
 				t.Errorf("normalization = %+v, want name %q, email %q and unchanged password", tt.payload, tt.wantName, tt.wantMail)
+			}
+		})
+	}
+}
+
+func TestDTO_EmailValidation(t *testing.T) {
+	t.Parallel()
+	for _, tt := range []struct {
+		name, email string
+		valid       bool
+	}{
+		{"plain address", "alice@example.com", true},
+		{"plus address", "alice+banking@example.com", true},
+		{"quoted local part", `"alice"@example.com`, true},
+		{"unqualified domain", "alice@localhost", false},
+		{"IP literal domain", "alice@[127.0.0.1]", false},
+		{"display name", "Alice <alice@example.com>", false},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			register := auth.RegisterDTO{Name: "Alice", Email: tt.email, Password: "password123"}
+			login := auth.LoginDTO{Email: tt.email, Password: "password123"}
+			var want validation.Errors
+			if !tt.valid {
+				want = validation.Errors{{Field: "email", Code: "INVALID_FORMAT", Message: "Enter a valid email address."}}
+			}
+			if got := register.Validate(); !slices.Equal(got, want) {
+				t.Errorf("RegisterDTO.Validate() = %+v, want %+v", got, want)
+			}
+			if got := login.Validate(); !slices.Equal(got, want) {
+				t.Errorf("LoginDTO.Validate() = %+v, want %+v", got, want)
 			}
 		})
 	}
@@ -71,6 +102,7 @@ func TestLoginDTO_Validate(t *testing.T) {
 		{"71 bytes", "alice@example.com", strings.Repeat("a", 71), nil},
 		{"72 bytes", "alice@example.com", strings.Repeat("é", 36), nil},
 		{"73 bytes", "alice@example.com", strings.Repeat("a", 73), validation.Errors{passwordLong}},
+		{"byte limit includes whitespace", "alice@example.com", strings.Repeat("a", 72) + " ", validation.Errors{passwordLong}},
 		{"over 72 bytes multibyte", "alice@example.com", strings.Repeat("é", 37), validation.Errors{passwordLong}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {

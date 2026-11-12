@@ -48,7 +48,7 @@ internal/platform/
 │   ├── postgres/             # Connection pool, DBTX, and transaction lifecycle
 │   └── redis/                # Redis connection setup
 ├── observability/logger/     # Logger setup
-└── validation/               # Field errors, email and UUID validation
+└── validation/               # Field errors and UUID validation
 ```
 
 Platform packages must not import `internal/modules`. Authentication middleware accepts a user-ID lookup function; `app.New` adapts the session service, translating missing or expired sessions into an empty user ID with no error. Other lookup errors remain errors and produce a generic `500` response. User-context helpers live beside authentication middleware.
@@ -121,7 +121,7 @@ A rejected password write must leave no user behind. The email pre-check is only
 | **Service** | Business rules, permissions, application state | Return domain errors |
 | **Store / database** | Unique keys, foreign keys, not-null and other integrity constraints | Translate known violations; wrap unexpected failures |
 
-Request validation uses `validation.FieldError` (`field`, `code`, `message`) and `validation.Errors`, an ordered collection that also implements `error`. Modules own their rules and normalization; platform validation types contain no HTTP details. DTO validation reports all invalid fields in declaration order, with only the first failed rule per field. Account-store defensive validation preserves these errors with `%w`; callers can recover them with `errors.As` rather than receiving a misleading account-type error.
+Request validation uses `validation.FieldError` (`field`, `code`, `message`) and `validation.Errors`, an ordered collection that also implements `error`. Modules use `go-playground/validator/v10` built-in tags and translate its failures into these types; no custom validation rules are registered. Email follows the library's `email` rule. Password validation uses built-in `Var` checks on a trimmed copy for `required` and on `[]byte(password)` for `max=72`, so whitespace-only passwords are rejected and bcrypt's byte limit is enforced without modifying the password. Modules own normalization and error messages; platform validation types contain no HTTP details. DTO validation reports all invalid fields in declaration order, with only the first failed rule per field. Account-store defensive validation preserves these errors with `%w`; callers can recover them with `errors.As` rather than receiving a misleading account-type error.
 
 `httpx.DecodeJSON` accepts exactly one JSON object with no unknown fields and enforces a 1 MiB limit over the complete body, including trailing data. Handlers use `WriteDecodeError` for safe, actionable decode responses and `WriteValidationError` for field validation. Invalid bodies and fields return `400`; oversized bodies return `413 PAYLOAD_TOO_LARGE`. The existing `error.code` and `error.message` envelope gains optional `details` for field-specific failures. Body-wide failures omit `details`. Do not echo submitted values or raw decoder errors, and do not make clients parse message text. See [OpenAPI](../api/openapi.yaml) for the complete contract and stable field codes.
 
