@@ -67,7 +67,7 @@ func (s *Store) Create(ctx context.Context, userID string, data *CreateAccountDT
 	}
 
 	if errs := data.Validate(); len(errs) > 0 {
-		return Account{}, ErrInvalidType
+		return Account{}, fmt.Errorf("create account: %w", errs)
 	}
 
 	var a Account

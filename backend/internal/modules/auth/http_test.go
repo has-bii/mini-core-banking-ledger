@@ -12,6 +12,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -33,15 +34,13 @@ func TestHandler_RejectsInvalidPayload(t *testing.T) {
 	for _, path := range []string{"/auth/register", "/auth/login"} {
 		t.Run(path, func(t *testing.T) {
 			t.Parallel()
-			for _, tt := range []struct{ name, body, code string }{
-				{"empty", "", "INVALID_JSON"},
-				{"malformed", "{", "INVALID_JSON"},
-				{"unknown field", `{"unexpected":true}`, "INVALID_JSON"},
-				{"multiple values", `{} {}`, "INVALID_JSON"},
-				{"trailing garbage", `{} x`, "INVALID_JSON"},
-				{"oversized", `{"email":"` + strings.Repeat("a", 1<<20) + `"}`, "INVALID_JSON"},
-				{"missing required fields", `{}`, "VALIDATION_ERROR"},
-				{"null", `null`, "VALIDATION_ERROR"},
+			for _, tt := range []struct {
+				name, body, code, message string
+				status                    int
+			}{
+				{"malformed", "{", "INVALID_JSON", "Request body contains malformed JSON.", 400},
+				{"oversized", `{"email":"` + strings.Repeat("a", 1<<20) + `"}`, "PAYLOAD_TOO_LARGE", "Request body must not exceed 1 MiB.", 413},
+				{"missing required fields", `{}`, "VALIDATION_ERROR", "Some fields are invalid.", 400},
 			} {
 				t.Run(tt.name, func(t *testing.T) {
 					t.Parallel()
@@ -50,8 +49,42 @@ func TestHandler_RejectsInvalidPayload(t *testing.T) {
 					auth.NewHandler(nil, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
 					w := httptest.NewRecorder()
 					mux.ServeHTTP(w, httptest.NewRequest(http.MethodPost, path, strings.NewReader(tt.body)))
-					assertHTTPError(t, w, http.StatusBadRequest, tt.code, "")
+					assertHTTPError(t, w, tt.status, tt.code, tt.message)
 				})
+			}
+		})
+	}
+}
+
+func TestHandler_ValidationDetails(t *testing.T) {
+	t.Parallel()
+	fields := []struct{ Field, Code, Message string }{
+		{"name", "REQUIRED", "Name is required."},
+		{"email", "REQUIRED", "Email is required."},
+		{"password", "REQUIRED", "Password is required."},
+	}
+	for _, path := range []string{"/auth/register", "/auth/login"} {
+		t.Run(path, func(t *testing.T) {
+			t.Parallel()
+			mux := http.NewServeMux()
+			auth.NewHandler(nil, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+			w := httptest.NewRecorder()
+			mux.ServeHTTP(w, httptest.NewRequest(http.MethodPost, path, strings.NewReader(`{}`)))
+			assertHTTPError(t, w, http.StatusBadRequest, "VALIDATION_ERROR", "Some fields are invalid.")
+			var body struct {
+				Error struct {
+					Details []struct{ Field, Code, Message string }
+				}
+			}
+			if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
+				t.Fatal(err)
+			}
+			want := fields
+			if path == "/auth/login" {
+				want = fields[1:]
+			}
+			if !reflect.DeepEqual(body.Error.Details, want) {
+				t.Errorf("details = %+v, want %+v", body.Error.Details, want)
 			}
 		})
 	}

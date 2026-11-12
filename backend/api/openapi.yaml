@@ -4,9 +4,18 @@ info:
   version: 0.1.0
   description: |
     Contract for the implemented authentication and account APIs.
-    JSON request bodies must contain exactly one JSON value, must not exceed
-    1 MiB, and must not contain unknown fields. Decode failures return 400,
-    including oversized bodies.
+    JSON request bodies must contain exactly one JSON object, must not exceed
+    1 MiB, and must not contain unknown fields. Empty, malformed, non-object,
+    and otherwise invalid bodies return 400 INVALID_JSON. Oversized bodies
+    return 413 PAYLOAD_TOO_LARGE, including oversized trailing whitespace.
+
+    Invalid field values return 400 VALIDATION_ERROR with the message
+    "Some fields are invalid." and a details array containing field, code,
+    and message. Field names match JSON properties. All invalid fields are
+    reported in declaration order, with only the first failed rule per field.
+    Decoding stops at the first error; only field-specific decoding errors
+    include details. Submitted values and raw decoder internals are not echoed.
+    Clients should use codes, not parse human-readable messages.
 
     Sessions last 24 hours. Session tokens are stored as SHA-256 hashes and
     never returned in JSON. Login-specific brute-force protection and automatic
@@ -64,6 +73,8 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '403':
           $ref: '#/components/responses/CrossOriginForbidden'
         '409':
@@ -118,6 +129,8 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '401':
           description: Invalid email or password (INVALID_CREDENTIALS).
           headers:
@@ -244,9 +257,10 @@ paths:
                 $ref: '#/components/schemas/AccountResponse'
         '400':
           description: |
-            INVALID_JSON for malformed JSON, unknown fields, type mismatches,
-            multiple JSON values, empty bodies, or bodies exceeding 1 MiB.
+            INVALID_JSON for malformed or non-object JSON, unknown fields,
+            type mismatches, multiple JSON values, or empty bodies.
             VALIDATION_ERROR for invalid field values or missing required fields.
+            Field-specific errors include structured details.
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
@@ -259,12 +273,22 @@ paths:
                   value:
                     error:
                       code: INVALID_JSON
-                      message: Invalid JSON body
+                      message: 'Field "balance" is not allowed.'
+                      details:
+                        - field: balance
+                          code: UNKNOWN_FIELD
+                          message: 'Field "balance" is not allowed.'
                 validationError:
                   value:
                     error:
                       code: VALIDATION_ERROR
-                      message: name is required
+                      message: Some fields are invalid.
+                      details:
+                        - field: name
+                          code: REQUIRED
+                          message: Name is required.
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
         '401':
           description: Authentication required (UNAUTHENTICATED).
           headers:
@@ -551,6 +575,22 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Account'
+    FieldError:
+      type: object
+      required: [field, code, message]
+      properties:
+        field:
+          type: string
+          description: JSON property name, not a Go struct field name.
+          example: email
+        code:
+          type: string
+          description: Stable machine-readable rule or decoding failure.
+          enum: [REQUIRED, INVALID_FORMAT, MIN_LENGTH, MAX_LENGTH, INVALID_CHOICE, INVALID_TYPE, UNKNOWN_FIELD]
+        message:
+          type: string
+          description: Actionable explanation without the submitted value.
+          example: Enter a valid email address.
     ErrorResponse:
       type: object
       required: [error]
@@ -563,6 +603,7 @@ components:
               type: string
               enum:
                 - INVALID_JSON
+                - PAYLOAD_TOO_LARGE
                 - VALIDATION_ERROR
                 - EMAIL_TAKEN
                 - INVALID_CREDENTIALS
@@ -572,8 +613,29 @@ components:
                 - NOT_FOUND
             message:
               type: string
-              description: Human-readable detail; multiple validation errors are joined by newlines.
+              description: Human-readable explanation; do not parse this text for program logic.
+            details:
+              type: array
+              minItems: 1
+              description: |
+                Present for request-field validation and field-specific decoding
+                errors. Omitted for body-wide decoding errors and other failures.
+                One entry per invalid field, in declaration order for validation.
+              items:
+                $ref: '#/components/schemas/FieldError'
   responses:
+    PayloadTooLarge:
+      description: |
+        Request body exceeds 1 MiB (PAYLOAD_TOO_LARGE). Login and account handler
+        responses include Cache-Control: no-store.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: PAYLOAD_TOO_LARGE
+              message: Request body must not exceed 1 MiB.
     TooManyRequests:
       description: Shared per-process token bucket exhausted (TOO_MANY_REQUESTS).
       content:
@@ -594,10 +656,11 @@ components:
             type: string
     BadRequest:
       description: |
-        INVALID_JSON for malformed JSON, unknown fields, type mismatches,
-        multiple JSON values, empty bodies, or bodies exceeding 1 MiB.
+        INVALID_JSON for malformed or non-object JSON, unknown fields,
+        type mismatches, multiple JSON values, or empty bodies.
         VALIDATION_ERROR for invalid field values or missing required fields.
-        Login responses include Cache-Control: no-store.
+        Field-specific errors include structured details. Login responses
+        include Cache-Control: no-store.
       content:
         application/json:
           schema:
@@ -607,12 +670,25 @@ components:
               value:
                 error:
                   code: INVALID_JSON
-                  message: Invalid JSON body
+                  message: Request body is required.
+            invalidFieldType:
+              value:
+                error:
+                  code: INVALID_JSON
+                  message: 'Field "email" must be a string.'
+                  details:
+                    - field: email
+                      code: INVALID_TYPE
+                      message: 'Field "email" must be a string.'
             validationError:
               value:
                 error:
                   code: VALIDATION_ERROR
-                  message: password must contain at least 8 characters
+                  message: Some fields are invalid.
+                  details:
+                    - field: password
+                      code: MIN_LENGTH
+                      message: Password must contain at least 8 characters.
     InternalError:
       description: |
         Unexpected server error (INTERNAL_ERROR). Responses from the login,

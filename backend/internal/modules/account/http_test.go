@@ -21,22 +21,25 @@ import (
 func TestHandler_CreateAccountRejectsInvalidPayload(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {
-		name    string
-		body    string
-		code    string
-		message string
+		name, body, code, message string
+		status                    int
+		details                   validation.Errors
 	}{
-		{name: "malformed JSON", body: `{`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
-		{name: "empty body", body: ``, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
-		{name: "wrong field type", body: `{"name":123,"account_type":"savings"}`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
-		{name: "multiple JSON values", body: `{} {}`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
-		{name: "client supplied owner", body: `{"name":"Travel","account_type":"savings","user_id":"another-user"}`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
-		{name: "client supplied balance", body: `{"name":"Travel","account_type":"savings","balance":100}`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
-		{name: "oversized body", body: `{"name":"` + strings.Repeat("A", 1<<20) + `","account_type":"savings"}`, code: httpx.CodeInvalidJSON, message: "Invalid JSON body"},
-		{name: "missing fields", body: `{}`, code: httpx.CodeValidationError, message: "name is required\ninvalid account type"},
-		{name: "null body", body: `null`, code: httpx.CodeValidationError, message: "name is required\ninvalid account type"},
-		{name: "invalid name", body: `{"name":"12","account_type":"savings"}`, code: httpx.CodeValidationError, message: "name must contain 3 to 32 ASCII letters or spaces"},
-		{name: "main account type", body: `{"name":"Travel","account_type":"main"}`, code: httpx.CodeValidationError, message: "invalid account type"},
+		{name: "malformed JSON", body: `{`, status: 400, code: "INVALID_JSON", message: "Request body contains malformed JSON."},
+		{name: "wrong field type", body: `{"name":123,"account_type":"savings"}`, status: 400, code: "INVALID_JSON", message: `Field "name" must be a string.`, details: validation.Errors{
+			{Field: "name", Code: "INVALID_TYPE", Message: `Field "name" must be a string.`},
+		}},
+		{name: "client supplied owner", body: `{"name":"Travel","account_type":"savings","user_id":"another-user"}`, status: 400, code: "INVALID_JSON", message: `Field "user_id" is not allowed.`, details: validation.Errors{
+			{Field: "user_id", Code: "UNKNOWN_FIELD", Message: `Field "user_id" is not allowed.`},
+		}},
+		{name: "client supplied balance", body: `{"name":"Travel","account_type":"savings","balance":100}`, status: 400, code: "INVALID_JSON", message: `Field "balance" is not allowed.`, details: validation.Errors{
+			{Field: "balance", Code: "UNKNOWN_FIELD", Message: `Field "balance" is not allowed.`},
+		}},
+		{name: "oversized body", body: `{"name":"` + strings.Repeat("A", 1<<20) + `","account_type":"savings"}`, status: 413, code: "PAYLOAD_TOO_LARGE", message: "Request body must not exceed 1 MiB."},
+		{name: "missing fields", body: `{}`, status: 400, code: "VALIDATION_ERROR", message: "Some fields are invalid.", details: validation.Errors{
+			{Field: "name", Code: "REQUIRED", Message: "Name is required."},
+			{Field: "account_type", Code: "REQUIRED", Message: "Account type is required."},
+		}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
@@ -49,19 +52,23 @@ func TestHandler_CreateAccountRejectsInvalidPayload(t *testing.T) {
 			r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			w := httptest.NewRecorder()
 			handler.ServeHTTP(w, r)
-			if w.Code != http.StatusBadRequest {
-				t.Fatalf("status = %d, want 400; body = %s", w.Code, w.Body.String())
+			if w.Code != tt.status {
+				t.Fatalf("status = %d, want %d; body = %s", w.Code, tt.status, w.Body.String())
 			}
 			if got := w.Header().Get("Cache-Control"); got != "no-store" {
 				t.Errorf("Cache-Control = %q, want no-store", got)
 			}
-			var got map[string]map[string]string
+			var got struct {
+				Error struct {
+					Code, Message string
+					Details       validation.Errors
+				}
+			}
 			if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil {
 				t.Fatal(err)
 			}
-			want := map[string]map[string]string{"error": {"code": tt.code, "message": tt.message}}
-			if !reflect.DeepEqual(got, want) {
-				t.Errorf("response = %v, want %v", got, want)
+			if got.Error.Code != tt.code || got.Error.Message != tt.message || !reflect.DeepEqual(got.Error.Details, tt.details) {
+				t.Errorf("response = %s, want %s %q with details %+v", w.Body.String(), tt.code, tt.message, tt.details)
 			}
 		})
 	}

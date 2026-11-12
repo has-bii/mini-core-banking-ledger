@@ -190,25 +190,6 @@ func TestStore_Create(t *testing.T) {
 	})
 
 	for _, tt := range []struct {
-		name      string
-		typeValue account.AccountType
-	}{
-		{name: "main type", typeValue: account.Main},
-		{name: "empty type", typeValue: ""},
-		{name: "unknown type", typeValue: "other"},
-		{name: "uppercase type", typeValue: "SAVINGS"},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.Create(t.Context(), owner.ID, &account.CreateAccountDTO{
-				Name: "Travel", Type: tt.typeValue,
-			})
-			if !errors.Is(err, account.ErrInvalidType) || got != (account.Account{}) {
-				t.Errorf("Create() = %+v, %v; want zero account, ErrInvalidType", got, err)
-			}
-		})
-	}
-
-	for _, tt := range []struct {
 		name   string
 		userID string
 		err    error

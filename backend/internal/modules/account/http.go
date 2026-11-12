@@ -28,11 +28,11 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 	httpx.NoStoreHeader(w)
 	var payload CreateAccountDTO
 	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
-		httpx.WriteError(w, http.StatusBadRequest, httpx.CodeInvalidJSON, "Invalid JSON body")
+		httpx.WriteDecodeError(w, err)
 		return
 	}
 	if errs := payload.Validate(); len(errs) > 0 {
-		httpx.WriteError(w, http.StatusBadRequest, httpx.CodeValidationError, errors.Join(errs...).Error())
+		httpx.WriteValidationError(w, errs)
 		return
 	}
 

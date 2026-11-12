@@ -5,12 +5,7 @@ import (
 	"time"
 )
 
-var (
-	ErrNotFound     = errors.New("account not found")
-	ErrInvalidType  = errors.New("invalid account type")
-	ErrNameRequired = errors.New("name is required")
-	ErrInvalidName  = errors.New("name must contain 3 to 32 ASCII letters or spaces")
-)
+var ErrNotFound = errors.New("account not found")
 
 type AccountType string
 
