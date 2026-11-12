@@ -107,7 +107,7 @@ func TestAuthGuard(t *testing.T) {
 					t.Errorf("downstream identity = %q, %v; want %q, true", id, ok, tt.userID)
 				}
 				w.WriteHeader(http.StatusNoContent)
-			}), middleware.GetUser(lookupUserID), middleware.AuthGuard())
+			}), middleware.GetUser(lookupUserID), middleware.AuthGuard)
 
 			request := httptest.NewRequest(http.MethodGet, "/private", nil)
 			if tt.cookie {

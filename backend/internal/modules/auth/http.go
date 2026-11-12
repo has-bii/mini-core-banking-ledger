@@ -33,7 +33,7 @@ func (h *Handler) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/register", h.register)
 	mux.HandleFunc("POST /auth/login", h.login)
 	mux.HandleFunc("POST /auth/logout", h.logout)
-	mux.Handle("GET /auth/me", middleware.AuthGuard()(http.HandlerFunc(h.me)))
+	mux.Handle("GET /auth/me", middleware.AuthGuard(http.HandlerFunc(h.me)))
 }
 
 func (h *Handler) me(w http.ResponseWriter, r *http.Request) {

@@ -39,15 +39,13 @@ func GetUser(lookupUserID func(context.Context, string) (string, error)) Middlew
 }
 
 // AuthGuard requires a verified user ID populated by GetUser.
-func AuthGuard() Middleware {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if id, ok := UserIDFromContext(r.Context()); !ok || id == "" {
-				httpx.NoStoreHeader(w)
-				httpx.WriteError(w, http.StatusUnauthorized, httpx.CodeUnauthenticated, "authentication required")
-				return
-			}
-			next.ServeHTTP(w, r)
-		})
-	}
+func AuthGuard(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if id, ok := UserIDFromContext(r.Context()); !ok || id == "" {
+			httpx.NoStoreHeader(w)
+			httpx.WriteError(w, http.StatusUnauthorized, httpx.CodeUnauthenticated, "authentication required")
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }

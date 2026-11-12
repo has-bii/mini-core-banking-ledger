@@ -19,9 +19,9 @@ func NewHandler(accountService *Service, log *slog.Logger) *Handler {
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
-	mux.Handle("POST /accounts", middleware.AuthGuard()(http.HandlerFunc(h.createAccount)))
-	mux.Handle("GET /accounts", middleware.AuthGuard()(http.HandlerFunc(h.getAccounts)))
-	mux.Handle("GET /accounts/{id}", middleware.AuthGuard()(http.HandlerFunc(h.getAccount)))
+	mux.Handle("POST /accounts", middleware.AuthGuard(http.HandlerFunc(h.createAccount)))
+	mux.Handle("GET /accounts", middleware.AuthGuard(http.HandlerFunc(h.getAccounts)))
+	mux.Handle("GET /accounts/{id}", middleware.AuthGuard(http.HandlerFunc(h.getAccount)))
 }
 
 func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
