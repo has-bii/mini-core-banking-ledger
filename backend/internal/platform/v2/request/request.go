@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func HttpRequestJSON(w http.ResponseWriter, r *http.Request, dst any) error {
+func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 	// Limit body size to 1 MB
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 

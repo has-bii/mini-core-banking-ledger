@@ -31,27 +31,14 @@ func NewErrorResponseData(title string, status int, detail string, instance stri
 	}
 }
 
-func HttpResponse(w http.ResponseWriter, status int, v any) {
-	contentType := "application/json"
-	if status >= 400 {
-		contentType = "application/problem+json"
-	}
-
-	w.Header().Set("Content-Type", contentType)
-
-	w.WriteHeader(status)
-
-	_ = json.NewEncoder(w).Encode(v)
-}
-
-func SuccessResponse(w http.ResponseWriter, status int, v *SuccessResponseData) {
+func SendSuccess(w http.ResponseWriter, status int, v *SuccessResponseData) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
 	_ = json.NewEncoder(w).Encode(v)
 }
 
-func ErrorResponse(w http.ResponseWriter, status int, v *ErrorResponseData) {
+func SendError(w http.ResponseWriter, status int, v *ErrorResponseData) {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
