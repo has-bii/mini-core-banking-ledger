@@ -8,11 +8,11 @@ import (
 	"testing"
 )
 
-func TestTokenBucket_Middleware(t *testing.T) {
+func TestRateLimiter_Middleware(t *testing.T) {
 	t.Parallel()
 
 	calls := 0
-	handler := middleware.NewTokenBucket(1, 0).Middleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := middleware.NewRateLimiter(1, 0).Middleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls++
 		w.WriteHeader(http.StatusNoContent)
 	}))

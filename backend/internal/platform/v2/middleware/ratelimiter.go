@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type TokenBucket struct {
+type RateLimiter struct {
 	tokens     float64
 	capacity   float64
 	refillRate float64
@@ -15,8 +15,8 @@ type TokenBucket struct {
 	mu         sync.Mutex
 }
 
-func NewTokenBucket(capacity, refillRate float64) *TokenBucket {
-	return &TokenBucket{
+func NewRateLimiter(capacity, refillRate float64) *RateLimiter {
+	return &RateLimiter{
 		tokens:     capacity,
 		capacity:   capacity,
 		refillRate: refillRate,
@@ -24,7 +24,7 @@ func NewTokenBucket(capacity, refillRate float64) *TokenBucket {
 	}
 }
 
-func (tb *TokenBucket) refill(now time.Time) {
+func (tb *RateLimiter) refill(now time.Time) {
 	elapsed := now.Sub(tb.lastRefill).Seconds()
 	tb.tokens += elapsed * tb.refillRate
 
@@ -35,7 +35,7 @@ func (tb *TokenBucket) refill(now time.Time) {
 	tb.lastRefill = now
 }
 
-func (tb *TokenBucket) allow() bool {
+func (tb *RateLimiter) allow() bool {
 	tb.mu.Lock()
 	defer tb.mu.Unlock()
 
@@ -50,7 +50,7 @@ func (tb *TokenBucket) allow() bool {
 	return false
 }
 
-func (tb *TokenBucket) Middleware() Middleware {
+func (tb *RateLimiter) Middleware() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !tb.allow() {
