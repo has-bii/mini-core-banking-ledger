@@ -44,7 +44,7 @@ func Recoverer(log *slog.Logger) Middleware {
 				}
 
 				response.SendError(rw, http.StatusInternalServerError, response.NewErrorResponseData(
-					"Internal Server Error",
+					http.StatusText(http.StatusInternalServerError),
 					http.StatusInternalServerError,
 					"Unexpected error has occurred",
 					r.URL.Path,
