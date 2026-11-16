@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"backend/internal/platform/v2/response"
+	"backend/internal/platform/v2/httpx"
 	"net/http"
 	"sync"
 	"time"
@@ -54,7 +54,7 @@ func (tb *RateLimiter) Middleware() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !tb.allow() {
-				response.SendError(w, http.StatusTooManyRequests, response.NewErrorResponse(
+				httpx.SendError(w, httpx.NewErrorResponse(
 					http.StatusText(http.StatusTooManyRequests),
 					http.StatusTooManyRequests,
 					"Rate limit exceeded",

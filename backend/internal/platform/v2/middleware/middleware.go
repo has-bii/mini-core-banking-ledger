@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"backend/internal/platform/v2/response"
+	"backend/internal/platform/v2/httpx"
 	"log/slog"
 	"net/http"
 	"runtime/debug"
@@ -43,7 +43,7 @@ func Recoverer(log *slog.Logger) Middleware {
 					panic(http.ErrAbortHandler)
 				}
 
-				response.SendError(rw, http.StatusInternalServerError, response.NewErrorResponse(
+				httpx.SendError(rw, httpx.NewErrorResponse(
 					http.StatusText(http.StatusInternalServerError),
 					http.StatusInternalServerError,
 					"Unexpected error has occurred",
