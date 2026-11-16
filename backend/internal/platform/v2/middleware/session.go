@@ -31,6 +31,7 @@ func GetUserFromSession(lookupUserID func(context.Context, string) (string, erro
 					r.URL.Path,
 					nil,
 				))
+				return
 			}
 			if userID == "" {
 				next.ServeHTTP(w, r)
