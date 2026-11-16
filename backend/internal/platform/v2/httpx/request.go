@@ -1,6 +1,7 @@
-package request
+package httpx
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
@@ -9,17 +10,32 @@ import (
 )
 
 func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
-	// Limit body size to 1 MB
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 
-	dec := json.NewDecoder(r.Body)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		if maxBytesErr, ok := errors.AsType[*http.MaxBytesError](err); ok {
+			return BadRequest(http.StatusRequestEntityTooLarge,
+				"body must not be larger than %d bytes", maxBytesErr.Limit)
+		}
+		return err
+	}
+
+	body = bytes.Trim(body, " \t\r\n")
+	if len(body) == 0 {
+		return BadRequest(http.StatusBadRequest, "body must not be empty")
+	}
+	if body[0] != '{' {
+		return BadRequest(http.StatusBadRequest, "body must be a JSON object")
+	}
+
+	dec := json.NewDecoder(bytes.NewReader(body))
 	dec.DisallowUnknownFields()
 
 	if err := dec.Decode(dst); err != nil {
 		var (
 			syntaxErr        *json.SyntaxError
 			unmarshalTypeErr *json.UnmarshalTypeError
-			maxBytesErr      *http.MaxBytesError
 			invalidErr       *json.InvalidUnmarshalError
 		)
 
@@ -42,17 +58,10 @@ func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 				"body contains an invalid JSON type (at character %d)",
 				unmarshalTypeErr.Offset)
 
-		case errors.Is(err, io.EOF):
-			return BadRequest(http.StatusBadRequest, "body must not be empty")
-
 		case strings.HasPrefix(err.Error(), "json: unknown field "):
 			field := strings.TrimPrefix(err.Error(), "json: unknown field ")
 			return BadRequest(http.StatusBadRequest,
 				"body contains unknown field %s", field)
-
-		case errors.As(err, &maxBytesErr):
-			return BadRequest(http.StatusRequestEntityTooLarge,
-				"body must not be larger than %d bytes", maxBytesErr.Limit)
 
 		case errors.As(err, &invalidErr):
 			panic(err)
