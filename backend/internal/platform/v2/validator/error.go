@@ -13,7 +13,9 @@ type ErrorValidation struct {
 	Errors *[]ErrorField `json:"errors,omitempty"`
 }
 
-func (ev *ErrorValidation) Error() string { return "Validation Failed" } // TODO: change the returned string
+func (ev *ErrorValidation) Error() string {
+	return "One or more fields are invalid. Check the field errors for details."
+}
 
 func NewErrorValidation(errs *[]ErrorField) error {
 	return &ErrorValidation{Errors: errs}
