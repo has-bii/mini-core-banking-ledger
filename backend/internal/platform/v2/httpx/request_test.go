@@ -46,12 +46,15 @@ func TestDecodeJSON(t *testing.T) {
 				}
 				return
 			}
-			var bodyErr *httpx.MalformedRequestBody
-			if !errors.As(err, &bodyErr) {
-				t.Fatalf("DecodeJSON() = %v, want MalformedRequestBody", err)
+			var httpErr *httpx.HTTPError
+			if !errors.As(err, &httpErr) {
+				t.Fatalf("DecodeJSON() = %v, want HTTPError", err)
 			}
-			if bodyErr.Status != tt.status {
-				t.Errorf("status = %d, want %d", bodyErr.Status, tt.status)
+			if httpErr.Status != tt.status {
+				t.Errorf("status = %d, want %d", httpErr.Status, tt.status)
+			}
+			if httpErr.Message == "" || strings.Contains(httpErr.Message, "%!") {
+				t.Errorf("invalid error message: %q", httpErr.Message)
 			}
 		})
 	}
@@ -73,12 +76,12 @@ func TestDecodeJSON_RequiresObjectForAnyDestination(t *testing.T) {
 			t.Parallel()
 			var payload any
 			err := httpx.DecodeJSON(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/", strings.NewReader(tt.body)), &payload)
-			var bodyErr *httpx.MalformedRequestBody
-			if !errors.As(err, &bodyErr) {
-				t.Fatalf("DecodeJSON() = %v, want MalformedRequestBody", err)
+			var httpErr *httpx.HTTPError
+			if !errors.As(err, &httpErr) {
+				t.Fatalf("DecodeJSON() = %v, want HTTPError", err)
 			}
-			if bodyErr.Status != http.StatusBadRequest {
-				t.Errorf("status = %d, want 400", bodyErr.Status)
+			if httpErr.Status != http.StatusBadRequest {
+				t.Errorf("status = %d, want 400", httpErr.Status)
 			}
 		})
 	}

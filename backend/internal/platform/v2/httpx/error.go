@@ -1,14 +1,12 @@
 package httpx
 
-import "fmt"
-
-type MalformedRequestBody struct {
-	Status int
-	Msg    string
+type HTTPError struct {
+	Status  int
+	Message string
 }
 
-func (mr *MalformedRequestBody) Error() string { return mr.Msg }
+func (he *HTTPError) Error() string { return he.Message }
 
-func BadRequest(status int, format string, args ...any) error {
-	return &MalformedRequestBody{Status: status, Msg: fmt.Sprintf(format, args...)}
+func NewHTTPError(status int, message string) error {
+	return &HTTPError{Status: status, Message: message}
 }
