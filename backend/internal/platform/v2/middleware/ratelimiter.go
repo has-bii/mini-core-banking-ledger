@@ -54,7 +54,7 @@ func (tb *RateLimiter) Middleware() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !tb.allow() {
-				response.SendError(w, http.StatusTooManyRequests, response.NewErrorResponseData(
+				response.SendError(w, http.StatusTooManyRequests, response.NewErrorResponse(
 					http.StatusText(http.StatusTooManyRequests),
 					http.StatusTooManyRequests,
 					"Rate limit exceeded",

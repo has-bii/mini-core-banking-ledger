@@ -43,7 +43,7 @@ func Recoverer(log *slog.Logger) Middleware {
 					panic(http.ErrAbortHandler)
 				}
 
-				response.SendError(rw, http.StatusInternalServerError, response.NewErrorResponseData(
+				response.SendError(rw, http.StatusInternalServerError, response.NewErrorResponse(
 					http.StatusText(http.StatusInternalServerError),
 					http.StatusInternalServerError,
 					"Unexpected error has occurred",

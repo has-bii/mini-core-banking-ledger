@@ -6,12 +6,12 @@ import (
 	"net/http"
 )
 
-type SuccessResponseData struct {
+type SuccessResponseDTO struct {
 	Data    any    `json:"data"`
 	Message string `json:"message,omitempty"`
 }
 
-type ErrorResponseData struct {
+type ErrorResponseDto struct {
 	Type     string                     `json:"type"`
 	Title    string                     `json:"title"`
 	Status   int                        `json:"status"`
@@ -20,8 +20,8 @@ type ErrorResponseData struct {
 	Error    *validator.ErrorValidation `json:"error,omitempty"`
 }
 
-func NewErrorResponseData(title string, status int, detail string, instance string, errors *validator.ErrorValidation) *ErrorResponseData {
-	return &ErrorResponseData{
+func NewErrorResponse(title string, status int, detail string, instance string, errors *validator.ErrorValidation) *ErrorResponseDto {
+	return &ErrorResponseDto{
 		Type:     "about:blank",
 		Title:    title,
 		Status:   status,
@@ -31,14 +31,14 @@ func NewErrorResponseData(title string, status int, detail string, instance stri
 	}
 }
 
-func SendSuccess(w http.ResponseWriter, status int, v *SuccessResponseData) {
+func SendSuccess(w http.ResponseWriter, status int, v *SuccessResponseDTO) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
 	_ = json.NewEncoder(w).Encode(v)
 }
 
-func SendError(w http.ResponseWriter, status int, v *ErrorResponseData) {
+func SendError(w http.ResponseWriter, status int, v *ErrorResponseDto) {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
