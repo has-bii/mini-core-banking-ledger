@@ -14,7 +14,7 @@ import (
 
 func TestResponses(t *testing.T) {
 	t.Parallel()
-	fields := []validator.ErrorField{{Field: "name", Message: []string{"required"}}}
+	fields := []validator.ErrorField{{"name": {"required"}}}
 	for _, tt := range []struct {
 		name, contentType, body string
 		status                  int
@@ -43,7 +43,7 @@ func TestResponses(t *testing.T) {
 		},
 		{
 			name: "error with fields", status: http.StatusUnprocessableEntity, contentType: "application/problem+json",
-			body: `{"type":"about:blank","title":"Invalid","status":422,"detail":"invalid input","instance":"/accounts","error":[{"field":"name","message":["required"]}]}`,
+			body: `{"type":"about:blank","title":"Invalid","status":422,"detail":"invalid input","instance":"/accounts","error":[{"name":["required"]}]}`,
 			send: func(w http.ResponseWriter) error {
 				return httpx.SendError(w, httpx.NewErrorResponse("Invalid", http.StatusUnprocessableEntity, "invalid input", "/accounts", &fields))
 			},
