@@ -6,7 +6,6 @@ import (
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/apperror"
 	"backend/internal/testutil"
 	"errors"
 	"testing"
@@ -127,8 +126,7 @@ func TestService_RegistrationAndIdentity(t *testing.T) {
 	if !errors.As(err, &pgErr) || pgErr.Code != "23502" || pgErr.ColumnName != "password" {
 		t.Fatalf("null password error = %v, want required password constraint", err)
 	}
-	var appErr *apperror.Error
-	if got, err := svc.Register(t.Context(), payload); !errors.Is(err, user.ErrEmailTaken) || !errors.As(err, &appErr) || appErr.Code != "EMAIL_TAKEN" || got != (user.User{}) {
+	if got, err := svc.Register(t.Context(), payload); !errors.Is(err, user.ErrEmailTaken) || got != (user.User{}) {
 		t.Fatalf("duplicate Register() = %+v, %v", got, err)
 	}
 	if got, err := svc.Me(t.Context(), u.ID); err != nil || got != u {
@@ -137,7 +135,7 @@ func TestService_RegistrationAndIdentity(t *testing.T) {
 	if _, err := pool.Exec(t.Context(), "DELETE FROM users WHERE id = $1", u.ID); err != nil {
 		t.Fatal(err)
 	}
-	if got, err := svc.Me(t.Context(), u.ID); !errors.Is(err, auth.ErrUnauthenticated) || !errors.Is(err, user.ErrNotFound) || !errors.As(err, &appErr) || appErr.Code != "UNAUTHENTICATED" || got != (user.User{}) {
+	if got, err := svc.Me(t.Context(), u.ID); !errors.Is(err, auth.ErrUnauthenticated) || !errors.Is(err, user.ErrNotFound) || got != (user.User{}) {
 		t.Fatalf("deleted user Me() = %+v, %v", got, err)
 	}
 }
@@ -168,8 +166,7 @@ func TestService_LoginOutcomes(t *testing.T) {
 			}
 			got, created, token, err := svc.Login(t.Context(), payload)
 			if name != "valid" {
-				var appErr *apperror.Error
-				if !errors.Is(err, auth.ErrInvalidCredentials) || !errors.As(err, &appErr) || appErr.Code != "INVALID_CREDENTIALS" || got != (user.User{}) || created != (session.Session{}) || token != "" {
+				if !errors.Is(err, auth.ErrInvalidCredentials) || got != (user.User{}) || created != (session.Session{}) || token != "" {
 					t.Fatalf("failed Login() = %+v, %+v, %q, %v", got, created, token, err)
 				}
 				if name == "unknown email" && !errors.Is(err, user.ErrNotFound) {

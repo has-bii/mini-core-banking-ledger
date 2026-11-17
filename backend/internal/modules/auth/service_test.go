@@ -3,7 +3,6 @@ package auth_test
 import (
 	"backend/internal/modules/auth"
 	"backend/internal/modules/user"
-	"backend/internal/platform/apperror"
 	"context"
 	"errors"
 	"fmt"
@@ -28,8 +27,7 @@ func TestService_RegisterPreservesConcurrentEmailConflict(t *testing.T) {
 	cause := fmt.Errorf("insert user: %w", user.ErrEmailTaken)
 	svc := auth.NewService(registrationRaceStore{cause: cause}, nil)
 	got, err := svc.Register(t.Context(), auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "password123"})
-	var appErr *apperror.Error
-	if got != (user.User{}) || !errors.As(err, &appErr) || appErr.Code != "EMAIL_TAKEN" || appErr.Message != "email already taken" || !errors.Is(err, cause) {
-		t.Fatalf("Register() = %+v, %v; want safe EMAIL_TAKEN preserving store cause", got, err)
+	if got != (user.User{}) || !errors.Is(err, user.ErrEmailTaken) || !errors.Is(err, cause) {
+		t.Fatalf("Register() = %+v, %v; want wrapped email conflict preserving store cause", got, err)
 	}
 }

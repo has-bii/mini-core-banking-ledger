@@ -3,7 +3,6 @@ package auth
 import (
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/apperror"
 	"context"
 	"errors"
 	"fmt"
@@ -34,7 +33,7 @@ func NewService(users userStore, sessions sessionService) *Service {
 func (s *Service) Register(ctx context.Context, payload RegisterDTO) (user.User, error) {
 	_, err := s.users.FindByEmail(ctx, payload.Email)
 	if err == nil {
-		return user.User{}, apperror.New(apperror.CodeEmailTaken, user.ErrEmailTaken.Error(), nil, user.ErrEmailTaken)
+		return user.User{}, user.ErrEmailTaken
 	}
 	if !errors.Is(err, user.ErrNotFound) {
 		return user.User{}, fmt.Errorf("check registration email: %w", err)
@@ -46,9 +45,6 @@ func (s *Service) Register(ctx context.Context, payload RegisterDTO) (user.User,
 	}
 
 	u, err := s.users.Create(ctx, payload.Name, payload.Email, hashedPassword)
-	if errors.Is(err, user.ErrEmailTaken) {
-		return user.User{}, apperror.New(apperror.CodeEmailTaken, user.ErrEmailTaken.Error(), nil, err)
-	}
 	if err != nil {
 		return user.User{}, fmt.Errorf("register user: %w", err)
 	}
@@ -63,14 +59,14 @@ func (s *Service) Login(ctx context.Context, payload LoginDTO) (user.User, sessi
 	u, err := s.users.FindByEmail(ctx, payload.Email)
 	if errors.Is(err, user.ErrNotFound) {
 		_ = comparePassword(dummyPasswordHash, payload.Password)
-		return user.User{}, session.Session{}, "", apperror.New(apperror.CodeInvalidCredentials, ErrInvalidCredentials.Error(), nil, errors.Join(ErrInvalidCredentials, err))
+		return user.User{}, session.Session{}, "", errors.Join(ErrInvalidCredentials, err)
 	}
 	if err != nil {
 		return user.User{}, session.Session{}, "", fmt.Errorf("find login user: %w", err)
 	}
 
 	if err := comparePassword(u.Password, payload.Password); err != nil {
-		return user.User{}, session.Session{}, "", apperror.New(apperror.CodeInvalidCredentials, ErrInvalidCredentials.Error(), nil, errors.Join(ErrInvalidCredentials, err))
+		return user.User{}, session.Session{}, "", errors.Join(ErrInvalidCredentials, err)
 	}
 
 	created, token, err := s.sessions.Create(ctx, u.ID)
@@ -91,7 +87,7 @@ func (s *Service) Logout(ctx context.Context, token string) error {
 func (s *Service) Me(ctx context.Context, userID string) (user.User, error) {
 	u, err := s.users.FindByID(ctx, userID)
 	if errors.Is(err, user.ErrNotFound) {
-		return user.User{}, apperror.New(apperror.CodeUnauthenticated, ErrUnauthenticated.Error(), nil, errors.Join(ErrUnauthenticated, err))
+		return user.User{}, errors.Join(ErrUnauthenticated, err)
 	}
 	if err != nil {
 		return user.User{}, fmt.Errorf("find current user: %w", err)

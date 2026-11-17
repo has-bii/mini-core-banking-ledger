@@ -44,6 +44,17 @@ func TestNew_RateLimitCORS(t *testing.T) {
 			t.Fatalf("429 allow credentials = %q, want true", got)
 		}
 
+		var problem struct {
+			Status           int
+			Detail, Instance string
+		}
+		if err := json.Unmarshal(response.Body.Bytes(), &problem); err != nil {
+			t.Fatal(err)
+		}
+		if response.Header().Get("Content-Type") != "application/problem+json" || problem.Status != 429 || problem.Detail != "Rate limit exceeded" || problem.Instance != "/api/not-found" {
+			t.Fatalf("rate limit response = %s", response.Body.String())
+		}
+
 		preflight := httptest.NewRequest(http.MethodOptions, "/api/not-found", nil)
 		preflight.Header.Set("Origin", origin)
 		preflight.Header.Set("Access-Control-Request-Method", http.MethodPost)
@@ -73,12 +84,13 @@ func TestNew_InvalidSession(t *testing.T) {
 	handler.ServeHTTP(response, request)
 
 	var body struct {
-		Error struct{ Code, Message string }
+		Type, Title, Detail, Instance string
+		Status                        int
 	}
 	if err := json.Unmarshal(response.Body.Bytes(), &body); err != nil {
 		t.Fatal(err)
 	}
-	if response.Code != http.StatusUnauthorized || body.Error.Code != "UNAUTHENTICATED" || body.Error.Message != "authentication required" {
+	if response.Code != http.StatusUnauthorized || body.Status != 401 || body.Type != "about:blank" || body.Title != "Unauthorized" || body.Detail != "Session is expired or invalid" || body.Instance != "/auth/me" || response.Header().Get("Content-Type") != "application/problem+json" {
 		t.Fatalf("invalid session: status=%d body=%s, want authentication required", response.Code, response.Body.String())
 	}
 }

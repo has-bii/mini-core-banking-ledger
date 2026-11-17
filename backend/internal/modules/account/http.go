@@ -1,7 +1,6 @@
 package account
 
 import (
-	legacyMiddleware "backend/internal/platform/transport/httpx/middleware"
 	"backend/internal/platform/v2/httpx"
 	"backend/internal/platform/v2/middleware"
 	"backend/internal/platform/v2/validator"
@@ -23,22 +22,9 @@ func NewHandler(accountService *Service, log *slog.Logger) *Handler {
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
-	mux.Handle("POST /accounts", h.authenticated(h.createAccount))
-	mux.Handle("GET /accounts", h.authenticated(h.getAccounts))
-	mux.Handle("GET /accounts/{id}", h.authenticated(h.getAccount))
-}
-
-func (h *Handler) authenticated(next func(http.ResponseWriter, *http.Request)) http.Handler {
-	guard := middleware.AuthGuard(next)
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// shortcut: bridge legacy sessions for account routes until app middleware migrates to v2.
-		if _, ok := middleware.UserIDFromContext(r.Context()); !ok {
-			if id, ok := legacyMiddleware.UserIDFromContext(r.Context()); ok && id != "" {
-				r = r.WithContext(middleware.WithUserID(r.Context(), id))
-			}
-		}
-		guard.ServeHTTP(w, r)
-	})
+	mux.Handle("POST /accounts", middleware.AuthGuard(h.createAccount))
+	mux.Handle("GET /accounts", middleware.AuthGuard(h.getAccounts))
+	mux.Handle("GET /accounts/{id}", middleware.AuthGuard(h.getAccount))
 }
 
 func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {

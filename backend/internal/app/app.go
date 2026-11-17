@@ -12,18 +12,23 @@ import (
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/transport/httpx/middleware"
+	"backend/internal/platform/v2/middleware"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler, error) {
-	cors, err := middleware.CORS(cfg.CORSOrigin)
+	cors, err := middleware.CORS(&middleware.CORSOptions{
+		Origin:         []string{cfg.CORSOrigin},
+		AllowedHeaders: "Content-Type",
+		AllowedMethods: "GET, HEAD, POST, PUT, DELETE",
+		Credentials:    true,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("CORS_ORIGIN: %w", err)
 	}
 
-	tb := middleware.NewTokenBucket(cfg.RatelimitCapacity, cfg.RatelimitRefillRate)
+	tb := middleware.NewRateLimiter(cfg.RatelimitCapacity, cfg.RatelimitRefillRate)
 
 	mux := http.NewServeMux()
 
@@ -46,5 +51,5 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 
 	mux.Handle("/api/", http.StripPrefix("/api", api))
 
-	return middleware.Chain(mux, middleware.Recoverer(log), middleware.Logging(log), cors, middleware.GetUser(lookupUserID), tb.Middleware()), nil
+	return middleware.Chain(mux, middleware.Recoverer(log), middleware.Logging(log), cors, middleware.GetUserFromSession(lookupUserID), tb.Middleware()), nil
 }

@@ -6,7 +6,7 @@ import (
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/transport/httpx/middleware"
+	"backend/internal/platform/v2/middleware"
 	"backend/internal/testutil"
 	"context"
 	"encoding/json"
@@ -27,7 +27,7 @@ func realAuthHandler(t *testing.T, secure bool) (http.Handler, *auth.Service, *s
 	svc := auth.NewService(user.NewStore(pool), sessions)
 	mux := http.NewServeMux()
 	auth.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil)), secure).Register(mux)
-	h := middleware.GetUser(func(ctx context.Context, token string) (string, error) {
+	h := middleware.GetUserFromSession(func(ctx context.Context, token string) (string, error) {
 		current, err := sessions.FindByToken(ctx, token)
 		if errors.Is(err, session.ErrNotFound) {
 			return "", nil
@@ -40,11 +40,11 @@ func realAuthHandler(t *testing.T, secure bool) (http.Handler, *auth.Service, *s
 func TestHandler_DomainErrorResponses(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {
-		name, path, payload, code, message string
-		status                             int
+		name, path, payload, title, message string
+		status                              int
 	}{
-		{"duplicate email", "/auth/register", `{"name":"Alice","email":"alice@example.com","password":"password123"}`, "EMAIL_TAKEN", "email already taken", http.StatusConflict},
-		{"invalid credentials", "/auth/login", `{"email":"alice@example.com","password":"incorrect"}`, "INVALID_CREDENTIALS", "invalid email or password", http.StatusUnauthorized},
+		{"duplicate email", "/auth/register", `{"name":"Alice","email":"alice@example.com","password":"password123"}`, "Conflict", "email already taken", http.StatusConflict},
+		{"invalid credentials", "/auth/login", `{"email":"alice@example.com","password":"incorrect"}`, "Unauthorized", "invalid email or password", http.StatusUnauthorized},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
@@ -54,7 +54,7 @@ func TestHandler_DomainErrorResponses(t *testing.T) {
 			}
 			w := httptest.NewRecorder()
 			h.ServeHTTP(w, httptest.NewRequest("POST", tt.path, strings.NewReader(tt.payload)).WithContext(t.Context()))
-			assertHTTPError(t, w, tt.status, tt.code, tt.message)
+			assertHTTPError(t, w, tt.status, tt.title, tt.message)
 			if tt.path == "/auth/login" && w.Header().Get("Cache-Control") != "no-store" {
 				t.Error("failed login must not be cached")
 			}

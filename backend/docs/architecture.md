@@ -3,18 +3,18 @@
 **Pattern:** Handler → Service → Store (Controller-Service-Repository)
 **Stack:** Go, PostgreSQL, pgx; parameterized SQL, no ORM or query builder.
 
-## Account v2 migration
+## Platform v2
 
-Account uses `platform/v2/httpx`, `platform/v2/middleware`, and `platform/v2/validator`. The legacy conventions below still apply to other modules. For account:
+Auth, account, and application middleware use `platform/v2/httpx`, `platform/v2/middleware`, and `platform/v2/validator`:
 
 - HTTP handlers use standard `http.Handler` signatures, v2 decoding and response helpers, and a module-local error mapper instead of `httpx.Adapt`.
-- Domain sentinels (`ErrNotFound`, `ErrInvalidAccountID`, `ErrInvalidUserID`) live in `account.go`. Stores wrap them with `%w`; services preserve errors without converting them to legacy `apperror.Error` or HTTP errors.
+- Domain sentinels live beside their modules. Stores wrap them with `%w`; services preserve errors without converting them to legacy `apperror.Error` or HTTP errors. Auth preserves credential and missing-user causes with `errors.Join`.
 - DTO validation normalizes inputs and returns v2 `ErrorValidation`, with messages keyed by JSON field name. Store defensive validation preserves this structured error. The validator is configured once and reused concurrently.
 - Handlers map invalid IDs/fields to 400, missing accounts/owners to 404, malformed JSON to 400, oversized bodies to 413, and unexpected errors to a logged, generic 500. Errors use `application/problem+json`; success uses `data` and an optional `message`.
-- The application still resolves sessions with legacy middleware. Account route registration bridges its verified user ID into v2 context before the v2 guard; native v2 context takes precedence. This temporary bridge does not re-query sessions or affect other routes. Shared middleware errors retain the legacy envelope.
+- The application resolves sessions with v2 `GetUserFromSession`; auth and account guards read the same verified user ID context. No legacy context bridge remains. Rate-limit, recovery, and session-lookup failures use v2 problem details; Go's cross-origin protection still writes plain-text 403 rejections.
 - Existing PostgreSQL helpers, SQL, ownership predicates, and account-creation transaction locking remain unchanged. The migration does not relocate transaction ownership.
 
-See [OpenAPI](../api/openapi.yaml) for both response contracts.
+See [OpenAPI](../api/openapi.yaml) for the response contract.
 
 ## 1. Layer Responsibilities
 
@@ -28,8 +28,8 @@ See [OpenAPI](../api/openapi.yaml) for both response contracts.
 ### Handlers
 
 - Decode and validate request payloads before calling a service.
-- Return errors before writing a response; register error-returning handlers through `httpx.Adapt`.
-- Let the HTTP adapter map application codes to statuses, log unexpected errors once, and return safe JSON responses.
+- Handle errors before writing a response; register standard `http.Handler` functions.
+- Use a module-local mapper to translate domain errors into statuses, log unexpected errors, and write safe v2 responses.
 
 ### Services
 
@@ -38,7 +38,7 @@ See [OpenAPI](../api/openapi.yaml) for both response contracts.
 - Use `postgres.InTx` with a pool for atomic workflows; construct participating stores with the callback's `pgx.Tx`.
 - Keep expensive work that does not need a transaction, such as password hashing, outside it.
 - Return safe domain models or DTOs; never expose password hashes.
-- Translate expected domain failures into `apperror.Error`, preserving the original cause. Propagate unexpected errors with useful `%w` context.
+- Return domain errors, preserving original causes with `%w` or `errors.Join`. Propagate unexpected errors with useful context.
 
 ### Stores
 
@@ -133,20 +133,20 @@ A rejected password write must leave no user behind. The email pre-check is only
 | Layer | Validates | Failure handling |
 | --- | --- | --- |
 | **Handler** | JSON shape, required fields, lengths, basic formats | Return `400 Bad Request` |
-| **Service** | Business rules, permissions, application state | Translate expected domain failures into application errors |
+| **Service** | Business rules, permissions, application state | Return domain errors preserving causes |
 | **Store / database** | Unique keys, foreign keys, not-null and other integrity constraints | Translate known violations; wrap unexpected failures |
 
-Request validation uses `validation.FieldError` (`field`, `code`, `message`) and `validation.Errors`, an ordered collection that also implements `error`. Modules use `go-playground/validator/v10` built-in tags and translate its failures into these types; no custom validation rules are registered. Email follows the library's `email` rule. Password validation uses built-in `Var` checks on a trimmed copy for `required` and on `[]byte(password)` for `max=72`, so whitespace-only passwords are rejected and bcrypt's byte limit is enforced without modifying the password. Modules own normalization and error messages; platform validation types contain no HTTP details. DTO validation reports all invalid fields in declaration order, with only the first failed rule per field. Account-store defensive validation preserves these errors with `%w`; callers can recover them with `errors.As` rather than receiving a misleading account-type error.
+DTO validation returns v2 `validator.ErrorValidation`, containing messages keyed by JSON field name. Modules configure `go-playground/validator/v10` once with `UseJSONName` and use `FormatErrors`; only the first failed rule per field is reported. Email follows the built-in `email` rule. Auth trims names and email addresses, rejects whitespace-only passwords using a validation copy, enforces a minimum of 8 characters and bcrypt's maximum of 72 bytes, and never modifies the actual password. Account-store defensive validation preserves structured errors with `%w`.
 
-`httpx.DecodeJSON` accepts exactly one JSON object with no unknown fields and enforces a 1 MiB limit over the complete body, including trailing data. Handlers return `httpx.DecodeError` for safe, actionable decode responses and `httpx.ValidationError` for field validation; the adapter writes the response. Invalid bodies and fields return `400`; oversized bodies return `413 PAYLOAD_TOO_LARGE`. The existing `error.code` and `error.message` envelope gains optional `details` for field-specific failures. Body-wide failures omit `details`. Do not echo submitted values or raw decoder errors, and do not make clients parse message text. See [OpenAPI](../api/openapi.yaml) for the complete contract and stable field codes.
+V2 `httpx.DecodeJSON` accepts exactly one JSON object with no unknown fields and enforces a 1 MiB limit over the complete body, including trailing data. It returns client-safe `HTTPError` values for invalid bodies (`400`) and oversized bodies (`413`). Handlers map these and validation errors into problem details, with `errors` included only for validation. Do not echo submitted values or internal causes; clients should use statuses and field keys rather than parse human-readable messages.
 
 Errors travel upward through normal Go returns, not exceptions:
 
 1. The store translates recognized database failures into domain errors.
-2. Domain sentinels stay beside their domains. Services translate expected failures into `apperror.Error` (`Code`, `Message`, optional `Details`) with a private cause accessible through `Unwrap`. Unexpected errors propagate, optionally wrapped with `%w`; `errors.Is` and `errors.As` continue to work.
-3. Handlers return errors to `httpx.Adapt`; standard middleware can call `httpx.HandleError`. The transport maps known public codes to statuses, such as `409 Conflict` for `EMAIL_TAKEN`. Unknown codes, internal errors, and non-serializable details are logged and become `500 INTERNAL_ERROR` with message `internal error`; underlying causes never enter JSON.
+2. Domain sentinels stay beside their domains. Services preserve expected failures and unexpected causes; `errors.Is` and `errors.As` continue to work.
+3. Module-local handler mappers translate known errors to statuses: auth email conflicts become 409, invalid credentials or missing identity become 401. Unexpected failures are logged and become generic 500 responses; underlying causes never enter JSON.
 
-Top-level public codes live in `apperror`; existing string values remain stable. Field-validation codes remain in `validation`. Application error messages and details must be client-safe, and details must be JSON-serializable. Validation continues to use ordered field-error arrays; other application errors may supply other JSON values. HTTP status codes belong only to the transport. A handler must not return an error after committing headers or a body; the adapter cannot replace an already-written response.
+HTTP status codes belong only to the transport. Handlers use `SendSuccess` and `SendError` and log write failures without attempting to replace an already-committed response.
 
 Data flows upward as **database rows → store models → service results → handler JSON**. Keep sensitive persistence fields out of public responses.
 

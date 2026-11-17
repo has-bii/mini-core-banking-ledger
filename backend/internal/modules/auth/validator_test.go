@@ -2,51 +2,67 @@ package auth_test
 
 import (
 	"backend/internal/modules/auth"
-	"backend/internal/platform/validation"
-	"slices"
+	"backend/internal/platform/v2/validator"
+	"errors"
+	"reflect"
 	"strings"
 	"testing"
 )
 
-func TestRegisterDTO_Validate(t *testing.T) {
+func assertValidationErrors(t *testing.T, err error, want validator.ErrorField) {
+	t.Helper()
+	if want == nil {
+		if err != nil {
+			t.Fatalf("Validate() = %v, want nil", err)
+		}
+		return
+	}
+	var fields *validator.ErrorValidation
+	if !errors.As(err, &fields) || fields.Errors == nil || !reflect.DeepEqual(*fields.Errors, want) {
+		t.Fatalf("Validate() = %v, want %+v", err, want)
+	}
+}
+
+func TestDTO_Validate(t *testing.T) {
 	t.Parallel()
-	nameRequired := validation.FieldError{Field: "name", Code: "REQUIRED", Message: "Name is required."}
-	emailRequired := validation.FieldError{Field: "email", Code: "REQUIRED", Message: "Email is required."}
-	emailInvalid := validation.FieldError{Field: "email", Code: "INVALID_FORMAT", Message: "Enter a valid email address."}
-	passwordRequired := validation.FieldError{Field: "password", Code: "REQUIRED", Message: "Password is required."}
-	passwordShort := validation.FieldError{Field: "password", Code: "MIN_LENGTH", Message: "Password must contain at least 8 characters."}
-	passwordLong := validation.FieldError{Field: "password", Code: "MAX_LENGTH", Message: "Password must not exceed 72 bytes."}
+	// Keep whitespace, character-count, and bcrypt byte-limit regressions together.
 	for _, tt := range []struct {
-		name     string
-		payload  auth.RegisterDTO
-		want     validation.Errors
-		wantName string
-		wantMail string
+		name, password string
+		want           validator.ErrorField
 	}{
-		{"valid and trimmed", auth.RegisterDTO{Name: " Alice ", Email: " alice@example.com ", Password: "password123"}, nil, "Alice", "alice@example.com"},
-		{"missing fields", auth.RegisterDTO{}, validation.Errors{nameRequired, emailRequired, passwordRequired}, "", ""},
-		{"blank name", auth.RegisterDTO{Name: " \t", Email: "alice@example.com", Password: "password123"}, validation.Errors{nameRequired}, "", "alice@example.com"},
-		{"invalid email", auth.RegisterDTO{Name: "Alice", Email: "not-an-email", Password: "password123"}, validation.Errors{emailInvalid}, "Alice", "not-an-email"},
-		{"short password", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "1234567"}, validation.Errors{passwordShort}, "Alice", "alice@example.com"},
-		{"blank password", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "        "}, validation.Errors{passwordRequired}, "Alice", "alice@example.com"},
-		{"blank password over byte limit", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: strings.Repeat(" ", 73)}, validation.Errors{passwordRequired}, "Alice", "alice@example.com"},
-		{"eight characters", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "éééééééé"}, nil, "Alice", "alice@example.com"},
-		{"seven multibyte characters", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "ééééééé"}, validation.Errors{passwordShort}, "Alice", "alice@example.com"},
-		{"72 bytes", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: strings.Repeat("é", 36)}, nil, "Alice", "alice@example.com"},
-		{"over 72 bytes", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: strings.Repeat("é", 37)}, validation.Errors{passwordLong}, "Alice", "alice@example.com"},
-		{"password whitespace preserved", auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: " 123456 "}, nil, "Alice", "alice@example.com"},
+		{"valid", "password123", nil},
+		{"missing password", "", validator.ErrorField{"password": {"This field is required"}}},
+		{"blank password", "        ", validator.ErrorField{"password": {"This field is required"}}},
+		{"blank password over byte limit", strings.Repeat(" ", 73), validator.ErrorField{"password": {"This field is required"}}},
+		{"seven characters", "1234567", validator.ErrorField{"password": {"Must contain at least 8 characters"}}},
+		{"seven multibyte characters", "ééééééé", validator.ErrorField{"password": {"Must contain at least 8 characters"}}},
+		{"eight multibyte characters", "éééééééé", nil},
+		{"71 bytes", strings.Repeat("a", 71), nil},
+		{"72 bytes", strings.Repeat("é", 36), nil},
+		{"73 bytes", strings.Repeat("a", 73), validator.ErrorField{"password": {"Password must not exceed 72 bytes."}}},
+		{"over 72 bytes multibyte", strings.Repeat("é", 37), validator.ErrorField{"password": {"Password must not exceed 72 bytes."}}},
+		{"byte limit includes whitespace", strings.Repeat("a", 72) + " ", validator.ErrorField{"password": {"Password must not exceed 72 bytes."}}},
+		{"password whitespace preserved", " 123456 ", nil},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			password := tt.payload.Password
-			if got := tt.payload.Validate(); !slices.Equal(got, tt.want) {
-				t.Fatalf("Validate() = %v, want %v", got, tt.want)
-			}
-			if tt.payload.Name != tt.wantName || tt.payload.Email != tt.wantMail || tt.payload.Password != password {
-				t.Errorf("normalization = %+v, want name %q, email %q and unchanged password", tt.payload, tt.wantName, tt.wantMail)
+			register := auth.RegisterDTO{Name: " Alice ", Email: " alice@example.com ", Password: tt.password}
+			login := auth.LoginDTO{Email: " alice@example.com ", Password: tt.password}
+			assertValidationErrors(t, register.Validate(), tt.want)
+			assertValidationErrors(t, login.Validate(), tt.want)
+			if register.Name != "Alice" || register.Email != "alice@example.com" || login.Email != "alice@example.com" || register.Password != tt.password || login.Password != tt.password {
+				t.Fatal("expected trimmed name/email and unchanged passwords")
 			}
 		})
 	}
+}
+
+func TestDTO_RequiredFields(t *testing.T) {
+	t.Parallel()
+	register := auth.RegisterDTO{Name: " \t", Email: " "}
+	login := auth.LoginDTO{Email: " "}
+	assertValidationErrors(t, register.Validate(), validator.ErrorField{"name": {"This field is required"}, "email": {"This field is required"}, "password": {"This field is required"}})
+	assertValidationErrors(t, login.Validate(), validator.ErrorField{"email": {"This field is required"}, "password": {"This field is required"}})
 }
 
 func TestDTO_EmailValidation(t *testing.T) {
@@ -61,59 +77,18 @@ func TestDTO_EmailValidation(t *testing.T) {
 		{"unqualified domain", "alice@localhost", false},
 		{"IP literal domain", "alice@[127.0.0.1]", false},
 		{"display name", "Alice <alice@example.com>", false},
+		{"invalid email", "not-an-email", false},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			register := auth.RegisterDTO{Name: "Alice", Email: tt.email, Password: "password123"}
 			login := auth.LoginDTO{Email: tt.email, Password: "password123"}
-			var want validation.Errors
+			var want validator.ErrorField
 			if !tt.valid {
-				want = validation.Errors{{Field: "email", Code: "INVALID_FORMAT", Message: "Enter a valid email address."}}
+				want = validator.ErrorField{"email": {"Must be a valid email address"}}
 			}
-			if got := register.Validate(); !slices.Equal(got, want) {
-				t.Errorf("RegisterDTO.Validate() = %+v, want %+v", got, want)
-			}
-			if got := login.Validate(); !slices.Equal(got, want) {
-				t.Errorf("LoginDTO.Validate() = %+v, want %+v", got, want)
-			}
-		})
-	}
-}
-
-func TestLoginDTO_Validate(t *testing.T) {
-	t.Parallel()
-	emailRequired := validation.FieldError{Field: "email", Code: "REQUIRED", Message: "Email is required."}
-	emailInvalid := validation.FieldError{Field: "email", Code: "INVALID_FORMAT", Message: "Enter a valid email address."}
-	passwordRequired := validation.FieldError{Field: "password", Code: "REQUIRED", Message: "Password is required."}
-	passwordShort := validation.FieldError{Field: "password", Code: "MIN_LENGTH", Message: "Password must contain at least 8 characters."}
-	passwordLong := validation.FieldError{Field: "password", Code: "MAX_LENGTH", Message: "Password must not exceed 72 bytes."}
-	for _, tt := range []struct {
-		name     string
-		email    string
-		password string
-		want     validation.Errors
-	}{
-		{"valid and trimmed", " alice@example.com ", " password ", nil},
-		{"missing fields", "", "", validation.Errors{emailRequired, passwordRequired}},
-		{"invalid email", "not-an-email", "password123", validation.Errors{emailInvalid}},
-		{"blank password", "alice@example.com", "        ", validation.Errors{passwordRequired}},
-		{"seven characters", "alice@example.com", "ééééééé", validation.Errors{passwordShort}},
-		{"eight characters", "alice@example.com", "éééééééé", nil},
-		{"71 bytes", "alice@example.com", strings.Repeat("a", 71), nil},
-		{"72 bytes", "alice@example.com", strings.Repeat("é", 36), nil},
-		{"73 bytes", "alice@example.com", strings.Repeat("a", 73), validation.Errors{passwordLong}},
-		{"byte limit includes whitespace", "alice@example.com", strings.Repeat("a", 72) + " ", validation.Errors{passwordLong}},
-		{"over 72 bytes multibyte", "alice@example.com", strings.Repeat("é", 37), validation.Errors{passwordLong}},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			payload := auth.LoginDTO{Email: tt.email, Password: tt.password}
-			if got := payload.Validate(); !slices.Equal(got, tt.want) {
-				t.Fatalf("Validate() = %v, want %v", got, tt.want)
-			}
-			if payload.Email != strings.TrimSpace(tt.email) || payload.Password != tt.password {
-				t.Errorf("normalization = %+v, want trimmed email and unchanged password", payload)
-			}
+			assertValidationErrors(t, register.Validate(), want)
+			assertValidationErrors(t, login.Validate(), want)
 		})
 	}
 }

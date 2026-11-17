@@ -9,19 +9,16 @@ info:
     and otherwise invalid bodies return 400. Oversized bodies return 413,
     including oversized trailing whitespace.
 
-    Account handlers and their authentication guard use v2 problem details
+    Auth, account, and shared middleware use v2 problem details
     (application/problem+json): type, title, status, detail, instance, and
-    optional errors keyed by JSON field name. Account success responses use
-    data and an optional message. Shared middleware still uses legacy errors.
+    optional validation errors keyed by JSON field name. Success responses use
+    data and an optional message; logout returns an empty 204.
 
-    Auth endpoints retain INVALID_JSON and PAYLOAD_TOO_LARGE codes.
-    Invalid auth field values return 400 VALIDATION_ERROR with the message
-    "Some fields are invalid." and a details array containing field, code,
-    and message. Field names match JSON properties. All invalid fields are
-    reported in declaration order, with only the first failed rule per field.
-    Decoding stops at the first error; only field-specific decoding errors
-    include details. Submitted values and raw decoder internals are not echoed.
-    Clients should use codes, not parse human-readable messages.
+    Invalid field values return 400 with the detail
+    "One or more fields are invalid. Check the field errors for details."
+    All invalid fields are reported, with only the first failed rule per field.
+    Decoding stops at the first error and omits validation errors.
+    Clients should use HTTP statuses and field keys, not parse messages.
 
     Sessions last 24 hours. Session tokens are stored as SHA-256 hashes and
     never returned in JSON. Login-specific brute-force protection and automatic
@@ -30,7 +27,7 @@ info:
     A shared in-memory token bucket limits requests across all clients per API
     process. RATE_LIMIT_CAPACITY defaults to 50 tokens (burst size) and
     RATE_LIMIT_REFILL_RATE defaults to 10 tokens per second. Exhaustion returns
-    429 with error code TOO_MANY_REQUESTS. CORS preflight requests bypass the
+    429 problem details. CORS preflight requests bypass the
     bucket. Limits reset on restart and are not shared between instances.
 
     CORS allows one exact frontend origin configured by CORS_ORIGIN, defaulting
@@ -41,10 +38,10 @@ info:
     Session cookies remain SameSite=Lax; CORS alone does not enable cookies
     between unrelated sites.
 
-    OPTIONS requests from the allowed origin with Access-Control-Request-Method
-    receive 204 with Access-Control-Allow-Methods: GET, HEAD, POST, OPTIONS and
-    Access-Control-Allow-Headers: Content-Type. All responses include Vary:
-    Origin. Other origins receive no CORS permission headers. Existing CSRF
+    All OPTIONS requests receive 204. CORS sets Access-Control-Allow-Methods:
+    GET, HEAD, POST, PUT, DELETE and Access-Control-Allow-Headers: Content-Type.
+    All responses include Vary: Origin. Only the configured origin receives
+    Access-Control-Allow-Origin and credential permission. Existing CSRF
     protection remains active: unsafe browser requests from untrusted origins
     return 403, while same-origin and trusted-origin requests are allowed.
 servers:
@@ -84,15 +81,17 @@ paths:
         '403':
           $ref: '#/components/responses/CrossOriginForbidden'
         '409':
-          description: Email already registered (EMAIL_TAKEN).
+          description: Email already registered.
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
-                error:
-                  code: EMAIL_TAKEN
-                  message: email already taken
+                type: about:blank
+                title: Conflict
+                status: 409
+                detail: email already taken
+                instance: /auth/register
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
@@ -104,7 +103,7 @@ paths:
       summary: Log in and create a session
       description: |
         Returns the user and sets the session cookie. Unknown users and wrong
-        passwords both return INVALID_CREDENTIALS. All responses include
+        passwords both return 401 problem details. Handler responses include
         Cache-Control: no-store.
       requestBody:
         required: true
@@ -138,18 +137,20 @@ paths:
         '413':
           $ref: '#/components/responses/PayloadTooLarge'
         '401':
-          description: Invalid email or password (INVALID_CREDENTIALS).
+          description: Invalid email or password.
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
-                error:
-                  code: INVALID_CREDENTIALS
-                  message: invalid email or password
+                type: about:blank
+                title: Unauthorized
+                status: 401
+                detail: invalid email or password
+                instance: /auth/login
         '403':
           $ref: '#/components/responses/CrossOriginForbidden'
         '429':
@@ -163,8 +164,8 @@ paths:
       summary: Get the current user
       description: |
         Requires a valid, unexpired session. Missing, empty, expired, revoked,
-        or otherwise invalid session cookies return UNAUTHENTICATED.
-        All responses include Cache-Control: no-store.
+        or otherwise invalid session cookies return 401 problem details.
+        Handler and authentication-guard responses include Cache-Control: no-store.
       security:
         - sessionCookie: []
       responses:
@@ -178,18 +179,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserResponse'
         '401':
-          description: Authentication required (UNAUTHENTICATED).
+          description: Session is expired or invalid, or the user no longer exists.
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
-                error:
-                  code: UNAUTHENTICATED
-                  message: authentication required
+                type: about:blank
+                title: Unauthorized
+                status: 401
+                detail: Session is expired or invalid
+                instance: /auth/me
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
@@ -201,7 +204,7 @@ paths:
       summary: Revoke the current session and clear its cookie
       description: |
         Idempotent: returns 204 even if the session is absent or invalid.
-        Other sessions remain valid. All responses include Cache-Control:
+        Other sessions remain valid. Handler responses include Cache-Control:
         no-store. A session revocation failure returns 500 without clearing
         the cookie.
       security:
@@ -503,7 +506,7 @@ components:
           description: Client-safe explanation; not a stable machine-readable code.
         instance:
           type: string
-          description: Request path as seen by the account handler, without query parameters or the /api prefix.
+          description: Request path without query parameters. Handler responses omit the /api prefix; outer middleware responses retain it.
         errors:
           type: object
           description: Optional validation messages keyed by JSON field name; first failed rule per field.
@@ -511,51 +514,9 @@ components:
             type: array
             items:
               type: string
-    FieldError:
-      type: object
-      required: [field, code, message]
-      properties:
-        field:
-          type: string
-          description: JSON property name, not a Go struct field name.
-          example: email
-        code:
-          type: string
-          description: Stable machine-readable rule or decoding failure.
-          enum: [REQUIRED, INVALID_FORMAT, MIN_LENGTH, MAX_LENGTH, INVALID_CHOICE, INVALID_TYPE, UNKNOWN_FIELD]
-        message:
-          type: string
-          description: Actionable explanation without the submitted value.
-          example: Enter a valid email address.
     ErrorResponse:
-      type: object
-      required: [error]
-      properties:
-        error:
-          type: object
-          required: [code, message]
-          properties:
-            code:
-              type: string
-              enum:
-                - INVALID_JSON
-                - PAYLOAD_TOO_LARGE
-                - VALIDATION_ERROR
-                - EMAIL_TAKEN
-                - INVALID_CREDENTIALS
-                - UNAUTHENTICATED
-                - TOO_MANY_REQUESTS
-                - INTERNAL_ERROR
-                - NOT_FOUND
-            message:
-              type: string
-              description: Human-readable explanation; do not parse this text for program logic.
-            details:
-              description: |
-                Optional client-safe JSON value. Request-field validation and
-                field-specific decoding errors use an array of FieldError objects,
-                with one entry per invalid field, in declaration order for validation.
-                Body-wide decoding errors omit details.
+      allOf:
+        - $ref: '#/components/schemas/AccountProblem'
   responses:
     AccountBadRequest:
       description: Invalid JSON object, unknown field, invalid field value, or invalid account/user ID. Only validation failures include errors.
@@ -608,36 +569,37 @@ components:
           schema:
             $ref: '#/components/schemas/AccountProblem'
     AccountInternalError:
-      description: Unexpected server error. Account handler errors use problem details and no-store; legacy shared middleware uses ErrorResponse and may omit no-store.
+      description: Unexpected server error. Account handler errors include no-store; shared middleware may omit it.
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/AccountProblem'
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
     PayloadTooLarge:
       description: |
-        Request body exceeds 1 MiB (PAYLOAD_TOO_LARGE). Login and account handler
-        responses include Cache-Control: no-store.
+        Request body exceeds 1 MiB. Login and account handler responses
+        include Cache-Control: no-store.
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           example:
-            error:
-              code: PAYLOAD_TOO_LARGE
-              message: Request body must not exceed 1 MiB.
+            type: about:blank
+            title: Request Entity Too Large
+            status: 413
+            detail: body must not be larger than 1048576 bytes
+            instance: /auth/register
     TooManyRequests:
-      description: Shared per-process token bucket exhausted (TOO_MANY_REQUESTS).
+      description: Shared per-process token bucket exhausted.
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           example:
-            error:
-              code: TOO_MANY_REQUESTS
-              message: too many requests
+            type: about:blank
+            title: Too Many Requests
+            status: 429
+            detail: Rate limit exceeded
+            instance: /api/auth/login
     CrossOriginForbidden:
       description: |
         Rejected by CSRF protection before the authentication handler runs.
@@ -648,49 +610,44 @@ components:
             type: string
     BadRequest:
       description: |
-        INVALID_JSON for malformed or non-object JSON, unknown fields,
-        type mismatches, multiple JSON values, or empty bodies.
-        VALIDATION_ERROR for invalid field values or missing required fields.
-        Field-specific errors include structured details. Login responses
-        include Cache-Control: no-store.
+        Malformed or non-object JSON, unknown fields, type mismatches,
+        multiple JSON values, empty bodies, or invalid field values.
+        Only validation failures include errors keyed by JSON field name.
+        Login responses include Cache-Control: no-store.
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           examples:
             invalidJSON:
               value:
-                error:
-                  code: INVALID_JSON
-                  message: Request body is required.
-            invalidFieldType:
-              value:
-                error:
-                  code: INVALID_JSON
-                  message: 'Field "email" must be a string.'
-                  details:
-                    - field: email
-                      code: INVALID_TYPE
-                      message: 'Field "email" must be a string.'
+                type: about:blank
+                title: Bad Request
+                status: 400
+                detail: body must not be empty
+                instance: /auth/register
             validationError:
               value:
-                error:
-                  code: VALIDATION_ERROR
-                  message: Some fields are invalid.
-                  details:
-                    - field: password
-                      code: MIN_LENGTH
-                      message: Password must contain at least 8 characters.
+                type: about:blank
+                title: Bad Request
+                status: 400
+                detail: One or more fields are invalid. Check the field errors for details.
+                instance: /auth/register
+                errors:
+                  password: [Must contain at least 8 characters]
     InternalError:
       description: |
-        Unexpected server error (INTERNAL_ERROR). Responses from the login,
-        current-user, logout and account handlers include Cache-Control: no-store.
-        Errors from shared middleware may omit this header.
+        Unexpected server error. Responses from the login, current-user,
+        logout and account handlers include Cache-Control: no-store.
+        Shared middleware may omit this header and uses the generic detail
+        "Unexpected error has occurred" instead of "internal error".
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           example:
-            error:
-              code: INTERNAL_ERROR
-              message: internal error
+            type: about:blank
+            title: Internal Server Error
+            status: 500
+            detail: internal error
+            instance: /auth/login

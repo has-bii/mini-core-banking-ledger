@@ -26,7 +26,7 @@ The API loads `.env`; existing environment variables take precedence.
 
 Both accept finite decimal values; invalid settings prevent startup. The default burst size was previously hard-coded to `20` and is now `50`; set `RATE_LIMIT_CAPACITY=20` to retain the previous limit.
 
-Each API process has one in-memory token bucket shared by all clients and routes. It starts full, consumes one token per request, and returns HTTP `429` with error code `TOO_MANY_REQUESTS` when exhausted. CORS preflight requests bypass the bucket. Restarting resets it; separate instances do not share limits. This is not per-user or per-IP throttling.
+Each API process has one in-memory token bucket shared by all clients and routes. It starts full, consumes one token per request, and returns HTTP `429` problem details when exhausted. CORS preflight requests bypass the bucket. Restarting resets it; separate instances do not share limits. This is not per-user or per-IP throttling.
 
 ## Migrations
 
@@ -95,6 +95,6 @@ See [api/openapi.yaml](api/openapi.yaml) (OpenAPI 3.0.3) for implemented endpoin
 
 Registration, login, and account creation use `go-playground/validator/v10` built-in rules. Invalid JSON or fields return `400`; bodies exceeding 1 MiB return `413`. Validation reports all invalid fields, first failed rule per field.
 
-Auth endpoints and shared middleware retain the legacy `error.code` / `error.message` envelope, with optional `error.details`. Account handlers and their authentication guard use v2 `application/problem+json` errors (`type`, `title`, `status`, `detail`, `instance`, and optional `errors` keyed by JSON field name). Account success responses contain `data` and an optional `message`. Account consumers must support this new error contract; shared CORS, rate-limit, recovery, and session-lookup failures can still use the legacy envelope.
+Auth, account, and shared middleware use v2 `application/problem+json` errors (`type`, `title`, `status`, `detail`, `instance`, and optional validation `errors` keyed by JSON field name). Success responses contain `data` and an optional `message`; logout remains an empty `204`. CSRF rejections from Go's cross-origin protection remain plain-text `403` responses. Consumers must support the v2 error contract; legacy error codes and detail arrays are no longer returned.
 
 See [architecture guidelines](docs/architecture.md) for layer responsibilities, transactions, and validation rules.

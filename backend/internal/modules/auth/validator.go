@@ -1,13 +1,19 @@
 package auth
 
 import (
-	"backend/internal/platform/validation"
+	pValidator "backend/internal/platform/v2/validator"
+	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
 
-var authValidator = validator.New(validator.WithRequiredStructEnabled())
+var authValidator = func() *validator.Validate {
+	v := validator.New(validator.WithRequiredStructEnabled())
+	v.RegisterTagNameFunc(pValidator.UseJSONName)
+	return v
+}()
 
 type RegisterDTO struct {
 	Name     string `json:"name" validate:"required"`
@@ -15,7 +21,7 @@ type RegisterDTO struct {
 	Password string `json:"password" validate:"required,min=8"`
 }
 
-func (p *RegisterDTO) Validate() validation.Errors {
+func (p *RegisterDTO) Validate() error {
 	p.Name = strings.TrimSpace(p.Name)
 	p.Email = strings.TrimSpace(p.Email)
 	payload := *p
@@ -28,7 +34,7 @@ type LoginDTO struct {
 	Password string `json:"password" validate:"required,min=8"`
 }
 
-func (p *LoginDTO) Validate() validation.Errors {
+func (p *LoginDTO) Validate() error {
 	p.Email = strings.TrimSpace(p.Email)
 	payload := *p
 	payload.Password = passwordForValidation(p.Password)
@@ -37,40 +43,26 @@ func (p *LoginDTO) Validate() validation.Errors {
 
 func passwordForValidation(password string) string {
 	// Normalize only the validation copy; never trim the actual password.
-	if authValidator.Var(strings.TrimSpace(password), "required") != nil {
+	if strings.TrimSpace(password) == "" {
 		return ""
 	}
 	return password
 }
 
-func authValidationErrors(err error, password string) validation.Errors {
-	var errs validation.Errors
-	passwordInvalid := false
-	if err != nil {
-		// Struct receives only the concrete, non-nil DTOs above.
-		for _, field := range err.(validator.ValidationErrors) {
-			switch field.StructField() {
-			case "Name":
-				errs = append(errs, validation.FieldError{Field: "name", Code: validation.CodeRequired, Message: "Name is required."})
-			case "Email":
-				if field.Tag() == "required" {
-					errs = append(errs, validation.FieldError{Field: "email", Code: validation.CodeRequired, Message: "Email is required."})
-				} else {
-					errs = append(errs, validation.FieldError{Field: "email", Code: validation.CodeInvalidFormat, Message: "Enter a valid email address."})
-				}
-			case "Password":
-				passwordInvalid = true
-				if field.Tag() == "required" {
-					errs = append(errs, validation.FieldError{Field: "password", Code: validation.CodeRequired, Message: "Password is required."})
-				} else {
-					errs = append(errs, validation.FieldError{Field: "password", Code: validation.CodeMinLength, Message: "Password must contain at least 8 characters."})
-				}
-			}
+func authValidationErrors(err error, password string) error {
+	if _, ok := errors.AsType[*validator.InvalidValidationError](err); ok {
+		return fmt.Errorf("validate auth: %w", err)
+	}
+	fields := pValidator.FormatErrors(err)
+	// bcrypt limits bytes, while the min rule counts characters.
+	if len(fields["password"]) == 0 && len(password) > 72 {
+		if fields == nil {
+			fields = make(pValidator.ErrorField)
 		}
+		fields["password"] = []string{"Password must not exceed 72 bytes."}
 	}
-	// A byte slice makes the built-in max rule enforce bcrypt's byte limit.
-	if !passwordInvalid && authValidator.Var([]byte(password), "max=72") != nil {
-		errs = append(errs, validation.FieldError{Field: "password", Code: validation.CodeMaxLength, Message: "Password must not exceed 72 bytes."})
+	if len(fields) == 0 {
+		return nil
 	}
-	return errs
+	return pValidator.NewErrorValidation(&fields)
 }

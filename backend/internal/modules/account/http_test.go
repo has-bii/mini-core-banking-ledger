@@ -2,9 +2,8 @@ package account_test
 
 import (
 	"backend/internal/modules/account"
-	"backend/internal/platform/transport/httpx/middleware"
 	"backend/internal/platform/v2/httpx"
-	v2Middleware "backend/internal/platform/v2/middleware"
+	"backend/internal/platform/v2/middleware"
 	"backend/internal/platform/v2/validator"
 	"context"
 	"encoding/json"
@@ -25,7 +24,7 @@ func accountTestHandler(t *testing.T, store *accountStoreStub) http.Handler {
 	t.Helper()
 	mux := http.NewServeMux()
 	account.NewHandler(account.NewService(store), slog.New(slog.NewTextHandler(io.Discard, nil))).Register(mux)
-	return middleware.GetUser(func(context.Context, string) (string, error) {
+	return middleware.GetUserFromSession(func(context.Context, string) (string, error) {
 		return accountTestUserID, nil
 	})(mux)
 }
@@ -50,31 +49,17 @@ func assertAccountProblem(t *testing.T, w *httptest.ResponseRecorder, status int
 
 func TestHandler_PreservesV2Session(t *testing.T) {
 	t.Parallel()
-	for _, tt := range []struct {
-		name         string
-		legacyCookie bool
-	}{
-		{name: "native v2 context"},
-		{name: "v2 takes precedence over legacy", legacyCookie: true},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			// Force a storage failure to observe identity forwarding without SQL.
-			store := &accountStoreStub{err: errors.New("database unavailable")}
-			type requestKey struct{}
-			ctx := context.WithValue(t.Context(), requestKey{}, "request-value")
-			ctx = v2Middleware.WithUserID(ctx, "native-user")
-			r := httptest.NewRequest(http.MethodGet, "/accounts", nil).WithContext(ctx)
-			if tt.legacyCookie {
-				r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
-			}
-			w := httptest.NewRecorder()
-			accountTestHandler(t, store).ServeHTTP(w, r)
-			assertAccountProblem(t, w, http.StatusInternalServerError, "internal error", "/accounts", nil)
-			if store.userID != "native-user" || store.ctx == nil || store.ctx.Value(requestKey{}) != "request-value" {
-				t.Fatalf("identity or request context lost: %+v", store)
-			}
-		})
+	// Force a storage failure to observe identity forwarding without SQL.
+	store := &accountStoreStub{err: errors.New("database unavailable")}
+	type requestKey struct{}
+	ctx := context.WithValue(t.Context(), requestKey{}, "request-value")
+	ctx = middleware.WithUserID(ctx, "native-user")
+	r := httptest.NewRequest(http.MethodGet, "/accounts", nil).WithContext(ctx)
+	w := httptest.NewRecorder()
+	accountTestHandler(t, store).ServeHTTP(w, r)
+	assertAccountProblem(t, w, http.StatusInternalServerError, "internal error", "/accounts", nil)
+	if store.userID != "native-user" || store.ctx == nil || store.ctx.Value(requestKey{}) != "request-value" {
+		t.Fatalf("identity or request context lost: %+v", store)
 	}
 }
 

@@ -119,12 +119,13 @@ func TestApp_SessionLookupFailure(t *testing.T) {
 	pool.Close()
 	w := authRequest(t, h, "GET", "/api/auth/me", "", cookie, http.StatusInternalServerError)
 	var body struct {
-		Error struct{ Code, Message string }
+		Type, Title, Detail, Instance string
+		Status                        int
 	}
 	if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
 		t.Fatal(err)
 	}
-	if body.Error.Code != "INTERNAL_ERROR" || body.Error.Message != "internal error" {
+	if w.Header().Get("Content-Type") != "application/problem+json" || body.Type != "about:blank" || body.Title != "Internal Server Error" || body.Status != 500 || body.Detail != "Unexpected error has occurred" || body.Instance != "/api/auth/me" {
 		t.Fatalf("lookup failure = %s, want a generic internal error", w.Body.String())
 	}
 }
