@@ -1,8 +1,8 @@
 package middleware_test
 
 import (
-	"backend/internal/platform/v2/httpx"
-	"backend/internal/platform/v2/middleware"
+	"backend/internal/platform/httpx"
+	"backend/internal/platform/middleware"
 	"context"
 	"encoding/json"
 	"errors"

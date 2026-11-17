@@ -1,7 +1,7 @@
 package auth
 
 import (
-	pValidator "backend/internal/platform/v2/validator"
+	pValidator "backend/internal/platform/validator"
 	"errors"
 	"fmt"
 	"strings"

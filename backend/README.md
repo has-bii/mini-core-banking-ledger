@@ -95,6 +95,6 @@ See [api/openapi.yaml](api/openapi.yaml) (OpenAPI 3.0.3) for implemented endpoin
 
 Registration, login, and account creation use `go-playground/validator/v10` built-in rules. Invalid JSON or fields return `400`; bodies exceeding 1 MiB return `413`. Validation reports all invalid fields, first failed rule per field.
 
-Auth, account, and shared middleware use v2 `application/problem+json` errors (`type`, `title`, `status`, `detail`, `instance`, and optional validation `errors` keyed by JSON field name). Success responses contain `data` and an optional `message`; logout remains an empty `204`. CSRF rejections from Go's cross-origin protection remain plain-text `403` responses. Consumers must support the v2 error contract; legacy error codes and detail arrays are no longer returned.
+Auth, account, and shared middleware use `application/problem+json` errors (`type`, `title`, `status`, `detail`, `instance`, and optional validation `errors` keyed by JSON field name). Success responses contain `data` and an optional `message`; logout remains an empty `204`. CSRF rejections from Go's cross-origin protection remain plain-text `403` responses. Consumers must support this error contract; legacy error codes and detail arrays are not returned.
 
 See [architecture guidelines](docs/architecture.md) for layer responsibilities, transactions, and validation rules.

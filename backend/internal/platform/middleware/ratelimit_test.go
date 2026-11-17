@@ -1,18 +1,18 @@
 package middleware_test
 
 import (
-	"backend/internal/platform/transport/httpx/middleware"
+	"backend/internal/platform/middleware"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 )
 
-func TestTokenBucket_Middleware(t *testing.T) {
+func TestRateLimiter_Middleware(t *testing.T) {
 	t.Parallel()
 
 	calls := 0
-	handler := middleware.NewTokenBucket(1, 0).Middleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := middleware.NewRateLimiter(1, 0).Middleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls++
 		w.WriteHeader(http.StatusNoContent)
 	}))
@@ -23,7 +23,7 @@ func TestTokenBucket_Middleware(t *testing.T) {
 		if response.Code != want {
 			t.Fatalf("status = %d, want %d", response.Code, want)
 		}
-		if want == http.StatusTooManyRequests && !strings.Contains(response.Body.String(), `"code":"TOO_MANY_REQUESTS"`) {
+		if want == http.StatusTooManyRequests && !strings.Contains(response.Body.String(), `{"type":"about:blank","title":"Too Many Requests","status":429,"detail":"Rate limit exceeded","instance":"/"}`) {
 			t.Fatalf("unexpected error response: %s", response.Body.String())
 		}
 	}

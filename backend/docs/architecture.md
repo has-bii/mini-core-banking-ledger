@@ -3,15 +3,15 @@
 **Pattern:** Handler → Service → Store (Controller-Service-Repository)
 **Stack:** Go, PostgreSQL, pgx; parameterized SQL, no ORM or query builder.
 
-## Platform v2
+## Platform
 
-Auth, account, and application middleware use `platform/v2/httpx`, `platform/v2/middleware`, and `platform/v2/validator`:
+Auth, account, and application middleware use `platform/httpx`, `platform/middleware`, and `platform/validator`:
 
-- HTTP handlers use standard `http.Handler` signatures, v2 decoding and response helpers, and a module-local error mapper instead of `httpx.Adapt`.
-- Domain sentinels live beside their modules. Stores wrap them with `%w`; services preserve errors without converting them to legacy `apperror.Error` or HTTP errors. Auth preserves credential and missing-user causes with `errors.Join`.
-- DTO validation normalizes inputs and returns v2 `ErrorValidation`, with messages keyed by JSON field name. Store defensive validation preserves this structured error. The validator is configured once and reused concurrently.
+- HTTP handlers use standard `http.Handler` signatures, shared decoding and response helpers, and a module-local error mapper instead of `httpx.Adapt`.
+- Domain sentinels live beside their modules. Stores wrap them with `%w`; services preserve errors without converting them to HTTP errors. Auth preserves credential and missing-user causes with `errors.Join`.
+- DTO validation normalizes inputs and returns `validator.ErrorValidation`, with messages keyed by JSON field name. Store defensive validation preserves this structured error. The validator is configured once and reused concurrently.
 - Handlers map invalid IDs/fields to 400, missing accounts/owners to 404, malformed JSON to 400, oversized bodies to 413, and unexpected errors to a logged, generic 500. Errors use `application/problem+json`; success uses `data` and an optional `message`.
-- The application resolves sessions with v2 `GetUserFromSession`; auth and account guards read the same verified user ID context. No legacy context bridge remains. Rate-limit, recovery, and session-lookup failures use v2 problem details; Go's cross-origin protection still writes plain-text 403 rejections.
+- The application resolves sessions with `GetUserFromSession`; auth and account guards read the same verified user ID context. Rate-limit, recovery, and session-lookup failures use problem details; Go's cross-origin protection still writes plain-text 403 rejections.
 - Existing PostgreSQL helpers, SQL, ownership predicates, and account-creation transaction locking remain unchanged. The migration does not relocate transaction ownership.
 
 See [OpenAPI](../api/openapi.yaml) for the response contract.
@@ -29,7 +29,7 @@ See [OpenAPI](../api/openapi.yaml) for the response contract.
 
 - Decode and validate request payloads before calling a service.
 - Handle errors before writing a response; register standard `http.Handler` functions.
-- Use a module-local mapper to translate domain errors into statuses, log unexpected errors, and write safe v2 responses.
+- Use a module-local mapper to translate domain errors into statuses, log unexpected errors, and write safe problem-detail responses.
 
 ### Services
 
@@ -56,14 +56,12 @@ See [OpenAPI](../api/openapi.yaml) for the response contract.
 
 ```text
 internal/platform/
-├── apperror/                 # Client-safe application errors and stable public codes
-├── transport/httpx/          # JSON decoding, responses, error adapter, and HTTP status mapping
-│   └── middleware/           # Chaining, recovery, logging, CORS, auth, rate limiting
-├── storage/
-│   ├── postgres/             # Connection pool, DBTX, and transaction lifecycle
-│   └── redis/                # Redis connection setup
-├── observability/logger/     # Logger setup
-└── validation/               # Field errors and UUID validation
+├── httpx/                    # JSON decoding, responses, and HTTP errors
+├── middleware/               # Chaining, recovery, logging, CORS, auth, rate limiting
+├── postgres/                 # Connection pool, DBTX, and transaction lifecycle
+├── redis/                    # Redis connection setup
+├── logger/                   # Logger setup
+└── validator/                # Validation configuration and structured field errors
 ```
 
 Platform packages must not import `internal/modules`. Authentication middleware accepts a user-ID lookup function; `app.New` adapts the session service, translating missing or expired sessions into an empty user ID with no error. Other lookup errors remain errors and produce a generic `500` response. User-context helpers live beside authentication middleware.
@@ -136,9 +134,9 @@ A rejected password write must leave no user behind. The email pre-check is only
 | **Service** | Business rules, permissions, application state | Return domain errors preserving causes |
 | **Store / database** | Unique keys, foreign keys, not-null and other integrity constraints | Translate known violations; wrap unexpected failures |
 
-DTO validation returns v2 `validator.ErrorValidation`, containing messages keyed by JSON field name. Modules configure `go-playground/validator/v10` once with `UseJSONName` and use `FormatErrors`; only the first failed rule per field is reported. Email follows the built-in `email` rule. Auth trims names and email addresses, rejects whitespace-only passwords using a validation copy, enforces a minimum of 8 characters and bcrypt's maximum of 72 bytes, and never modifies the actual password. Account-store defensive validation preserves structured errors with `%w`.
+DTO validation returns `validator.ErrorValidation`, containing messages keyed by JSON field name. Modules configure `go-playground/validator/v10` once with `UseJSONName` and use `FormatErrors`; only the first failed rule per field is reported. Email follows the built-in `email` rule. Auth trims names and email addresses, rejects whitespace-only passwords using a validation copy, enforces a minimum of 8 characters and bcrypt's maximum of 72 bytes, and never modifies the actual password. Account-store defensive validation preserves structured errors with `%w`.
 
-V2 `httpx.DecodeJSON` accepts exactly one JSON object with no unknown fields and enforces a 1 MiB limit over the complete body, including trailing data. It returns client-safe `HTTPError` values for invalid bodies (`400`) and oversized bodies (`413`). Handlers map these and validation errors into problem details, with `errors` included only for validation. Do not echo submitted values or internal causes; clients should use statuses and field keys rather than parse human-readable messages.
+`httpx.DecodeJSON` accepts exactly one JSON object with no unknown fields and enforces a 1 MiB limit over the complete body, including trailing data. It returns client-safe `HTTPError` values for invalid bodies (`400`) and oversized bodies (`413`). Handlers map these and validation errors into problem details, with `errors` included only for validation. Do not echo submitted values or internal causes; clients should use statuses and field keys rather than parse human-readable messages.
 
 Errors travel upward through normal Go returns, not exceptions:
 

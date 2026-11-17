@@ -2,7 +2,7 @@ package account_test
 
 import (
 	"backend/internal/modules/account"
-	"backend/internal/platform/v2/validator"
+	"backend/internal/platform/validator"
 	"context"
 	"errors"
 	"reflect"

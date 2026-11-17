@@ -1,7 +1,7 @@
 package httpx
 
 import (
-	"backend/internal/platform/v2/validator"
+	"backend/internal/platform/validator"
 	"encoding/json"
 	"errors"
 	"net/http"

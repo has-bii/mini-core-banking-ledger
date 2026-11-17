@@ -6,7 +6,7 @@ import (
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/v2/middleware"
+	"backend/internal/platform/middleware"
 	"backend/internal/testutil"
 	"context"
 	"encoding/json"

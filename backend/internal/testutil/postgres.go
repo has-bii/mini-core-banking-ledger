@@ -3,7 +3,7 @@
 package testutil
 
 import (
-	"backend/internal/platform/storage/postgres"
+	"backend/internal/platform/postgres"
 	"context"
 	"crypto/rand"
 	"net/url"

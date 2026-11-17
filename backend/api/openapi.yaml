@@ -9,7 +9,7 @@ info:
     and otherwise invalid bodies return 400. Oversized bodies return 413,
     including oversized trailing whitespace.
 
-    Auth, account, and shared middleware use v2 problem details
+    Auth, account, and shared middleware use problem details
     (application/problem+json): type, title, status, detail, instance, and
     optional validation errors keyed by JSON field name. Success responses use
     data and an optional message; logout returns an empty 204.

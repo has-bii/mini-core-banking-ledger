@@ -1,8 +1,8 @@
 package httpx_test
 
 import (
-	"backend/internal/platform/v2/httpx"
-	"backend/internal/platform/v2/validator"
+	"backend/internal/platform/httpx"
+	"backend/internal/platform/validator"
 	"encoding/json"
 	"errors"
 	"net/http"

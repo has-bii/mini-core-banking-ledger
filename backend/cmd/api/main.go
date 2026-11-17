@@ -11,9 +11,9 @@ import (
 
 	"backend/internal/app"
 	"backend/internal/config"
-	"backend/internal/platform/observability/logger"
-	"backend/internal/platform/storage/postgres"
-	"backend/internal/platform/storage/redis"
+	"backend/internal/platform/logger"
+	"backend/internal/platform/postgres"
+	"backend/internal/platform/redis"
 )
 
 func main() {

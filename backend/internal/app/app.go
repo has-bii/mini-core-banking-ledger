@@ -12,7 +12,7 @@ import (
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/v2/middleware"
+	"backend/internal/platform/middleware"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

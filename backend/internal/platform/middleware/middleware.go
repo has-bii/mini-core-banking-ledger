@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"backend/internal/platform/v2/httpx"
+	"backend/internal/platform/httpx"
 	"log/slog"
 	"net/http"
 	"runtime/debug"

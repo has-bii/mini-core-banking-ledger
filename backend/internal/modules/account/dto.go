@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	pValidator "backend/internal/platform/v2/validator"
+	pValidator "backend/internal/platform/validator"
 
 	"github.com/go-playground/validator/v10"
 )

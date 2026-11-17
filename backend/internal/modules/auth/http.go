@@ -3,9 +3,9 @@ package auth
 import (
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
-	"backend/internal/platform/v2/httpx"
-	"backend/internal/platform/v2/middleware"
-	"backend/internal/platform/v2/validator"
+	"backend/internal/platform/httpx"
+	"backend/internal/platform/middleware"
+	"backend/internal/platform/validator"
 	"context"
 	"errors"
 	"log/slog"

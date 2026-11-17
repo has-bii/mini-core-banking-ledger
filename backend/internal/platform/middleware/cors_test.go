@@ -1,7 +1,7 @@
 package middleware_test
 
 import (
-	"backend/internal/platform/v2/middleware"
+	"backend/internal/platform/middleware"
 	"net/http"
 	"net/http/httptest"
 	"slices"

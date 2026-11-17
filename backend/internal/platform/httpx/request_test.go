@@ -1,7 +1,7 @@
 package httpx_test
 
 import (
-	"backend/internal/platform/v2/httpx"
+	"backend/internal/platform/httpx"
 	"errors"
 	"net/http"
 	"net/http/httptest"

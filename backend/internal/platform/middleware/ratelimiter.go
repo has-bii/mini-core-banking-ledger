@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"backend/internal/platform/v2/httpx"
+	"backend/internal/platform/httpx"
 	"net/http"
 	"sync"
 	"time"

@@ -2,9 +2,9 @@ package account_test
 
 import (
 	"backend/internal/modules/account"
-	"backend/internal/platform/v2/httpx"
-	"backend/internal/platform/v2/middleware"
-	"backend/internal/platform/v2/validator"
+	"backend/internal/platform/httpx"
+	"backend/internal/platform/middleware"
+	"backend/internal/platform/validator"
 	"context"
 	"encoding/json"
 	"errors"

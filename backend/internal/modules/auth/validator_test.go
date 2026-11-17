@@ -2,7 +2,7 @@ package auth_test
 
 import (
 	"backend/internal/modules/auth"
-	"backend/internal/platform/v2/validator"
+	"backend/internal/platform/validator"
 	"errors"
 	"reflect"
 	"strings"
