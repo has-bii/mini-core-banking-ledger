@@ -1,186 +1,94 @@
-# Still Bank — UI Design Brief
+# Still Bank — Design System and Authentication Only
 
-## Objective
+## 1. Task and strict scope
 
-Design an original, mobile-only personal banking experience for **Still Bank**. Deliver a reusable design system and example screens demonstrating the complete agreed product scope.
+Start from scratch. Previous designs have been deleted.
 
-This brief is intended for a UI design agent such as pen.dev or Wonder Design. Produce designs and design specifications only—not frontend code.
+Create only:
 
-## 1. Audience and platform
+1. A reusable **design system** for Still Bank.
+2. **Authentication screens** demonstrating that system.
 
-- Customers managing their own personal money; not internal staff or business banking users.
-- Native-mobile-app appearance and interaction patterns, not a mobile website.
-- Mobile layouts only; no desktop designs.
-- Use one reference phone size and specify adaptation to smaller and larger phones.
-- Respect safe areas, mobile keyboards, and comfortable touch interaction.
+**Do not design the rest of the banking application.** Do not generate Home, dashboards, Accounts, Savings, Transfers, Top-up, Activity, transaction receipts, Profile, or bottom-navigation screens—not even as examples or previews. Banking context does not authorize banking screens.
 
-## 2. Visual direction
+This brief is for a UI design agent such as pen.dev or Wonder Design. Deliver designs, component specifications, and token specifications only. Do not implement frontend code.
 
-**Direction: Quiet Confidence.** Calm, precise, trustworthy, and approachable without looking cold, flashy, or exclusive.
+## 2. Audience and platform
+
+- Still Bank is a personal banking app for customers, not internal staff or business users.
+- Mobile only, with a native-mobile-app appearance—not a mobile website.
+- Light mode only; no desktop layouts or dark-mode designs.
+- Choose one reference phone size and document adaptation to smaller and larger phones.
+- Respect safe areas and mobile keyboards.
+- Future financial content uses IDR, formatted like **Rp150.000**, without decimals. This is context for reusable typography, not a request for transaction screens.
+
+## 3. Visual direction
+
+**Quiet Confidence:** calm, precise, trustworthy, and approachable without feeling cold, flashy, or exclusive.
 
 - Original identity using the name **Still Bank**.
-- Warm off-white backgrounds, deep forest-green accents, charcoal text, subtle borders.
-- Light mode only.
+- **Main canvas must be warm off-white**, not pure white: `--background: oklch(0.98 0.006 85)`.
+- Use this shared background throughout auth screens, including exposed safe areas.
+- Cards and popovers stay white: `--card: oklch(1 0 0)` and `--popover: oklch(1 0 0)`.
+- Deep forest-green primary actions, charcoal text, subtle borders.
 - Readable sans-serif typography, clear hierarchy, and tabular numerals for financial amounts.
-- Generous but practical spacing, restrained rounding, and minimal decoration.
+- Generous but practical spacing, restrained rounding, minimal decoration.
 - Reserve red for errors and destructive actions.
-- Distinguish incoming and outgoing money with signs and labels, not color alone.
-- Use clear, reassuring, direct language. Avoid unnecessary financial jargon.
+- Clear, reassuring language; no unnecessary financial jargon.
+- Avoid excessive gradients, decorative banking dashboards, and generic website hero sections.
 
-Choose exact visual values within this direction and document them as reusable tokens. Avoid generic dashboard styling, excessive gradients, and decorative elements that compete with account information.
+Preserve the specified canvas, card, and popover values. Choose and document the remaining values within this direction.
 
-## 3. Currency and sample content
+## 4. Required shadcn/ui and Tailwind token contract
 
-- IDR only; no currency switching or conversion.
-- Format money consistently as **Rp150.000**, without decimals.
-- Use realistic fictional customers, account names, balances, and transactions.
-- Keep sample balances and transactions consistent across connected screens.
-- Do not invent interest rates or imply unsupported banking services.
+The frontend will use **shadcn/ui with Tailwind CSS v4**. Use the supplied `globals.css` structure as the naming and mapping contract, not a separate token system. Its default neutral palette is not the final brand palette.
 
-## 4. Authentication
+### CSS structure
 
-### Registration
+Any illustrative CSS specification must preserve:
 
-- Fields: full name, email, password.
-- No email verification.
-- Automatically create one Main account after successful registration.
+```css
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+```
 
-### Sign-in and recovery
+- Define light-theme colors as **OKLCH CSS custom properties in `:root`**.
+- Preserve `@theme inline` mappings from `--color-<name>` to `var(--<name>)` for every color token below.
+- Use semantic utilities such as `bg-background`, `text-foreground`, `bg-primary`, and `border-border`, not hardcoded per-component palette colors.
+- Preserve the base styling contract: `border-border outline-ring/50` globally, and `bg-background text-foreground` on the body.
+- The supplied `.dark` block and custom dark variant are compatibility scaffolding only. Do not design dark mode or add a theme switch.
 
-- Email and password sign-in.
-- Password visibility control and clear validation.
-- Forgot-password and reset-password screens/states.
-- Sign-out from Profile.
+### Required color tokens
 
-Keep registration simple. Do not add identity-document collection or a full identity-verification flow.
+Provide each token's value, semantic role, and utility mapping. Ensure readable foreground/background pairings.
 
-## 5. Account model
-
-| Account type | Creation | Purpose | Closure |
-| --- | --- | --- | --- |
-| Main | One, created automatically | Primary balance and destination for top-ups | Cannot be closed through account management |
-| Sub | Customer can create multiple | Separate everyday money | Allowed only with zero balance and no pending transfers |
-| Savings | Customer can create multiple | Separate money with manual locking | Allowed only when unlocked, with zero balance and no pending transfers |
-
-### Shared account behavior
-
-- Show account type, nickname, balance, and relevant actions.
-- Customers can update account nicknames—not balances or historical transactions.
-- Present deletion as **Close account**, not erasing an account or its history.
-- Preserve transaction history after closure.
-- Explain closure restrictions and show a confirmation before closing.
-
-### Savings locking
-
-- New Savings accounts start unlocked.
-- Customers manually lock or unlock them from account details.
-- Locked Savings accounts can receive money.
-- Locked Savings accounts cannot transfer money out or be closed.
-- Show a visible Locked status and explain restrictions when an outgoing transfer is attempted.
-- Unlocking requires a confirmation dialog explaining that the money becomes available to transfer.
-- No PIN, waiting period, penalty, interest, savings goals, or target/progress tracking.
-- Describe this as voluntary spending control—not a security lock or fixed-term deposit.
-
-## 6. Money movement
-
-### Transfers
-
-Support:
-
-1. Transfers between the customer's own accounts.
-2. Transfers to another customer within Still Bank.
-
-Do not include external-bank or international transfers.
-
-Show source account selection, destination/recipient selection, amount entry, review, and a clear result or receipt. Respect Savings locking and make failures or unavailable actions understandable.
-
-Recipient lookup details are not prescribed; choose a simple, consistent design without implying an external banking integration.
-
-### Top-ups
-
-- Top-ups go only to Main.
-- Use a simulated bank-transfer funding flow: amount entry → review → confirm → receipt.
-- Identify this as a demo funding flow in design annotations.
-- Do not imply that real payment processing or bank integration exists.
-
-## 7. Navigation and home
-
-Use four bottom tabs:
-
-1. **Home**
-2. **Accounts**
-3. **Activity**
-4. **Profile**
-
-### Home content
-
-- Total balance.
-- Account previews.
-- Prominent **Send Money** and **Move Money** actions.
-- Access to Main-account top-up.
-- Recent transactions.
-- A small services section with labeled shortcuts for future features, including bill payments.
-
-### Future-service shortcuts
-
-- Clearly label unavailable services **Coming soon**.
-- Tapping a shortcut explains that it is not available yet.
-- Do not let customers begin an unfinished payment flow.
-- Keep this section small and secondary to working banking actions.
-
-## 8. Example screen coverage
-
-Use reusable screen templates and variants rather than drawing every combination as a separate screen.
-
-| Area | Required examples |
+| CSS custom properties | Role |
 | --- | --- |
-| Access | Registration, sign-in, forgot/reset password |
-| Home | Balance overview, account previews, shortcuts, recent activity, coming-soon feedback |
-| Accounts | Account list, account details, create, rename, close and closure restrictions |
-| Savings | Locked and unlocked states, lock/unlock interactions, unlock confirmation, restricted transfer feedback |
-| Transfers | Own-account transfer, another-customer transfer, review, result/receipt |
-| Top-up | Amount entry, review, confirmation/result and receipt |
-| Activity | Transaction list, filters, transaction details |
-| Profile | Customer details, sign-out |
-
-Include representative **loading, empty, validation, failure, and success states** across the relevant flows. Do not limit examples to populated happy-path screens.
-
-## 9. Reusable design system
-
-Create foundations and components that directly support the example screens. The frontend will use **shadcn/ui with Tailwind CSS v4**. Design components and tokens for that stack, while retaining the native-mobile-app appearance.
-
-### Required shadcn/ui token contract
-
-Use the supplied `globals.css` structure as the naming and mapping contract—not a separate, incompatible token system. Its neutral color values are a starting point; choose branded light-theme values that express the agreed warm off-white, forest-green, and charcoal direction.
-
-- Preserve the imports for `tailwindcss`, `tw-animate-css`, and `shadcn/tailwind.css` in any illustrative CSS specification.
-- Define theme color values as **OKLCH CSS custom properties in `:root`**.
-- Preserve the `@theme inline` mapping from `--color-<name>` to `var(--<name>)`. Components should use semantic utilities such as `bg-background`, `text-foreground`, `bg-primary`, and `border-border`, rather than hardcoded palette colors.
-- Keep the base styling contract: `border-border outline-ring/50` globally and `bg-background text-foreground` on the body.
-- Include every color token listed below in the token sheet, with its value and intended use. Keep foreground/background pairs legible at their actual usage sizes.
-
-| CSS custom properties | Intended role |
-| --- | --- |
-| `--background`, `--foreground` | App canvas and default text |
-| `--card`, `--card-foreground` | Account cards and other card surfaces |
-| `--popover`, `--popover-foreground` | Floating surfaces and their text |
+| `--background`, `--foreground` | Warm off-white canvas and default text |
+| `--card`, `--card-foreground` | White card surfaces and their text |
+| `--popover`, `--popover-foreground` | White floating surfaces and their text |
 | `--primary`, `--primary-foreground` | Forest-green primary actions and contrasting content |
 | `--secondary`, `--secondary-foreground` | Secondary actions and surfaces |
 | `--muted`, `--muted-foreground` | Subdued surfaces and supporting text |
-| `--accent`, `--accent-foreground` | Highlighted or selected interactive surfaces and their content |
+| `--accent`, `--accent-foreground` | Highlighted/selected interactive surfaces and their content |
 | `--destructive`, `--destructive-foreground` | Errors and destructive actions with contrasting content |
-| `--border`, `--input`, `--ring` | Borders, input boundaries, and visible focus rings |
-| `--chart-1` through `--chart-5` | Compatible data-visualization palette; defining these does not require adding charts |
-| `--sidebar`, `--sidebar-foreground` | Sidebar-compatible surface pair |
-| `--sidebar-primary`, `--sidebar-primary-foreground` | Sidebar-compatible primary-action pair |
-| `--sidebar-accent`, `--sidebar-accent-foreground` | Sidebar-compatible selected-surface pair |
-| `--sidebar-border`, `--sidebar-ring` | Sidebar-compatible border and focus colors |
+| `--border`, `--input`, `--ring` | Borders, input boundaries, visible focus rings |
+| `--chart-1` through `--chart-5` | Compatible visualization palette; no charts required |
+| `--sidebar`, `--sidebar-foreground` | Compatible sidebar surface pair |
+| `--sidebar-primary`, `--sidebar-primary-foreground` | Compatible sidebar primary-action pair |
+| `--sidebar-accent`, `--sidebar-accent-foreground` | Compatible sidebar selected-surface pair |
+| `--sidebar-border`, `--sidebar-ring` | Compatible sidebar border and focus colors |
 
-Sidebar tokens are retained for compatibility only. Do not add a sidebar to the mobile navigation.
+Chart and sidebar tokens are retained for compatibility only. **Do not create charts or sidebars.** Explicitly define `--destructive-foreground`, which is mapped but missing from the supplied default `:root` values.
 
-Use the supplied radius contract, with `--radius: 0.625rem` as the base:
+If success, warning, or informational colors are needed, document them as explicit semantic extensions with foreground pairs and matching `@theme inline` mappings. Do not repurpose chart colors as status colors.
 
-| Tailwind theme token | Definition |
+### Radius contract
+
+Keep `--radius: 0.625rem` as the base and preserve these `@theme inline` definitions:
+
+| Theme token | Definition |
 | --- | --- |
 | `--radius-sm` | `calc(var(--radius) * 0.6)` |
 | `--radius-md` | `calc(var(--radius) * 0.8)` |
@@ -190,72 +98,106 @@ Use the supplied radius contract, with `--radius: 0.625rem` as the base:
 | `--radius-3xl` | `calc(var(--radius) * 2.2)` |
 | `--radius-4xl` | `calc(var(--radius) * 2.6)` |
 
-Use Tailwind-aligned spacing, typography, and elevation scales; document chosen values and their utility mappings. Avoid arbitrary per-screen values.
+Use Tailwind-aligned spacing, typography, and elevation scales. Document values and utility mappings; avoid arbitrary per-screen values.
 
-If distinct success, warning, or informational colors are necessary, document them as explicit semantic extensions with foreground pairs and matching `@theme inline` mappings. Do not misuse chart colors as status tokens.
+## 5. Design-system deliverables
 
-**Light mode remains the only design deliverable.** The supplied `.dark` values and custom dark variant are compatibility scaffolding, not a request for dark screens or a theme switch.
+Create clearly named foundation and component sheets, separate from auth screen frames.
 
 ### Foundations
 
-- Semantic color tokens, including text, surfaces, borders, actions, and status colors.
-- Typography scale and financial-number styling.
-- Spacing, layout, corner radius, elevation, and icon conventions.
-- Safe-area and mobile layout guidance.
-- Currency formatting and concise UI-copy conventions.
+- Semantic colors and foreground pairings.
+- Typography scale, including tabular-number and IDR formatting specimens.
+- Spacing, layout, radius, elevation, and icon conventions.
+- Safe-area and small-phone adaptation guidance.
+- Focus, validation, loading, disabled, error, and success conventions.
 
-### Components
+### Reusable components
 
-Cover the components needed by the flows, including:
+Use shadcn/ui primitives where applicable:
 
-- Buttons and icon buttons with relevant interaction states.
-- Text, email, password, and amount inputs; labels, helper text, and errors.
-- Account cards, balance displays, account selectors, and status badges.
-- Transaction rows and transaction-detail patterns.
-- Recipient selection and review/receipt patterns.
-- Bottom navigation, headers, and back navigation.
-- Dialogs or sheets for confirmations and focused actions.
-- Loading indicators/skeletons, empty states, error feedback, and success feedback.
-- Coming-soon service shortcuts.
+- **Button:** primary, secondary, outline, ghost, destructive, icon; loading and disabled states.
+- **Input and Label:** text, email, password, amount; helper text, validation, focus, disabled states.
+- **Password field:** visibility control with accessible labeling.
+- **Card, Badge, Separator:** reusable surfaces and hierarchy.
+- **Checkbox:** reusable control with relevant states; do not add unnecessary registration consent or marketing fields merely to demonstrate it.
+- **Alert and Sonner/toast:** error, informational, and success feedback.
+- **Dialog, Alert Dialog, Sheet/Drawer:** isolated component specimens with neutral content, not banking workflows.
+- **Skeleton and loading indicator:** reusable loading patterns.
 
-Document variants, states, and intended usage. Reuse these components across screens rather than introducing one-off styling. Map applicable components to shadcn/ui primitives such as Button, Input, Label, Card, Badge, Select, Dialog, Alert Dialog, Sheet/Drawer, Skeleton, and Sonner. Compose banking-specific patterns from these primitives; identify custom patterns such as bottom navigation explicitly. Preserve accessible focus, disabled, validation, and destructive states rather than replacing them with purely visual approximations.
+Document component variants, states, semantic-token usage, and intended behavior. Component specimens are allowed; assembling them into additional product screens is not.
 
-## 10. Accessibility and mobile behavior
+Do not expand into an exhaustive catalog of every shadcn/ui component. Focus on reusable foundations and the components listed above, especially those used by authentication.
 
-- Minimum **44×44-point** touch targets.
+## 6. Allowed screen examples — authentication only
+
+Create the following four screen templates and their relevant state variants:
+
+### A. Registration
+
+- Full name, email, and password.
+- Primary create-account action and link to sign-in.
+- Password visibility control and clear requirements/validation.
+- No email verification.
+- No identity documents, KYC flow, phone verification, social sign-in, or extra onboarding screens.
+- Successful registration can show a brief success state. Stop before any signed-in screen.
+
+Product context: a Main account is created automatically after registration. This does not require an account-creation or account-details screen.
+
+### B. Sign-in
+
+- Email and password.
+- Password visibility control.
+- Sign-in action, forgot-password link, and route to registration.
+- Invalid-credentials feedback and submission/loading states.
+- Stop at successful authentication; do not design the destination screen.
+
+### C. Forgot password
+
+- Email entry and reset-link request action.
+- Generic submission confirmation that does not disclose whether an email is registered.
+- Clear route back to sign-in.
+
+### D. Reset password
+
+- New password and confirmation.
+- Validation, submission/loading, and completion states.
+- Invalid/expired-link feedback may be a variant of this template.
+- Completion returns the customer to sign-in.
+
+Show relevant empty/default, focus, filled, validation-error, loading/disabled, failure, and success states as component variants or focused screen variants. Do not invent unrelated screens to demonstrate states.
+
+Connect only the auth flows. No email-verification screen is permitted; password-recovery email is not registration verification.
+
+## 7. Accessibility and mobile behavior
+
+- Minimum **44×44-point** touch targets, including password toggles and navigation links.
 - Readable text and sufficient contrast.
-- Never communicate status through color alone.
-- Clear field labels and actionable validation messages.
-- Keyboard-aware forms with visible primary actions.
-- Distinguish destructive actions from routine actions.
-- Specify how content adapts across phone sizes without adding desktop layouts.
+- Visible focus treatment and non-color-only status indicators.
+- Persistent field labels and actionable error messages.
+- Keyboard-aware forms with reachable primary actions on smaller phones.
+- No reliance on placeholder text as the only label.
+- Design annotations should identify accessible component behavior, not merely visual styling.
 
-## 11. Expected handoff
+## 8. Expected handoff and stopping point
 
-Provide:
+Organize the output as:
 
-1. A foundations/token sheet using the exact shadcn/ui CSS variable names above, with OKLCH light-theme values, semantic roles, Tailwind utility mappings, and the supplied radius scale. Include a proposed `:root` token block and any added `@theme inline` mappings as design specifications, not application implementation.
-2. A reusable component library with variants and states.
-3. Example screens covering the agreed flows.
-4. Flow connections or annotations explaining navigation, confirmations, and restrictions.
-5. Responsive-mobile and accessibility notes.
-6. Explicit annotations identifying simulated funding and simplified onboarding.
+1. **Foundations:** token sheet, scales, and usage guidance.
+2. **Components:** reusable variants and states.
+3. **Authentication:** registration, sign-in, forgot password, reset password, and their relevant variants.
+4. **Specifications:** auth-flow connections, accessibility/mobile notes, proposed OKLCH `:root` token block, and any added `@theme inline` mappings. CSS snippets are token specifications, not application implementation.
 
-Use clear page, frame, and component names. Label any additional design assumptions rather than presenting them as confirmed product requirements.
+Use consistent component instances in all auth screens. Label any added design assumptions.
 
-## 12. Boundaries
+### Completion checklist
 
-This is a design concept, not a production banking or compliance specification.
+- [ ] Main canvas is explicitly warm off-white; cards/popovers are white.
+- [ ] Tokens follow the supplied shadcn/ui and Tailwind v4 contract.
+- [ ] Forest-green Quiet Confidence branding and light-only scope are preserved.
+- [ ] Reusable design-system components include relevant states.
+- [ ] Only the four auth screen templates and their relevant variants are designed.
+- [ ] No registration email verification or identity-verification flow is added.
+- [ ] No signed-in banking screen, dashboard, Home preview, or bottom navigation is created.
 
-Out of scope:
-
-- Frontend implementation or backend/API design.
-- Desktop layouts and dark mode.
-- Business accounts and internal operations tools.
-- External-bank transfers, international transfers, and currency conversion.
-- Functional bill payments or other coming-soon services.
-- Cards, loans, investments, and rewards.
-- Savings interest, goals, automated rules, penalties, or time-based locking.
-- Full identity verification or real funding integrations.
-
-Do not silently expand the product beyond this brief.
+**Stop after the design system and authentication screens. Wait for a separate explicit request before designing any banking screens.**
