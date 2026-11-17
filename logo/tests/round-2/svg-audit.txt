@@ -1,0 +1,128 @@
+FILE: logo/concepts/a-level-s/iterations/v2/horizontal.svg
+
+=== horizontal.svg  (3793 bytes)
+viewBox 0 0 824 256 · aspect 3.219 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 186
+margins L24.3 R31.4 T55.0 B55.0 · bbox fill 0.531
+· INFO [complexity] 186 anchor points (library median 75.0, p75 155.0). Check every point earns its place.
+production-readiness score: 99/100 (heuristic)
+
+
+FILE: logo/concepts/a-level-s/iterations/v2/symbol-reversed-test.svg
+
+=== symbol-reversed-test.svg  (577 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #ffffff · gradients 0 · anchors 17
+margins L33.0 R33.0 T33.0 B33.0 · bbox fill 0.551
+✔ no issues found
+production-readiness score: 100/100 (heuristic)
+
+
+FILE: logo/concepts/a-level-s/iterations/v2/symbol.svg
+
+=== symbol.svg  (537 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #000000 · gradients 0 · anchors 17
+margins L32.0 R32.0 T32.0 B32.0 · bbox fill 0.562
+✔ no issues found
+production-readiness score: 100/100 (heuristic)
+
+
+FILE: logo/concepts/a-level-s/iterations/v2/wordmark.svg
+
+=== wordmark.svg  (3296 bytes)
+viewBox 0 0 736 256 · aspect 2.875 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 169
+margins L23.5 R27.1 T65.2 B71.0 · bbox fill 0.436
+· INFO [complexity] 169 anchor points (library median 75.0, p75 155.0). Check every point earns its place.
+production-readiness score: 99/100 (heuristic)
+
+
+FILE: logo/concepts/b-open-ground/iterations/v2/horizontal.svg
+
+=== horizontal.svg  (3822 bytes)
+viewBox 0 0 824 256 · aspect 3.219 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 186
+margins L30.4 R27.7 T55.0 B61.1 · bbox fill 0.508
+· INFO [complexity] 186 anchor points (library median 75.0, p75 155.0). Check every point earns its place.
+production-readiness score: 99/100 (heuristic)
+
+
+FILE: logo/concepts/b-open-ground/iterations/v2/symbol-reversed-test.svg
+
+=== symbol-reversed-test.svg  (472 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #ffffff · gradients 0 · anchors 13
+margins L41.0 R41.0 T33.0 B41.0 · bbox fill 0.483
+· INFO [off-centre-y] Vertical margins differ (top 33.0, bottom 41.0). Remember the optical centre sits slightly above the geometric centre.
+production-readiness score: 99/100 (heuristic)
+
+
+FILE: logo/concepts/b-open-ground/iterations/v2/symbol.svg
+
+=== symbol.svg  (452 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #000000 · gradients 0 · anchors 13
+margins L40.0 R40.0 T32.0 B40.0 · bbox fill 0.494
+· INFO [off-centre-y] Vertical margins differ (top 32.0, bottom 40.0). Remember the optical centre sits slightly above the geometric centre.
+production-readiness score: 99/100 (heuristic)
+
+
+FILE: logo/concepts/b-open-ground/iterations/v2/wordmark.svg
+
+=== wordmark.svg  (3498 bytes)
+viewBox 0 0 736 256 · aspect 2.875 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 173
+margins L23.4 R22.7 T64.1 B71.0 · bbox fill 0.443
+· INFO [complexity] 173 anchor points (library median 75.0, p75 155.0). Check every point earns its place.
+production-readiness score: 99/100 (heuristic)
+
+
+FILE: logo/concepts/c-shared-line/iterations/v2/horizontal.svg
+
+=== horizontal.svg  (3353 bytes)
+viewBox 0 0 736 256 · aspect 2.875 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 155
+margins L24.0 R32.7 T64.1 B71.0 · bbox fill 0.436
+✔ no issues found
+production-readiness score: 100/100 (heuristic)
+
+
+FILE: logo/concepts/c-shared-line/iterations/v2/symbol-reversed-test.svg
+
+=== symbol-reversed-test.svg  (1060 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #ffffff · gradients 0 · anchors 30
+margins L24.0 R24.0 T47.5 B45.1 · bbox fill 0.519
+✔ no issues found
+production-readiness score: 100/100 (heuristic)
+
+
+FILE: logo/concepts/c-shared-line/iterations/v2/symbol-small-test.svg
+
+=== symbol-small-test.svg  (956 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #000000 · gradients 0 · anchors 29
+margins L16.0 R20.2 T43.1 B36.8 · bbox fill 0.59
+✔ no issues found
+production-readiness score: 100/100 (heuristic)
+
+
+FILE: logo/concepts/c-shared-line/iterations/v2/symbol.svg
+
+=== symbol.svg  (1052 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #000000 · gradients 0 · anchors 30
+margins L24.0 R24.0 T47.5 B45.1 · bbox fill 0.519
+✔ no issues found
+production-readiness score: 100/100 (heuristic)
+
+
+FILE: logo/concepts/c-shared-line/iterations/v2/wordmark.svg
+
+=== wordmark.svg  (3344 bytes)
+viewBox 0 0 720 256 · aspect 2.812 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 155
+margins L16.0 R24.7 T64.1 B71.0 · bbox fill 0.446
+✔ no issues found
+production-readiness score: 100/100 (heuristic)

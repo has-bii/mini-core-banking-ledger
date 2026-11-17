@@ -1,0 +1,94 @@
+
+=== horizontal.svg  (3797 bytes)
+viewBox 0 0 806.21 256 · aspect 3.149 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 186
+margins L24.3 R20.8 T55.0 B55.0 · bbox fill 0.538
+▲ WARN [near-miss-angle] 3 straight edge(s) are 0.3–3° off a clean angle — they read as mistakes. Snap them: 90.4° (→90°) len 37.2 at (632,137); 133.0° (→135°) len 38.5 at (740,134); 132.4° (→135°) len 37.8 at (783,106). (Expected — and fine — for type set on a curve or deliberately rotated elements.)
+· INFO [fractional-viewbox] viewBox has fractional values; integer canvases are easier to grid.
+· INFO [complexity] 186 anchor points (library median 75.0, p75 155.0). Check every point earns its place.
+production-readiness score: 90/100 (heuristic)
+
+=== symbol-reversed-test.svg  (545 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #ffffff · gradients 0 · anchors 17
+margins L32.0 R32.0 T32.0 B32.0 · bbox fill 0.562
+✔ no issues found
+production-readiness score: 100/100 (heuristic)
+
+=== symbol.svg  (537 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #000000 · gradients 0 · anchors 17
+margins L32.0 R32.0 T32.0 B32.0 · bbox fill 0.562
+✔ no issues found
+production-readiness score: 100/100 (heuristic)
+
+=== wordmark.svg  (3305 bytes)
+viewBox 0 0 717.19 256 · aspect 2.802 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 169
+margins L23.5 R16.9 T65.2 B71.0 · bbox fill 0.441
+▲ WARN [near-miss-angle] 3 straight edge(s) are 0.3–3° off a clean angle — they read as mistakes. Snap them: 90.4° (→90°) len 44.9 at (516,138); 133.0° (→135°) len 46.5 at (645,135); 132.4° (→135°) len 45.6 at (697,101). (Expected — and fine — for type set on a curve or deliberately rotated elements.)
+· INFO [fractional-viewbox] viewBox has fractional values; integer canvases are easier to grid.
+· INFO [complexity] 169 anchor points (library median 75.0, p75 155.0). Check every point earns its place.
+production-readiness score: 90/100 (heuristic)
+
+=== horizontal.svg  (3828 bytes)
+viewBox 0 0 810.7 256 · aspect 3.167 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 186
+margins L30.4 R21.2 T55.0 B61.1 · bbox fill 0.512
+▲ WARN [near-miss-angle] 3 straight edge(s) are 0.3–3° off a clean angle — they read as mistakes. Snap them: 90.4° (→90°) len 37.3 at (635,137); 132.9° (→135°) len 38.0 at (744,134); 132.3° (→135°) len 37.9 at (787,106). (Expected — and fine — for type set on a curve or deliberately rotated elements.)
+· INFO [fractional-viewbox] viewBox has fractional values; integer canvases are easier to grid.
+· INFO [complexity] 186 anchor points (library median 75.0, p75 155.0). Check every point earns its place.
+production-readiness score: 90/100 (heuristic)
+
+=== symbol-reversed-test.svg  (460 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #ffffff · gradients 0 · anchors 13
+margins L40.0 R40.0 T32.0 B40.0 · bbox fill 0.494
+· INFO [off-centre-y] Vertical margins differ (top 32.0, bottom 40.0). Remember the optical centre sits slightly above the geometric centre.
+production-readiness score: 99/100 (heuristic)
+
+=== symbol.svg  (452 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #000000 · gradients 0 · anchors 13
+margins L40.0 R40.0 T32.0 B40.0 · bbox fill 0.494
+· INFO [off-centre-y] Vertical margins differ (top 32.0, bottom 40.0). Remember the optical centre sits slightly above the geometric centre.
+production-readiness score: 99/100 (heuristic)
+
+=== wordmark.svg  (3503 bytes)
+viewBox 0 0 722.6 256 · aspect 2.823 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 173
+margins L23.4 R17.4 T64.1 B71.0 · bbox fill 0.446
+▲ WARN [near-miss-angle] 3 straight edge(s) are 0.3–3° off a clean angle — they read as mistakes. Snap them: 90.4° (→90°) len 44.9 at (519,138); 132.9° (→135°) len 45.8 at (650,135); 132.3° (→135°) len 45.7 at (702,101). (Expected — and fine — for type set on a curve or deliberately rotated elements.)
+· INFO [fractional-viewbox] viewBox has fractional values; integer canvases are easier to grid.
+· INFO [complexity] 173 anchor points (library median 75.0, p75 155.0). Check every point earns its place.
+production-readiness score: 90/100 (heuristic)
+
+=== horizontal.svg  (3364 bytes)
+viewBox 0 0 721.88 256 · aspect 2.82 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 155
+margins L24.0 R26.7 T64.1 B71.0 · bbox fill 0.439
+▲ WARN [near-miss-angle] 3 straight edge(s) are 0.3–3° off a clean angle — they read as mistakes. Snap them: 90.4° (→90°) len 44.9 at (507,138); 132.9° (→135°) len 45.8 at (640,135); 132.3° (→135°) len 45.7 at (692,101). (Expected — and fine — for type set on a curve or deliberately rotated elements.)
+· INFO [fractional-viewbox] viewBox has fractional values; integer canvases are easier to grid.
+production-readiness score: 91/100 (heuristic)
+
+=== symbol-reversed-test.svg  (1066 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #ffffff · gradients 0 · anchors 30
+margins L24.0 R26.0 T49.5 B43.1 · bbox fill 0.514
+✔ no issues found
+production-readiness score: 100/100 (heuristic)
+
+=== symbol.svg  (1058 bytes)
+viewBox 0 0 256 256 · aspect 1.0 (square)
+colours 1: #000000 · gradients 0 · anchors 30
+margins L24.0 R26.0 T49.5 B43.1 · bbox fill 0.514
+✔ no issues found
+production-readiness score: 100/100 (heuristic)
+
+=== wordmark.svg  (3355 bytes)
+viewBox 0 0 705.88 256 · aspect 2.757 (horizontal)
+colours 1: #000000 · gradients 0 · anchors 155
+margins L16.0 R18.7 T64.1 B71.0 · bbox fill 0.449
+▲ WARN [near-miss-angle] 3 straight edge(s) are 0.3–3° off a clean angle — they read as mistakes. Snap them: 90.4° (→90°) len 44.9 at (499,138); 132.9° (→135°) len 45.8 at (632,135); 132.3° (→135°) len 45.7 at (684,101). (Expected — and fine — for type set on a curve or deliberately rotated elements.)
+· INFO [fractional-viewbox] viewBox has fractional values; integer canvases are easier to grid.
+production-readiness score: 91/100 (heuristic)

@@ -1,0 +1,52 @@
+{
+  "brand": "Still Bank",
+  "tagline": "",
+  "deck_title": "Open Ground \u2014 final logo kit",
+  "final": true,
+  "greyscale": false,
+  "date": "2026-11-18",
+  "industry": "consumer-app",
+  "mockups": [
+    "app-icon",
+    "favicon-tab",
+    "launcher-masks",
+    "letterhead",
+    "signature",
+    "one-colour"
+  ],
+  "brand_color": "#214F40",
+  "tile_color": "#214F40",
+  "brief": "A personal mobile banking app for everyday customers. Quiet Confidence: calm, precise, trustworthy and approachable; never cold, flashy or exclusive.",
+  "adjectives": [
+    "calm",
+    "precise",
+    "trustworthy",
+    "approachable"
+  ],
+  "criteria": "Mobile-first identity: recognisable app / favicon identifier, a readable Still Bank name, clear 16/24/32/64 px forms, and one-colour / reversed flexibility. Mockups are isolated branding applications, not UI screens or product promises.",
+  "concepts": [
+    {
+      "name": "B \u2014 Open Ground",
+      "symbol": "../svg/still-bank-symbol-color.svg",
+      "lockup": "../svg/still-bank-horizontal-color.svg",
+      "stacked": "../svg/still-bank-stacked-color.svg",
+      "symbol_on_tile": "../svg/still-bank-symbol-white.svg",
+      "symbol_on_dark": "../svg/still-bank-symbol-white.svg",
+      "lockup_on_dark": "../svg/still-bank-horizontal-white.svg",
+      "stacked_on_dark": "../svg/still-bank-stacked-white.svg",
+      "idea": "An open arch with an inward-turning foot gives the mark a quiet, grounded centre.",
+      "rationale": [
+        "The selected silhouette is retained, with a symmetrical crown and open 32-unit exit.",
+        "Forest #214F40 with Mist #F5F6F3; one-colour form carries recognition.",
+        "16/24 px use a sturdier small cut. Reversed mark and name have optical weight correction.",
+        "The abstract n / doorway reading remains a known trade-off; use the name while recognition builds."
+      ]
+    }
+  ],
+  "recommendation": "Direction B was selected by the user, and kit production was explicitly authorised. This kit contains refined vectors, raster exports, icon assets and usage guidance. No separate legal clearance or product capability is implied.",
+  "next_steps": [
+    "Use the SVG / PNG / icon files documented in README.md and USAGE.md.",
+    "Run professional name/device clearance in the intended markets before launch.",
+    "Proof print colours and real-device launcher masks before production."
+  ]
+}

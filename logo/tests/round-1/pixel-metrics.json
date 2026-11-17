@@ -1,0 +1,89 @@
+{
+  "method": "Chrome, 1\u00d7 CSS pixel scale, opaque light/dark crops; 4-connected ink at threshold 128. Components are diagnostic, not a readability score.",
+  "samples": [
+    {
+      "concept": "a-level-s",
+      "size_px": 16,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "a-level-s",
+      "size_px": 24,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "a-level-s",
+      "size_px": 32,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "a-level-s",
+      "size_px": 64,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "b-open-ground",
+      "size_px": 16,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "b-open-ground",
+      "size_px": 24,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "b-open-ground",
+      "size_px": 32,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "b-open-ground",
+      "size_px": 64,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "c-shared-line",
+      "size_px": 16,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "c-shared-line",
+      "size_px": 24,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "c-shared-line",
+      "size_px": 32,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    },
+    {
+      "concept": "c-shared-line",
+      "size_px": 64,
+      "small_cut": false,
+      "dark_ink_components_128_threshold": 1,
+      "white_ink_components_128_threshold": 1
+    }
+  ]
+}
