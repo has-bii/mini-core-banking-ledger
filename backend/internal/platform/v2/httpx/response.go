@@ -22,14 +22,17 @@ type ErrorResponse struct {
 }
 
 func NewErrorResponse(title string, status int, detail string, instance string, errors *validator.ErrorValidation) *ErrorResponse {
-	return &ErrorResponse{
-		Type:            "about:blank",
-		Title:           title,
-		Status:          status,
-		Detail:          detail,
-		Instance:        instance,
-		ErrorValidation: *errors,
+	response := &ErrorResponse{
+		Type:     "about:blank",
+		Title:    title,
+		Status:   status,
+		Detail:   detail,
+		Instance: instance,
 	}
+	if errors != nil {
+		response.ErrorValidation = *errors
+	}
+	return response
 }
 
 func NewSuccessResponse(message string, data any) *SuccessResponse {

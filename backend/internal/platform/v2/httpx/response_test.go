@@ -75,6 +75,28 @@ func TestResponses(t *testing.T) {
 	}
 }
 
+func TestErrorResponseWithoutValidationErrors(t *testing.T) {
+	t.Parallel()
+	w := httptest.NewRecorder()
+	response := httpx.NewErrorResponse("Unauthorized", http.StatusUnauthorized, "Session is expired or invalid", "/accounts", nil)
+	if err := httpx.SendError(w, response); err != nil {
+		t.Fatal(err)
+	}
+	if w.Code != http.StatusUnauthorized || w.Header().Get("Content-Type") != "application/problem+json" {
+		t.Fatalf("response = %d %v", w.Code, w.Header())
+	}
+	var body map[string]any
+	if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := body["errors"]; ok {
+		t.Fatalf("unexpected validation errors: %s", w.Body.String())
+	}
+	if body["detail"] != "Session is expired or invalid" || body["instance"] != "/accounts" {
+		t.Fatalf("unexpected problem details: %s", w.Body.String())
+	}
+}
+
 func TestResponsesRejectBeforeWriting(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {

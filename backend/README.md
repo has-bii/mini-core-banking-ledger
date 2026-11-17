@@ -93,6 +93,8 @@ No coverage threshold is enforced.
 
 See [api/openapi.yaml](api/openapi.yaml) (OpenAPI 3.0.3) for implemented endpoints, request and response schemas, validation, errors, and session cookies.
 
-Registration, login, and account creation use `go-playground/validator/v10` built-in rules and return actionable `400` errors for invalid JSON objects or fields. Field-specific failures include `error.details` entries with JSON field names, stable codes, and messages; clients should use codes instead of parsing message text. Validation reports all invalid fields, first failed rule per field. Bodies exceeding 1 MiB return `413 PAYLOAD_TOO_LARGE`, not `400 INVALID_JSON`.
+Registration, login, and account creation use `go-playground/validator/v10` built-in rules. Invalid JSON or fields return `400`; bodies exceeding 1 MiB return `413`. Validation reports all invalid fields, first failed rule per field.
+
+Auth endpoints and shared middleware retain the legacy `error.code` / `error.message` envelope, with optional `error.details`. Account handlers and their authentication guard use v2 `application/problem+json` errors (`type`, `title`, `status`, `detail`, `instance`, and optional `errors` keyed by JSON field name). Account success responses contain `data` and an optional `message`. Account consumers must support this new error contract; shared CORS, rate-limit, recovery, and session-lookup failures can still use the legacy envelope.
 
 See [architecture guidelines](docs/architecture.md) for layer responsibilities, transactions, and validation rules.

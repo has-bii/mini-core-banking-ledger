@@ -160,7 +160,7 @@ func TestGetUserFromSession_LookupError(t *testing.T) {
 				t.Fatalf("decode error response: %v", err)
 			}
 			if body.Type != "about:blank" || body.Title != "Internal Server Error" || body.Status != 500 ||
-				body.Detail != "Unexpected error has occurred" || body.Instance != "/private" || body.Error != nil {
+				body.Detail != "Unexpected error has occurred" || body.Instance != "/private" || body.Errors != nil {
 				t.Errorf("unexpected error response: %+v", body)
 			}
 		})
@@ -228,7 +228,7 @@ func TestAuthGuard(t *testing.T) {
 				t.Fatalf("decode error response: %v", err)
 			}
 			if body.Type != "about:blank" || body.Title != "Unauthorized" || body.Status != 401 ||
-				body.Detail != "Session is expired or invalid" || body.Instance != "/private" || body.Error != nil {
+				body.Detail != "Session is expired or invalid" || body.Instance != "/private" || body.Errors != nil {
 				t.Errorf("unexpected unauthorized response: %+v", body)
 			}
 		})

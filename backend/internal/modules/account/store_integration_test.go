@@ -5,11 +5,12 @@ package account_test
 import (
 	"backend/internal/modules/account"
 	"backend/internal/modules/user"
-	"backend/internal/platform/validation"
 	"backend/internal/testutil"
 	"errors"
 	"reflect"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 func TestStore_GetByID(t *testing.T) {
@@ -44,10 +45,10 @@ func TestStore_GetByID(t *testing.T) {
 		{name: "missing account", id: "00000000-0000-0000-0000-000000000000", userID: owner.ID, err: account.ErrNotFound},
 		{name: "another user's account", id: want.ID, userID: other.ID, err: account.ErrNotFound},
 		{name: "missing user", id: want.ID, userID: "00000000-0000-0000-0000-000000000000", err: account.ErrNotFound},
-		{name: "invalid account ID", id: "invalid", userID: owner.ID, err: validation.ErrInvalidUUID},
-		{name: "empty account ID", userID: owner.ID, err: validation.ErrInvalidUUID},
-		{name: "invalid user ID", id: want.ID, userID: "invalid", err: validation.ErrInvalidUUID},
-		{name: "empty user ID", id: want.ID, err: validation.ErrInvalidUUID},
+		{name: "invalid account ID", id: "invalid", userID: owner.ID, err: account.ErrInvalidAccountID},
+		{name: "empty account ID", userID: owner.ID, err: account.ErrInvalidAccountID},
+		{name: "invalid user ID", id: want.ID, userID: "invalid", err: account.ErrInvalidUserID},
+		{name: "empty user ID", id: want.ID, err: account.ErrInvalidUserID},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := store.GetByID(t.Context(), tt.id, tt.userID)
@@ -69,7 +70,7 @@ func TestStore_GetByID(t *testing.T) {
 	t.Run("database error", func(t *testing.T) {
 		pool.Close()
 		got, err := store.GetByID(t.Context(), want.ID, owner.ID)
-		if err == nil || errors.Is(err, account.ErrNotFound) || errors.Is(err, validation.ErrInvalidUUID) {
+		if err == nil || errors.Is(err, account.ErrNotFound) || errors.Is(err, account.ErrInvalidAccountID) || errors.Is(err, account.ErrInvalidUserID) {
 			t.Fatalf("GetByID() error = %v, want database error", err)
 		}
 		if !reflect.DeepEqual(got, account.Account{}) {
@@ -114,10 +115,10 @@ func TestStore_ListAccounts(t *testing.T) {
 	}
 
 	// mapping
-	if !validation.IsValidUUID(got.ID) {
+	if uuid.Validate(got.ID) != nil {
 		t.Errorf("Mapping failed! Expected ID to be valid UUID, got '%v'", got.ID)
 	}
-	if !validation.IsValidUUID(got.UserID) {
+	if uuid.Validate(got.UserID) != nil {
 		t.Errorf("Mapping failed! Expected UserID to be valid UUID, got '%v'", got.UserID)
 	}
 	if got.Name != "Main Account" {
@@ -157,7 +158,7 @@ func TestStore_Create(t *testing.T) {
 		for range count {
 			go func() {
 				<-start
-				a, err := store.Create(t.Context(), owner.ID, &account.CreateAccountDTO{Name: "Savings", Type: account.Savings})
+				a, err := store.Create(t.Context(), owner.ID, &account.CreateAccountDTO{Name: "Savings", AccountType: string(account.Savings)})
 				results <- result{a, err}
 			}()
 		}
@@ -195,10 +196,10 @@ func TestStore_Create(t *testing.T) {
 		err    error
 	}{
 		{name: "missing user", userID: "00000000-0000-0000-0000-000000000000", err: account.ErrNotFound},
-		{name: "invalid user ID", userID: "invalid", err: validation.ErrInvalidUUID},
+		{name: "invalid user ID", userID: "invalid", err: account.ErrInvalidUserID},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.Create(t.Context(), tt.userID, &account.CreateAccountDTO{Name: "Savings", Type: account.Savings})
+			got, err := store.Create(t.Context(), tt.userID, &account.CreateAccountDTO{Name: "Savings", AccountType: string(account.Savings)})
 			if !errors.Is(err, tt.err) || !reflect.DeepEqual(got, account.Account{}) {
 				t.Errorf("Create() = %+v, %v; want zero account, %v", got, err, tt.err)
 			}

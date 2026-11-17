@@ -6,10 +6,16 @@ info:
     Contract for the implemented authentication and account APIs.
     JSON request bodies must contain exactly one JSON object, must not exceed
     1 MiB, and must not contain unknown fields. Empty, malformed, non-object,
-    and otherwise invalid bodies return 400 INVALID_JSON. Oversized bodies
-    return 413 PAYLOAD_TOO_LARGE, including oversized trailing whitespace.
+    and otherwise invalid bodies return 400. Oversized bodies return 413,
+    including oversized trailing whitespace.
 
-    Invalid field values return 400 VALIDATION_ERROR with the message
+    Account handlers and their authentication guard use v2 problem details
+    (application/problem+json): type, title, status, detail, instance, and
+    optional errors keyed by JSON field name. Account success responses use
+    data and an optional message. Shared middleware still uses legacy errors.
+
+    Auth endpoints retain INVALID_JSON and PAYLOAD_TOO_LARGE codes.
+    Invalid auth field values return 400 VALIDATION_ERROR with the message
     "Some fields are invalid." and a details array containing field, code,
     and message. Field names match JSON properties. All invalid fields are
     reported in declaration order, with only the first failed rule per field.
@@ -256,81 +262,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/AccountResponse'
         '400':
-          description: |
-            INVALID_JSON for malformed or non-object JSON, unknown fields,
-            type mismatches, multiple JSON values, or empty bodies.
-            VALIDATION_ERROR for invalid field values or missing required fields.
-            Field-specific errors include structured details.
-          headers:
-            Cache-Control:
-              $ref: '#/components/headers/NoStore'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                invalidJSON:
-                  value:
-                    error:
-                      code: INVALID_JSON
-                      message: 'Field "balance" is not allowed.'
-                      details:
-                        - field: balance
-                          code: UNKNOWN_FIELD
-                          message: 'Field "balance" is not allowed.'
-                validationError:
-                  value:
-                    error:
-                      code: VALIDATION_ERROR
-                      message: Some fields are invalid.
-                      details:
-                        - field: name
-                          code: REQUIRED
-                          message: Name is required.
+          $ref: '#/components/responses/AccountBadRequest'
         '413':
-          $ref: '#/components/responses/PayloadTooLarge'
+          $ref: '#/components/responses/AccountPayloadTooLarge'
         '401':
-          description: Authentication required (UNAUTHENTICATED).
-          headers:
-            Cache-Control:
-              $ref: '#/components/headers/NoStore'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: UNAUTHENTICATED
-                  message: authentication required
+          $ref: '#/components/responses/AccountUnauthenticated'
         '403':
           $ref: '#/components/responses/CrossOriginForbidden'
         '404':
-          description: Account owner or required existing account was not found (NOT_FOUND).
-          headers:
-            Cache-Control:
-              $ref: '#/components/headers/NoStore'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: NOT_FOUND
-                  message: account not found
+          $ref: '#/components/responses/AccountNotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
-          description: |
-            Unexpected server error (INTERNAL_ERROR). Account handler responses
-            include Cache-Control: no-store; shared middleware errors may omit it.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: INTERNAL_ERROR
-                  message: internal error
+          $ref: '#/components/responses/AccountInternalError'
     get:
       tags: [Accounts]
       operationId: getAccounts
@@ -353,23 +297,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountsResponse'
+        '400':
+          $ref: '#/components/responses/AccountBadRequest'
         '401':
-          description: Authentication required (UNAUTHENTICATED).
-          headers:
-            Cache-Control:
-              $ref: '#/components/headers/NoStore'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: UNAUTHENTICATED
-                  message: authentication required
+          $ref: '#/components/responses/AccountUnauthenticated'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
-          $ref: '#/components/responses/InternalError'
+          $ref: '#/components/responses/AccountInternalError'
   /accounts/{id}:
     get:
       tags: [Accounts]
@@ -402,59 +337,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/AccountResponse'
         '400':
-          description: Invalid account ID (VALIDATION_ERROR).
-          headers:
-            Cache-Control:
-              $ref: '#/components/headers/NoStore'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: VALIDATION_ERROR
-                  message: invalid account ID
+          $ref: '#/components/responses/AccountBadRequest'
         '401':
-          description: Authentication required (UNAUTHENTICATED).
-          headers:
-            Cache-Control:
-              $ref: '#/components/headers/NoStore'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: UNAUTHENTICATED
-                  message: authentication required
+          $ref: '#/components/responses/AccountUnauthenticated'
         '404':
-          description: Account does not exist or belongs to another user (NOT_FOUND).
-          headers:
-            Cache-Control:
-              $ref: '#/components/headers/NoStore'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: NOT_FOUND
-                  message: account not found
+          $ref: '#/components/responses/AccountNotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
-          description: Unexpected server error (INTERNAL_ERROR).
-          headers:
-            Cache-Control:
-              $ref: '#/components/headers/NoStore'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: INTERNAL_ERROR
-                  message: internal error
+          $ref: '#/components/responses/AccountInternalError'
 components:
   securitySchemes:
     sessionCookie:
@@ -581,6 +472,9 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Account'
+        message:
+          type: string
+          description: Optional success message; omitted when empty.
     AccountsResponse:
       type: object
       required: [data]
@@ -589,6 +483,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Account'
+        message:
+          type: string
+          description: Optional success message; omitted when empty.
+    AccountProblem:
+      type: object
+      required: [type, title, status, detail, instance]
+      properties:
+        type:
+          type: string
+          enum: ['about:blank']
+        title:
+          type: string
+          description: HTTP status text.
+        status:
+          type: integer
+        detail:
+          type: string
+          description: Client-safe explanation; not a stable machine-readable code.
+        instance:
+          type: string
+          description: Request path as seen by the account handler, without query parameters or the /api prefix.
+        errors:
+          type: object
+          description: Optional validation messages keyed by JSON field name; first failed rule per field.
+          additionalProperties:
+            type: array
+            items:
+              type: string
     FieldError:
       type: object
       required: [field, code, message]
@@ -635,6 +557,65 @@ components:
                 with one entry per invalid field, in declaration order for validation.
                 Body-wide decoding errors omit details.
   responses:
+    AccountBadRequest:
+      description: Invalid JSON object, unknown field, invalid field value, or invalid account/user ID. Only validation failures include errors.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/AccountProblem'
+          example:
+            type: about:blank
+            title: Bad Request
+            status: 400
+            detail: One or more fields are invalid. Check the field errors for details.
+            instance: /accounts
+            errors:
+              name: [This field is required]
+    AccountUnauthenticated:
+      description: Session is expired or invalid.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/AccountProblem'
+          example:
+            type: about:blank
+            title: Unauthorized
+            status: 401
+            detail: Session is expired or invalid
+            instance: /accounts
+    AccountNotFound:
+      description: Account or owner was not found, or the account belongs to another user.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/AccountProblem'
+    AccountPayloadTooLarge:
+      description: Request body exceeds 1 MiB, including trailing data.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/AccountProblem'
+    AccountInternalError:
+      description: Unexpected server error. Account handler errors use problem details and no-store; legacy shared middleware uses ErrorResponse and may omit no-store.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/AccountProblem'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     PayloadTooLarge:
       description: |
         Request body exceeds 1 MiB (PAYLOAD_TOO_LARGE). Login and account handler

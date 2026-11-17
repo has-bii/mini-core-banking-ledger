@@ -2,8 +2,7 @@ package account_test
 
 import (
 	"backend/internal/modules/account"
-	"backend/internal/platform/apperror"
-	"backend/internal/platform/validation"
+	"backend/internal/platform/v2/validator"
 	"context"
 	"errors"
 	"reflect"
@@ -35,14 +34,13 @@ func (s *accountStoreStub) Create(ctx context.Context, userID string, data *acco
 	return s.account, s.err
 }
 
-func TestService_GetUserAccountApplicationError(t *testing.T) {
+func TestService_GetUserAccountPreservesCause(t *testing.T) {
 	t.Parallel()
 	cause := errors.New("lookup failed")
 	store := &accountStoreStub{err: errors.Join(cause, account.ErrNotFound)}
 	_, err := account.NewService(store).GetUserAccount(t.Context(), "id", "user")
-	var appErr *apperror.Error
-	if !errors.As(err, &appErr) || appErr.Code != "NOT_FOUND" || appErr.Message != "account not found" || !errors.Is(err, cause) {
-		t.Fatalf("GetUserAccount() error = %v; want NOT_FOUND preserving cause", err)
+	if !errors.Is(err, account.ErrNotFound) || !errors.Is(err, cause) {
+		t.Fatalf("GetUserAccount() error = %v; want ErrNotFound preserving cause", err)
 	}
 }
 
@@ -60,8 +58,8 @@ func TestService_GetUserAccount(t *testing.T) {
 	}{
 		{name: "returns account", id: id, userID: userID, account: account.Account{ID: id, UserID: userID, Name: "Main Account", Type: account.Main, Balance: 12345}},
 		{name: "not found", id: id, userID: userID, err: account.ErrNotFound},
-		{name: "invalid account ID", id: "invalid", userID: userID, err: validation.ErrInvalidUUID},
-		{name: "invalid user ID", id: id, userID: "invalid", err: validation.ErrInvalidUUID},
+		{name: "invalid account ID", id: "invalid", userID: userID, err: account.ErrInvalidAccountID},
+		{name: "invalid user ID", id: id, userID: "invalid", err: account.ErrInvalidUserID},
 		{name: "store error", id: id, userID: userID, err: errors.New("store unavailable")},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
@@ -108,7 +106,7 @@ func TestService_GetUserAccounts(t *testing.T) {
 		},
 		{
 			name: "invalid user ID",
-			err:  validation.ErrInvalidUUID,
+			err:  account.ErrInvalidUserID,
 		},
 		{
 			name:   "store error",
@@ -139,24 +137,29 @@ func TestService_GetUserAccounts(t *testing.T) {
 	}
 }
 
-func TestService_CreateUserAccountApplicationErrors(t *testing.T) {
+func TestService_CreateUserAccountPreservesErrors(t *testing.T) {
 	t.Parallel()
-	fields := validation.Errors{{Field: "name", Code: "REQUIRED", Message: "Name is required."}}
+	fields := validator.ErrorField{"name": {"This field is required"}}
+	validationErr := &validator.ErrorValidation{Errors: &fields}
 	for _, tt := range []struct {
-		name    string
-		cause   error
-		code    string
-		details any
+		name  string
+		cause error
 	}{
-		{name: "missing owner", cause: account.ErrNotFound, code: "NOT_FOUND"},
-		{name: "invalid fields", cause: fields, code: "VALIDATION_ERROR", details: fields},
+		{name: "missing owner", cause: account.ErrNotFound},
+		{name: "invalid user ID", cause: account.ErrInvalidUserID},
+		{name: "invalid fields", cause: validationErr},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			_, err := account.NewService(&accountStoreStub{err: tt.cause}).CreateUserAccount(t.Context(), "user", &account.CreateAccountDTO{})
-			var appErr *apperror.Error
-			if !errors.As(err, &appErr) || appErr.Code != tt.code || !reflect.DeepEqual(appErr.Details, tt.details) || appErr.Unwrap() == nil {
-				t.Fatalf("CreateUserAccount() error = %v; want %s with details %+v and cause", err, tt.code, tt.details)
+			if !errors.Is(err, tt.cause) {
+				t.Fatalf("CreateUserAccount() error = %v; want original cause %v", err, tt.cause)
+			}
+			if tt.cause == validationErr {
+				var got *validator.ErrorValidation
+				if !errors.As(err, &got) || !reflect.DeepEqual(*got.Errors, fields) {
+					t.Fatalf("validation details lost: %v", err)
+				}
 			}
 		})
 	}
@@ -168,7 +171,7 @@ func TestService_CreateUserAccount(t *testing.T) {
 	storeErr := errors.New("store unavailable")
 	store := &accountStoreStub{err: storeErr}
 	ctx := t.Context()
-	data := &account.CreateAccountDTO{Name: "Travel", Type: account.Savings}
+	data := &account.CreateAccountDTO{Name: "Travel", AccountType: string(account.Savings)}
 	got, err := account.NewService(store).CreateUserAccount(ctx, userID, data)
 	if !errors.Is(err, storeErr) || got != (account.Account{}) {
 		t.Errorf("CreateUserAccount() = %+v, %v; want zero account, %v", got, err, storeErr)

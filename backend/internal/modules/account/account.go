@@ -5,7 +5,11 @@ import (
 	"time"
 )
 
-var ErrNotFound = errors.New("account not found")
+var (
+	ErrNotFound         = errors.New("account not found")
+	ErrInvalidAccountID = errors.New("invalid account ID")
+	ErrInvalidUserID    = errors.New("invalid user ID")
+)
 
 type AccountType string
 

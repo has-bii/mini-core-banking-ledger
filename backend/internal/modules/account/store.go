@@ -2,11 +2,11 @@ package account
 
 import (
 	"backend/internal/platform/storage/postgres"
-	"backend/internal/platform/validation"
 	"context"
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -23,8 +23,8 @@ func scanAccount(r scanner) (Account, error) {
 }
 
 func (s *Store) ListByUserID(ctx context.Context, userID string) ([]Account, error) {
-	if !validation.IsValidUUID(userID) {
-		return nil, validation.ErrInvalidUUID
+	if err := uuid.Validate(userID); err != nil {
+		return nil, fmt.Errorf("list by user id: %w", ErrInvalidUserID)
 	}
 
 	const q = `SELECT id, user_id, name, type, sort_order, balance, created_at FROM accounts
@@ -41,11 +41,11 @@ func (s *Store) ListByUserID(ctx context.Context, userID string) ([]Account, err
 }
 
 func (s *Store) GetByID(ctx context.Context, ID, userID string) (Account, error) {
-	if !validation.IsValidUUID(ID) {
-		return Account{}, fmt.Errorf("account by id: ID %w", validation.ErrInvalidUUID)
+	if err := uuid.Validate(ID); err != nil {
+		return Account{}, fmt.Errorf("account by id: %w", ErrInvalidAccountID)
 	}
-	if !validation.IsValidUUID(userID) {
-		return Account{}, fmt.Errorf("account by id: userID %w", validation.ErrInvalidUUID)
+	if err := uuid.Validate(userID); err != nil {
+		return Account{}, fmt.Errorf("account by id: %w", ErrInvalidUserID)
 	}
 
 	const q = `SELECT id, user_id, name, type, sort_order, balance, created_at FROM accounts
@@ -62,11 +62,11 @@ func (s *Store) GetByID(ctx context.Context, ID, userID string) (Account, error)
 }
 
 func (s *Store) Create(ctx context.Context, userID string, data *CreateAccountDTO) (Account, error) {
-	if !validation.IsValidUUID(userID) {
-		return Account{}, fmt.Errorf("create account: userID %w", validation.ErrInvalidUUID)
+	if err := uuid.Validate(userID); err != nil {
+		return Account{}, fmt.Errorf("create account: %w", ErrInvalidUserID)
 	}
 
-	if errs := data.Validate(); len(errs) > 0 {
+	if errs := data.Validate(); errs != nil {
 		return Account{}, fmt.Errorf("create account: %w", errs)
 	}
 
@@ -96,7 +96,7 @@ func (s *Store) Create(ctx context.Context, userID string, data *CreateAccountDT
 			`INSERT INTO accounts (user_id, name, type, sort_order)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, user_id, name, type, sort_order, balance, created_at`,
-			userID, data.Name, data.Type, lastSortOrder+1,
+			userID, data.Name, data.AccountType, lastSortOrder+1,
 		).Scan(&a.ID, &a.UserID, &a.Name, &a.Type, &a.SortOrder, &a.Balance, &a.CreatedAt)
 
 		if err != nil {

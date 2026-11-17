@@ -8,6 +8,11 @@ import (
 
 type userIDContextKey struct{}
 
+// WithUserID carries a verified user ID across middleware boundaries.
+func WithUserID(ctx context.Context, userID string) context.Context {
+	return context.WithValue(ctx, userIDContextKey{}, userID)
+}
+
 func UserIDFromContext(ctx context.Context) (string, bool) {
 	id, ok := ctx.Value(userIDContextKey{}).(string)
 	return id, ok
@@ -37,7 +42,7 @@ func GetUserFromSession(lookupUserID func(context.Context, string) (string, erro
 				next.ServeHTTP(w, r)
 				return
 			}
-			ctx := context.WithValue(r.Context(), userIDContextKey{}, userID)
+			ctx := WithUserID(r.Context(), userID)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

@@ -3,6 +3,19 @@
 **Pattern:** Handler → Service → Store (Controller-Service-Repository)
 **Stack:** Go, PostgreSQL, pgx; parameterized SQL, no ORM or query builder.
 
+## Account v2 migration
+
+Account uses `platform/v2/httpx`, `platform/v2/middleware`, and `platform/v2/validator`. The legacy conventions below still apply to other modules. For account:
+
+- HTTP handlers use standard `http.Handler` signatures, v2 decoding and response helpers, and a module-local error mapper instead of `httpx.Adapt`.
+- Domain sentinels (`ErrNotFound`, `ErrInvalidAccountID`, `ErrInvalidUserID`) live in `account.go`. Stores wrap them with `%w`; services preserve errors without converting them to legacy `apperror.Error` or HTTP errors.
+- DTO validation normalizes inputs and returns v2 `ErrorValidation`, with messages keyed by JSON field name. Store defensive validation preserves this structured error. The validator is configured once and reused concurrently.
+- Handlers map invalid IDs/fields to 400, missing accounts/owners to 404, malformed JSON to 400, oversized bodies to 413, and unexpected errors to a logged, generic 500. Errors use `application/problem+json`; success uses `data` and an optional `message`.
+- The application still resolves sessions with legacy middleware. Account route registration bridges its verified user ID into v2 context before the v2 guard; native v2 context takes precedence. This temporary bridge does not re-query sessions or affect other routes. Shared middleware errors retain the legacy envelope.
+- Existing PostgreSQL helpers, SQL, ownership predicates, and account-creation transaction locking remain unchanged. The migration does not relocate transaction ownership.
+
+See [OpenAPI](../api/openapi.yaml) for both response contracts.
+
 ## 1. Layer Responsibilities
 
 | Layer | Owns | Must not contain |
