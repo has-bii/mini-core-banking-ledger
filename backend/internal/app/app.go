@@ -30,9 +30,10 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 
 	tb := middleware.NewRateLimiter(cfg.RatelimitCapacity, cfg.RatelimitRefillRate)
 
-	mux := http.NewServeMux()
-
 	sessionSvc := session.NewService(session.NewStore(pool))
+	authSvc := auth.NewService(user.NewStore(pool), sessionSvc)
+	accountService := account.NewService(account.NewStore(pool))
+
 	lookupUserID := func(ctx context.Context, token string) (string, error) {
 		current, err := sessionSvc.FindByToken(ctx, token)
 		if errors.Is(err, session.ErrNotFound) {
@@ -40,10 +41,8 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 		}
 		return current.UserID, err
 	}
-	authSvc := auth.NewService(user.NewStore(pool), sessionSvc)
 
-	accountService := account.NewService(account.NewStore(pool))
-
+	mux := http.NewServeMux()
 	api := http.NewServeMux()
 
 	auth.NewHandler(authSvc, log, cfg.Env != "dev" && cfg.Env != "test").Register(api)
@@ -51,5 +50,12 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 
 	mux.Handle("/api/", http.StripPrefix("/api", api))
 
-	return middleware.Chain(mux, middleware.Recoverer(log), middleware.Logging(log), cors, middleware.GetUserFromSession(lookupUserID), tb.Middleware()), nil
+	return middleware.Chain(
+		mux,
+		middleware.Recoverer(log),
+		middleware.Logging(log),
+		cors,
+		middleware.GetUserFromSession(lookupUserID),
+		tb.Middleware(),
+	), nil
 }
