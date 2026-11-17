@@ -194,14 +194,14 @@ func TestAuthGuard(t *testing.T) {
 			nextCalls := 0
 			handler := middleware.GetUserFromSession(func(context.Context, string) (string, error) {
 				return tt.userID, nil
-			})(middleware.AuthGuard(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			})(middleware.AuthGuard(func(w http.ResponseWriter, r *http.Request) {
 				nextCalls++
 				if id, ok := middleware.UserIDFromContext(r.Context()); !ok || id != tt.userID {
 					t.Errorf("downstream user = (%q, %t), want (%q, true)", id, ok, tt.userID)
 				}
 				w.WriteHeader(http.StatusAccepted)
 				_, _ = w.Write([]byte("protected content"))
-			})))
+			}))
 
 			handler.ServeHTTP(recorder, request)
 

@@ -43,7 +43,7 @@ func GetUserFromSession(lookupUserID func(context.Context, string) (string, erro
 	}
 }
 
-func AuthGuard(next http.Handler) http.Handler {
+func AuthGuard(h func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if id, ok := UserIDFromContext(r.Context()); !ok || id == "" {
 			httpx.NoStoreHeader(w)
@@ -56,6 +56,6 @@ func AuthGuard(next http.Handler) http.Handler {
 			))
 			return
 		}
-		next.ServeHTTP(w, r)
+		h(w, r)
 	})
 }
