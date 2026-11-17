@@ -14,7 +14,7 @@ import (
 
 func TestResponses(t *testing.T) {
 	t.Parallel()
-	fields := []validator.ErrorField{{"name": {"required"}}}
+	fields := validator.ErrorField{"name": {"required"}}
 	for _, tt := range []struct {
 		name, contentType, body string
 		status                  int
@@ -38,14 +38,14 @@ func TestResponses(t *testing.T) {
 			name: "error without fields", status: http.StatusBadRequest, contentType: "application/problem+json",
 			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/accounts"}`,
 			send: func(w http.ResponseWriter) error {
-				return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "invalid input", "/accounts", nil))
+				return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "invalid input", "/accounts", &validator.ErrorValidation{}))
 			},
 		},
 		{
 			name: "error with fields", status: http.StatusUnprocessableEntity, contentType: "application/problem+json",
-			body: `{"type":"about:blank","title":"Invalid","status":422,"detail":"invalid input","instance":"/accounts","error":[{"name":["required"]}]}`,
+			body: `{"type":"about:blank","title":"Invalid","status":422,"detail":"invalid input","instance":"/accounts","errors":{"name":["required"]}}`,
 			send: func(w http.ResponseWriter) error {
-				return httpx.SendError(w, httpx.NewErrorResponse("Invalid", http.StatusUnprocessableEntity, "invalid input", "/accounts", &fields))
+				return httpx.SendError(w, httpx.NewErrorResponse("Invalid", http.StatusUnprocessableEntity, "invalid input", "/accounts", &validator.ErrorValidation{Errors: &fields}))
 			},
 		},
 	} {
@@ -110,7 +110,7 @@ func TestResponsesReturnWriterError(t *testing.T) {
 			return httpx.SendSuccess(w, http.StatusOK, httpx.NewSuccessResponse("", nil))
 		}},
 		{"error", func(w http.ResponseWriter) error {
-			return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "", "", nil))
+			return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "", "", &validator.ErrorValidation{}))
 		}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {

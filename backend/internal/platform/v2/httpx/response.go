@@ -13,22 +13,22 @@ type SuccessResponse struct {
 }
 
 type ErrorResponse struct {
-	Type     string                  `json:"type"`
-	Title    string                  `json:"title"`
-	Status   int                     `json:"status"`
-	Detail   string                  `json:"detail"`
-	Instance string                  `json:"instance"`
-	Error    *[]validator.ErrorField `json:"error,omitempty"`
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail"`
+	Instance string `json:"instance"`
+	validator.ErrorValidation
 }
 
-func NewErrorResponse(title string, status int, detail string, instance string, errors *[]validator.ErrorField) *ErrorResponse {
+func NewErrorResponse(title string, status int, detail string, instance string, errors *validator.ErrorValidation) *ErrorResponse {
 	return &ErrorResponse{
-		Type:     "about:blank",
-		Title:    title,
-		Status:   status,
-		Detail:   detail,
-		Instance: instance,
-		Error:    errors,
+		Type:            "about:blank",
+		Title:           title,
+		Status:          status,
+		Detail:          detail,
+		Instance:        instance,
+		ErrorValidation: *errors,
 	}
 }
 
