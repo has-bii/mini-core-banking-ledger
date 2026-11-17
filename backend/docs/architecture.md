@@ -11,7 +11,7 @@ Auth, account, and application middleware use `platform/httpx`, `platform/middle
 - Domain sentinels live beside their modules. Stores wrap them with `%w`; services preserve errors without converting them to HTTP errors. Auth preserves credential and missing-user causes with `errors.Join`.
 - DTO validation normalizes inputs and returns `validator.ErrorValidation`, with messages keyed by JSON field name. Store defensive validation preserves this structured error. The validator is configured once and reused concurrently.
 - Handlers map invalid IDs/fields to 400, missing accounts/owners to 404, malformed JSON to 400, oversized bodies to 413, and unexpected errors to a logged, generic 500. Errors use `application/problem+json`; success uses `data` and an optional `message`.
-- The application resolves sessions with `GetUserFromSession`; auth and account guards read the same verified user ID context. Rate-limit, recovery, and session-lookup failures use problem details; Go's cross-origin protection still writes plain-text 403 rejections.
+- The application resolves sessions with `GetUserFromSession`; auth and account guards read the same verified user ID context. Rate-limit, recovery, session-lookup, and cross-origin protection failures use problem details. Cross-origin rejections return 403 without reaching the handler.
 - Existing PostgreSQL helpers, SQL, ownership predicates, and account-creation transaction locking remain unchanged. The migration does not relocate transaction ownership.
 
 See [OpenAPI](../api/openapi.yaml) for the response contract.

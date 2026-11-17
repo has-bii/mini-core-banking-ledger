@@ -2,8 +2,10 @@ package middleware_test
 
 import (
 	"backend/internal/platform/middleware"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
@@ -123,6 +125,25 @@ func TestCORS_Requests(t *testing.T) {
 			handler.ServeHTTP(rr, req)
 			if rr.Code != tt.wantStatus {
 				t.Errorf("status = %d, want %d", rr.Code, tt.wantStatus)
+			}
+			if tt.wantStatus == http.StatusForbidden {
+				if got := rr.Header().Get("Content-Type"); got != "application/problem+json" {
+					t.Errorf("Content-Type = %q, want application/problem+json", got)
+				}
+				var problem map[string]any
+				if err := json.Unmarshal(rr.Body.Bytes(), &problem); err != nil {
+					t.Fatalf("decode problem details: %v; body = %q", err, rr.Body.String())
+				}
+				want := map[string]any{
+					"type":     "about:blank",
+					"title":    "Forbidden",
+					"status":   float64(403),
+					"detail":   "Cross-origin request denied.",
+					"instance": "/resource",
+				}
+				if !reflect.DeepEqual(problem, want) {
+					t.Errorf("problem details = %v, want %v", problem, want)
+				}
 			}
 			wantCredentials := ""
 			if tt.credentials && tt.wantOrigin != "" {

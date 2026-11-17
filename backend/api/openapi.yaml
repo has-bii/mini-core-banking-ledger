@@ -603,11 +603,17 @@ components:
     CrossOriginForbidden:
       description: |
         Rejected by CSRF protection before the authentication handler runs.
-        This response is plain text, not the API JSON error envelope.
+        Uses the same problem-details format as other API errors.
       content:
-        text/plain:
+        application/problem+json:
           schema:
-            type: string
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            type: about:blank
+            title: Forbidden
+            status: 403
+            detail: Cross-origin request denied.
+            instance: /api/auth/login
     BadRequest:
       description: |
         Malformed or non-object JSON, unknown fields, type mismatches,

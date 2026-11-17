@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"backend/internal/platform/httpx"
 	"fmt"
 	"net/http"
 	"slices"
@@ -56,6 +57,16 @@ func CORS(opts *CORSOptions) (Middleware, error) {
 	// Cross-origin protection: block unsafe cross-origin requests,
 	// except from the origins we explicitly allow.
 	cop := http.NewCrossOriginProtection()
+	cop.SetDenyHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// A write failure cannot be replaced with another response.
+		_ = httpx.SendError(w, httpx.NewErrorResponse(
+			http.StatusText(http.StatusForbidden),
+			http.StatusForbidden,
+			"Cross-origin request denied.",
+			r.URL.Path,
+			nil,
+		))
+	}))
 	for _, o := range opts.Origin {
 		if err := cop.AddTrustedOrigin(o); err != nil {
 			return nil, fmt.Errorf("invalid CORS origin %q: %w", o, err)
