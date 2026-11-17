@@ -2,7 +2,7 @@
 
 ## 1. Task and strict scope
 
-Start from scratch. Previous designs have been deleted.
+Start from scratch.
 
 Create only:
 
@@ -26,8 +26,8 @@ This brief is for a UI design agent such as pen.dev or Wonder Design. Deliver de
 
 **Quiet Confidence:** calm, precise, trustworthy, and approachable without feeling cold, flashy, or exclusive.
 
-- Original identity using the name **Still Bank**.
-- **Main canvas must be warm off-white**, not pure white: `--background: oklch(0.98 0.006 85)`.
+- Use the existing **Still Bank** identity and approved logo assets in repository-root [`design/logo/`](../design/logo/); do not design a new logo.
+- **Main canvas must be off-white**, not pure white: `--background: oklch(0.98 0.006 85)`.
 - Use this shared background throughout auth screens, including exposed safe areas.
 - Cards and popovers stay white: `--card: oklch(1 0 0)` and `--popover: oklch(1 0 0)`.
 - Deep forest-green primary actions, charcoal text, subtle borders.
@@ -38,6 +38,19 @@ This brief is for a UI design agent such as pen.dev or Wonder Design. Deliver de
 - Avoid excessive gradients, decorative banking dashboards, and generic website hero sections.
 
 Preserve the specified canvas, card, and popover values. Choose and document the remaining values within this direction.
+
+### Existing logo and brand assets
+
+The approved logo is **Open Ground (Direction B)**. Start with the [logo kit README](../design/logo/README.md) and follow the [usage rules](../design/logo/USAGE.md) and [visual guide](../design/logo/guidelines/still-bank-usage-guide.pdf).
+
+- Default auth-screen lockup: [`still-bank-horizontal-color.svg`](../design/logo/svg/still-bank-horizontal-color.svg), at least **160 px canvas width**.
+- For symbol-only placements, use [`still-bank-symbol-color.svg`](../design/logo/svg/still-bank-symbol-color.svg) at **32 px and above**, or [`still-bank-symbol-small-color.svg`](../design/logo/svg/still-bank-symbol-small-color.svg) at **16–24 px**.
+- Use supplied SVG lockups intact. Do not retype the wordmark, redraw, stretch, recolour, add effects, or change symbol/name proportions.
+- Keep at least **one symbol stem-width** clear around the visible artwork; SVG canvas padding does not replace layout clear space. Follow the usage rules for other lockups and their minimum sizes.
+- Logo Forest is **`#214F40`**. Coordinate UI primary colors with it, but preserve the required off-white canvas and white card/popover tokens above; the kit's Mist **`#F5F6F3`** does not override them.
+- The logo uses outlined Figtree letterforms. Figtree is available in [`design/logo/fonts/`](../design/logo/fonts/), but the UI typography scale still needs to be specified; do not recreate the logo with a font.
+
+Show appropriate logo placement within the authentication scope only. The supplied app icons and favicons are reference assets, not requests for additional screens or implementation work.
 
 ## 4. Required shadcn/ui and Tailwind token contract
 
@@ -65,7 +78,7 @@ Provide each token's value, semantic role, and utility mapping. Ensure readable 
 
 | CSS custom properties | Role |
 | --- | --- |
-| `--background`, `--foreground` | Warm off-white canvas and default text |
+| `--background`, `--foreground` | Off-white canvas and default text |
 | `--card`, `--card-foreground` | White card surfaces and their text |
 | `--popover`, `--popover-foreground` | White floating surfaces and their text |
 | `--primary`, `--primary-foreground` | Forest-green primary actions and contrasting content |
@@ -192,7 +205,7 @@ Use consistent component instances in all auth screens. Label any added design a
 
 ### Completion checklist
 
-- [ ] Main canvas is explicitly warm off-white; cards/popovers are white.
+- [ ] Main canvas is explicitly off-white; cards/popovers are white.
 - [ ] Tokens follow the supplied shadcn/ui and Tailwind v4 contract.
 - [ ] Forest-green Quiet Confidence branding and light-only scope are preserved.
 - [ ] Reusable design-system components include relevant states.
