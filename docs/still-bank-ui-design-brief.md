@@ -1,4 +1,4 @@
-# Still Bank — Design System and Authentication Only
+# Still Bank — Design System, Reusable Components, and Authentication Examples
 
 ## 1. Task and strict scope
 
@@ -7,11 +7,14 @@ Start from scratch.
 Create only:
 
 1. A reusable **design system** for Still Bank.
-2. **Authentication screens** demonstrating that system.
+2. **Reusable component definitions** with variants and states.
+3. **Authentication example pages** demonstrating that system through shared component instances.
 
 **Do not design the rest of the banking application.** Do not generate Home, dashboards, Accounts, Savings, Transfers, Top-up, Activity, transaction receipts, Profile, or bottom-navigation screens—not even as examples or previews. Banking context does not authorize banking screens.
 
-This brief is for a UI design agent such as pen.dev or Wonder Design. Deliver designs, component specifications, and token specifications only. Do not implement frontend code.
+This brief is for **Wonder Desktop**, working in its own repository worktree. Use repository-relative paths to access the existing brand assets. If a required asset is unavailable, flag the missing dependency; do not recreate it.
+
+Deliver editable design foundations, reusable components, and authentication example pages in Wonder, with component and token specifications. This is design work only: do not create or modify application code, stylesheets, backend code, dependencies, or configuration. CSS snippets belong in the design specifications only.
 
 ## 2. Audience and platform
 
@@ -54,7 +57,7 @@ Show appropriate logo placement within the authentication scope only. The suppli
 
 ## 4. Required shadcn/ui and Tailwind token contract
 
-The frontend will use **shadcn/ui with Tailwind CSS v4**. Use the supplied `globals.css` structure as the naming and mapping contract, not a separate token system. Its default neutral palette is not the final brand palette.
+The frontend will use **shadcn/ui with Tailwind CSS v4**. The token names, values, and mappings specified below are the authoritative design contract; no external `globals.css` is required. Do not introduce a separate token system or treat the default shadcn neutral palette as the final brand palette.
 
 ### CSS structure
 
@@ -70,7 +73,7 @@ Any illustrative CSS specification must preserve:
 - Preserve `@theme inline` mappings from `--color-<name>` to `var(--<name>)` for every color token below.
 - Use semantic utilities such as `bg-background`, `text-foreground`, `bg-primary`, and `border-border`, not hardcoded per-component palette colors.
 - Preserve the base styling contract: `border-border outline-ring/50` globally, and `bg-background text-foreground` on the body.
-- The supplied `.dark` block and custom dark variant are compatibility scaffolding only. Do not design dark mode or add a theme switch.
+- Specify the light theme only. Do not generate a `.dark` block, design dark mode, or add a theme switch.
 
 ### Required color tokens
 
@@ -93,7 +96,7 @@ Provide each token's value, semantic role, and utility mapping. Ensure readable 
 | `--sidebar-accent`, `--sidebar-accent-foreground` | Compatible sidebar selected-surface pair |
 | `--sidebar-border`, `--sidebar-ring` | Compatible sidebar border and focus colors |
 
-Chart and sidebar tokens are retained for compatibility only. **Do not create charts or sidebars.** Explicitly define `--destructive-foreground`, which is mapped but missing from the supplied default `:root` values.
+Chart and sidebar tokens are retained for compatibility only. **Do not create charts or sidebars.** Explicitly define `--destructive-foreground` and its utility mapping alongside the other tokens.
 
 If success, warning, or informational colors are needed, document them as explicit semantic extensions with foreground pairs and matching `@theme inline` mappings. Do not repurpose chart colors as status colors.
 
@@ -144,7 +147,20 @@ Do not expand into an exhaustive catalog of every shadcn/ui component. Focus on 
 
 ## 6. Allowed screen examples — authentication only
 
-Create the following four screen templates and their relevant state variants:
+Create the following four example-page templates and their relevant state variants. These pages demonstrate the design system; they are not a request to implement authentication.
+
+### Backend-aligned behavior and password policy
+
+The current behavior was checked against `backend/internal/modules/auth/validator.go`, `service.go`, and `http.go`. Wonder does not need to inspect or change application code.
+
+- Registration requires a full name, a valid email address, and a password. Name and email have surrounding whitespace trimmed.
+- Registration and sign-in passwords require at least **8 characters** and at most **72 UTF-8 bytes**, and cannot be entirely whitespace. Do not describe the byte limit as 72 characters; multibyte characters can reach it sooner.
+- Passwords are not trimmed. Do not add uppercase, lowercase, number, or symbol requirements, a strength-based acceptance rule, or an invented maximum name length.
+- Suggested password helper copy: “Use at least 8 characters.” For a byte-limit error: “Password is too long. Use no more than 72 bytes; some characters use more than one byte.”
+- Include duplicate-email registration feedback and generic “Invalid email or password” sign-in feedback. Do not identify which credential was incorrect.
+- Registration does not create a signed-in session. Its success state should offer a route to sign-in, not imply automatic sign-in.
+- The auth module currently exposes registration, sign-in, sign-out, and current-user endpoints only. Forgot-password and reset-password examples below are **proposed design behavior**, not existing backend functionality. Label them accordingly in the specifications; do not add endpoints or implementation work.
+- For the proposed reset-password example, reuse the registration password policy and require matching confirmation. Label this as proposed behavior rather than an existing backend contract.
 
 ### A. Registration
 
@@ -196,17 +212,17 @@ Connect only the auth flows. No email-verification screen is permitted; password
 
 Organize the output as:
 
-1. **Foundations:** token sheet, scales, and usage guidance.
-2. **Components:** reusable variants and states.
-3. **Authentication:** registration, sign-in, forgot password, reset password, and their relevant variants.
-4. **Specifications:** auth-flow connections, accessibility/mobile notes, proposed OKLCH `:root` token block, and any added `@theme inline` mappings. CSS snippets are token specifications, not application implementation.
+1. **Foundations:** editable foundation sheets with tokens, scales, and usage guidance.
+2. **Components:** reusable component definitions with named variants and states, not merely duplicated drawings.
+3. **Authentication examples:** editable registration, sign-in, forgot-password, and reset-password page frames and their relevant variants, assembled from the shared components.
+4. **Specifications:** linked auth-flow connections, accessibility/mobile notes, proposed OKLCH `:root` token block, and `@theme inline` mappings for every required color token and any extensions. CSS snippets are token specifications, not application implementation.
 
 Use consistent component instances in all auth screens. Label any added design assumptions.
 
 ### Completion checklist
 
 - [ ] Main canvas is explicitly off-white; cards/popovers are white.
-- [ ] Tokens follow the supplied shadcn/ui and Tailwind v4 contract.
+- [ ] Tokens follow the self-contained shadcn/ui and Tailwind v4 contract in this brief.
 - [ ] Forest-green Quiet Confidence branding and light-only scope are preserved.
 - [ ] Reusable design-system components include relevant states.
 - [ ] Only the four auth screen templates and their relevant variants are designed.
