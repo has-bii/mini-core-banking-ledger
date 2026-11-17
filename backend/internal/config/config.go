@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -17,9 +18,10 @@ var (
 )
 
 type Config struct {
-	Env, Addr, DatabaseURL, RedisURL, LogLevel, CORSOrigin string
-	ReadTimeout, ShutdownTimeout                           time.Duration
-	RatelimitCapacity, RatelimitRefillRate                 float64
+	Env, Addr, DatabaseURL, RedisURL, LogLevel string
+	CORSOrigin                                 []string
+	ReadTimeout, ShutdownTimeout               time.Duration
+	RatelimitCapacity, RatelimitRefillRate     float64
 }
 
 func Load() (Config, error) {
@@ -34,11 +36,22 @@ func Load() (Config, error) {
 		DatabaseURL:         getString("DATABASE_URL", ""),
 		RedisURL:            getString("REDIS_URL", ""),
 		LogLevel:            getString("LOG_LEVEL", "info"),
-		CORSOrigin:          getString("CORS_ORIGIN", "http://localhost:3000"),
+		CORSOrigin:          strings.Split(getString("CORS_ORIGIN", "http://localhost:3000"), ","),
 		ReadTimeout:         getDuration("HTTP_READ_TIMEOUT", 5*time.Second, &errs),
 		ShutdownTimeout:     getDuration("SHUTDOWN_TIMEOUT", 10*time.Second, &errs),
 		RatelimitCapacity:   getFloat("RATE_LIMIT_CAPACITY", 50, &errs),
 		RatelimitRefillRate: getFloat("RATE_LIMIT_REFILL_RATE", 10, &errs),
+	}
+
+	origins := cfg.CORSOrigin[:0]
+	for _, origin := range cfg.CORSOrigin {
+		if origin = strings.TrimSpace(origin); origin != "" {
+			origins = append(origins, origin)
+		}
+	}
+	cfg.CORSOrigin = origins
+	if len(cfg.CORSOrigin) == 0 {
+		errs = append(errs, errors.New("CORS_ORIGIN must contain at least one origin"))
 	}
 
 	if cfg.RatelimitCapacity < 1 {

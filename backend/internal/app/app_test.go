@@ -11,12 +11,44 @@ import (
 	"testing"
 )
 
+func TestNew_CORSOrigins(t *testing.T) {
+	t.Parallel()
+
+	handler, err := app.New(config.Config{
+		Env: "test", CORSOrigin: []string{"https://app.example.com", "https://admin.example.com"}, RatelimitCapacity: 50, RatelimitRefillRate: 10,
+	}, nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name, origin, wantOrigin string
+		wantStatus               int
+	}{
+		{"app allowed", "https://app.example.com", "https://app.example.com", http.StatusNotFound},
+		{"admin allowed", "https://admin.example.com", "https://admin.example.com", http.StatusNotFound},
+		{"unlisted denied", "https://untrusted.example.com", "", http.StatusForbidden},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			request := httptest.NewRequest(http.MethodPost, "/api/not-found", nil)
+			request.Header.Set("Origin", tc.origin)
+			response := httptest.NewRecorder()
+			handler.ServeHTTP(response, request)
+			if response.Code != tc.wantStatus {
+				t.Fatalf("status = %d, want %d", response.Code, tc.wantStatus)
+			}
+			if got := response.Header().Get("Access-Control-Allow-Origin"); got != tc.wantOrigin {
+				t.Fatalf("CORS origin = %q, want %q", got, tc.wantOrigin)
+			}
+		})
+	}
+}
+
 func TestNew_RateLimitCORS(t *testing.T) {
 	t.Parallel()
 
 	const origin = "http://localhost:3000"
 	handler, err := app.New(config.Config{
-		Env: "test", CORSOrigin: origin, RatelimitCapacity: 1, RatelimitRefillRate: 0.001,
+		Env: "test", CORSOrigin: []string{origin}, RatelimitCapacity: 1, RatelimitRefillRate: 0.001,
 	}, nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)
@@ -72,7 +104,7 @@ func TestNew_InvalidSession(t *testing.T) {
 	t.Parallel()
 
 	handler, err := app.New(config.Config{
-		Env: "test", CORSOrigin: "http://localhost:3000", RatelimitCapacity: 50, RatelimitRefillRate: 10,
+		Env: "test", CORSOrigin: []string{"http://localhost:3000"}, RatelimitCapacity: 50, RatelimitRefillRate: 10,
 	}, nil,
 		slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {

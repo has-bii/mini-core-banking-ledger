@@ -19,7 +19,7 @@ import (
 
 func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler, error) {
 	cors, err := middleware.CORS(&middleware.CORSOptions{
-		Origin:         []string{cfg.CORSOrigin},
+		Origin:         cfg.CORSOrigin,
 		AllowedHeaders: "Content-Type",
 		AllowedMethods: "GET, HEAD, POST, PUT, DELETE",
 		Credentials:    true,
