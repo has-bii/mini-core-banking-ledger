@@ -1,6 +1,6 @@
 # Still Bank — design system
 
-The design system lives in [still-bank.pen](../still-bank.pen). It contains foundations and component specimens only, with no application screens.
+The design system lives in [still-bank.pen](../still-bank.pen). It contains foundations, reusable masters, component specimens, and the `AUTH-01`–`AUTH-06` authentication screens and supporting states.
 
 ## Token contract
 
@@ -42,6 +42,8 @@ Figtree's licensed source and existing logo assets are in `../../logo/`. Load th
 | Navigation / Item | EiRnc | Labeled item with selected indicator |
 | Navigation / Bottom bar | x6SHJq | Home, Wallets, Activity, Settings |
 | Navigation / Top bar | SRwVz | Back or close action and contextual title |
+| System / Status bar | QT5AI | Shared mobile status-bar specimen; device chrome is illustrative |
+| Feedback / Inline notice | qPycb | Success, error, and information feedback with an icon, title, and description |
 
 Button variants and states are connected instances of one base. Cards replace the content slot and hide the footer when unused. Navigation examples override the nested item states.
 
@@ -55,10 +57,12 @@ Button variants and states are connected instances of one base. Cards replace th
 - Bottom navigation's 20 px lower inset is a design specimen. Implementation must use the device's actual safe-area inset.
 - Cards group content with a shared purpose. Hide unused slots and allow content to determine height.
 - Disabled colors deliberately differ from enabled text. They are excluded from the active-text contrast checks.
+- Authentication uses contextual navigation and connected input/button instances. Registration verification and password recovery return to Sign in with a confirmation notice; neither signs the user in automatically.
+- OTP entry uses one text field. Code examples do not prescribe length, format, expiry, resend timing, or password complexity. Those product details remain open.
 
 ## Design review checklist
 
-- [x] Only design-system boards and reusable masters appear at the document root.
+- [x] Design-system boards, reusable masters, and individual authentication screen frames appear at the document root.
 - [x] Master components are arranged above the foundation and specimen boards.
 - [x] No visible node has a clipping problem in the resolved layout traversal.
 - [x] Root boards do not overlap; all work-in-progress placeholder flags are cleared.
@@ -72,7 +76,18 @@ Button variants and states are connected instances of one base. Cards replace th
 - [x] Long card headings grow their surface naturally.
 - [x] Screenshots were reviewed per foundation section and component family.
 - [x] CSS and JSON share the canvas color values and the requested radius multipliers.
-- [x] No dark theme or application screens were created.
+- [x] Authentication screens and states use the existing light theme.
+
+## Authentication review
+
+- [x] Six inventory screens, validation/retry states, pending states, resend feedback, and Sign-in confirmations were reviewed on the canvas.
+- [x] Shared OTP specimens cover focused editing and missing, incomplete, and invalid code feedback; full-screen examples include expired codes.
+- [x] A resolved traversal found no visible clipping or overlapping root frames. Input controls retain 56 px height; primary buttons retain 52 px and compact/back controls 44 px.
+- [x] 320 px examples were visually inspected for password visibility, wrapped text, and a long email address.
+- [x] Error and notice text uses existing semantic colors. Authentication link/error contrast pairs were added to the contrast audit; no token values changed.
+- [x] Product intent, MVP scope, inventory sections 4.1/6/7.2, the logo kit, and the Wise/Phantom authentication references were consulted. The Coinbase onboarding reference was also inspected.
+
+Long IDR amounts are not applicable to authentication. Canvas checks do not verify runtime focus order, keyboard behavior, screen-reader announcements, animations, safe areas, or real authentication delivery.
 
 Contrast checks evaluate the specified pairs mathematically. The canvas shows visual states; keyboard interaction, loading animation, assistive-technology behavior, and device safe areas need verification when implementing the app.
 

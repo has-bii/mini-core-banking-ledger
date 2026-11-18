@@ -127,6 +127,27 @@
       "ratio": 4.76,
       "minimum": 4.5,
       "pass": true
+    },
+    {
+      "foreground": "--primary",
+      "background": "--background",
+      "ratio": 8.58,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--destructive",
+      "background": "--background",
+      "ratio": 5.19,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--destructive",
+      "background": "--destructive-subtle",
+      "ratio": 4.94,
+      "minimum": 4.5,
+      "pass": true
     }
   ]
 }
