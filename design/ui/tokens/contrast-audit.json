@@ -148,6 +148,48 @@
       "ratio": 4.94,
       "minimum": 4.5,
       "pass": true
+    },
+    {
+      "foreground": "--foreground",
+      "background": "--secondary",
+      "ratio": 13.47,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--muted-foreground",
+      "background": "--secondary",
+      "ratio": 4.89,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--primary",
+      "background": "--card",
+      "ratio": 9.3,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--primary",
+      "background": "--secondary",
+      "ratio": 7.9,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--card",
+      "background": "--foreground",
+      "ratio": 15.87,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--foreground",
+      "background": "--muted",
+      "ratio": 13.67,
+      "minimum": 4.5,
+      "pass": true
     }
   ]
 }

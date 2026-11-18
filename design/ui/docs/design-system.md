@@ -1,6 +1,6 @@
 # Still Bank — design system
 
-The design system lives in [still-bank.pen](../still-bank.pen). It contains foundations, reusable masters, component specimens, and the `AUTH-01`–`AUTH-06` authentication screens and supporting states.
+The design system lives in [still-bank.pen](../still-bank.pen). It contains foundations, reusable masters, component specimens, the `AUTH-01`–`AUTH-06` authentication screens, and device enrollment/unlock screens and supporting states.
 
 ## Token contract
 
@@ -44,6 +44,7 @@ Figtree's licensed source and existing logo assets are in `../../logo/`. Load th
 | Navigation / Top bar | SRwVz | Back or close action and contextual title |
 | System / Status bar | QT5AI | Shared mobile status-bar specimen; device chrome is illustrative |
 | Feedback / Inline notice | qPycb | Success, error, and information feedback with an icon, title, and description |
+| Security / Method option | ZHfba | Account PIN and passkey choices with an icon, title, description, and navigation indicator |
 
 Button variants and states are connected instances of one base. Cards replace the content slot and hide the footer when unused. Navigation examples override the nested item states.
 
@@ -88,6 +89,18 @@ Button variants and states are connected instances of one base. Cards replace th
 - [x] Product intent, MVP scope, inventory sections 4.1/6/7.2, the logo kit, and the Wise/Phantom authentication references were consulted. The Coinbase onboarding reference was also inspected.
 
 Long IDR amounts are not applicable to authentication. Canvas checks do not verify runtime focus order, keyboard behavior, screen-reader announcements, animations, safe areas, or real authentication delivery.
+
+## Device enrollment and unlock review
+
+- [x] `DEV-01`–`DEV-05`, `SEC-02` in enrollment/reset contexts, `OV-07`, and illustrative `OV-08` creation/unlock surfaces are on the canvas. PIN/passkey management and logout remain in section 4.7 scope.
+- [x] PIN-only, passkey-only, and combined unlock variants, incorrect PIN, setup/unlock cancellation and failure, unavailable passkey creation, pending operations, and email-sign-in fallback are represented.
+- [x] PIN mismatch, focused editing, recovery delivery retry, invalid/expired OTP, resend pending/confirmation, missing/incomplete OTP specimens, and PIN-reset completion were inspected visually.
+- [x] A resolved traversal found no visible clipping or overlapping root frames. Connected button/input instances retain 52 / 44 / 56 px controls. The method option extends the existing library; foundation token values are unchanged.
+- [x] 320 px PIN editing and long-email OTP layouts were visually reviewed. Existing semantic colors are reused; additional measured contrast pairs cover the method choices, section header, and illustrative platform surfaces.
+- [x] Replacement confirmation explains that prior enrollment persists until setup succeeds. PIN reset returns to Quick unlock without opening Home. Passkey prompt examples identify the OS/browser-owned handoff in their canvas context and review notes.
+- [x] Product intent, MVP scope, inventory sections 4.2/4.7/5/6/7.3, the design system, logo kit, and Wise/Phantom/Coinbase references were consulted.
+
+PIN length/format and OTP timing remain unspecified. Long IDR amounts are not applicable to these screens. Platform prompts are illustrative, not a verified replica of a specific provider. Runtime focus, keyboards, assistive technology, safe areas, email delivery, and real passkey behavior require implementation checks.
 
 Contrast checks evaluate the specified pairs mathematically. The canvas shows visual states; keyboard interaction, loading animation, assistive-technology behavior, and device safe areas need verification when implementing the app.
 
