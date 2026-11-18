@@ -1,0 +1,363 @@
+{
+  "name": "Still Bank",
+  "theme": "light",
+  "description": "Canvas variables. Numeric lengths use pixels; font weights are strings. The CSS file derives radii in rem from the 10 px base.",
+  "variables": {
+    "--background": {
+      "type": "color",
+      "value": "#F5F6F3"
+    },
+    "--foreground": {
+      "type": "color",
+      "value": "#18251F"
+    },
+    "--card": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--card-foreground": {
+      "type": "color",
+      "value": "#18251F"
+    },
+    "--popover": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--popover-foreground": {
+      "type": "color",
+      "value": "#18251F"
+    },
+    "--primary": {
+      "type": "color",
+      "value": "#214F40"
+    },
+    "--primary-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--secondary": {
+      "type": "color",
+      "value": "#E8EEE8"
+    },
+    "--secondary-foreground": {
+      "type": "color",
+      "value": "#214F40"
+    },
+    "--muted": {
+      "type": "color",
+      "value": "#ECEFE9"
+    },
+    "--muted-foreground": {
+      "type": "color",
+      "value": "#5C6961"
+    },
+    "--accent": {
+      "type": "color",
+      "value": "#E1EBE2"
+    },
+    "--accent-foreground": {
+      "type": "color",
+      "value": "#214F40"
+    },
+    "--destructive": {
+      "type": "color",
+      "value": "#B53F36"
+    },
+    "--destructive-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--border": {
+      "type": "color",
+      "value": "#D8DED5"
+    },
+    "--input": {
+      "type": "color",
+      "value": "#839085"
+    },
+    "--ring": {
+      "type": "color",
+      "value": "#214F40"
+    },
+    "--chart-1": {
+      "type": "color",
+      "value": "#214F40"
+    },
+    "--chart-2": {
+      "type": "color",
+      "value": "#547565"
+    },
+    "--chart-3": {
+      "type": "color",
+      "value": "#8A6A3C"
+    },
+    "--chart-4": {
+      "type": "color",
+      "value": "#5C6D94"
+    },
+    "--chart-5": {
+      "type": "color",
+      "value": "#8C5E75"
+    },
+    "--sidebar": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--sidebar-foreground": {
+      "type": "color",
+      "value": "#18251F"
+    },
+    "--sidebar-primary": {
+      "type": "color",
+      "value": "#214F40"
+    },
+    "--sidebar-primary-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--sidebar-accent": {
+      "type": "color",
+      "value": "#E1EBE2"
+    },
+    "--sidebar-accent-foreground": {
+      "type": "color",
+      "value": "#214F40"
+    },
+    "--sidebar-border": {
+      "type": "color",
+      "value": "#D8DED5"
+    },
+    "--sidebar-ring": {
+      "type": "color",
+      "value": "#214F40"
+    },
+    "--primary-hover": {
+      "type": "color",
+      "value": "#1C4437"
+    },
+    "--primary-pressed": {
+      "type": "color",
+      "value": "#173B30"
+    },
+    "--secondary-hover": {
+      "type": "color",
+      "value": "#DFE7DF"
+    },
+    "--secondary-pressed": {
+      "type": "color",
+      "value": "#D6E1D6"
+    },
+    "--destructive-pressed": {
+      "type": "color",
+      "value": "#943229"
+    },
+    "--disabled": {
+      "type": "color",
+      "value": "#E4E7E1"
+    },
+    "--disabled-foreground": {
+      "type": "color",
+      "value": "#7A857C"
+    },
+    "--success": {
+      "type": "color",
+      "value": "#236649"
+    },
+    "--success-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--success-subtle": {
+      "type": "color",
+      "value": "#E8F3EC"
+    },
+    "--warning": {
+      "type": "color",
+      "value": "#825B15"
+    },
+    "--warning-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--warning-subtle": {
+      "type": "color",
+      "value": "#FFF2D7"
+    },
+    "--info": {
+      "type": "color",
+      "value": "#315E81"
+    },
+    "--info-foreground": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--info-subtle": {
+      "type": "color",
+      "value": "#EAF1F7"
+    },
+    "--destructive-subtle": {
+      "type": "color",
+      "value": "#FBEDEB"
+    },
+    "--radius": {
+      "type": "number",
+      "value": 10
+    },
+    "--radius-sm": {
+      "type": "number",
+      "value": 6
+    },
+    "--radius-md": {
+      "type": "number",
+      "value": 8
+    },
+    "--radius-lg": {
+      "type": "number",
+      "value": 10
+    },
+    "--radius-xl": {
+      "type": "number",
+      "value": 14
+    },
+    "--radius-2xl": {
+      "type": "number",
+      "value": 18
+    },
+    "--radius-3xl": {
+      "type": "number",
+      "value": 22
+    },
+    "--radius-4xl": {
+      "type": "number",
+      "value": 26
+    },
+    "--radius-full": {
+      "type": "number",
+      "value": 999
+    },
+    "--spacing": {
+      "type": "number",
+      "value": 4
+    },
+    "--space-0": {
+      "type": "number",
+      "value": 0
+    },
+    "--space-0-5": {
+      "type": "number",
+      "value": 2
+    },
+    "--space-1": {
+      "type": "number",
+      "value": 4
+    },
+    "--space-2": {
+      "type": "number",
+      "value": 8
+    },
+    "--space-3": {
+      "type": "number",
+      "value": 12
+    },
+    "--space-4": {
+      "type": "number",
+      "value": 16
+    },
+    "--space-5": {
+      "type": "number",
+      "value": 20
+    },
+    "--space-6": {
+      "type": "number",
+      "value": 24
+    },
+    "--space-8": {
+      "type": "number",
+      "value": 32
+    },
+    "--space-10": {
+      "type": "number",
+      "value": 40
+    },
+    "--space-12": {
+      "type": "number",
+      "value": 48
+    },
+    "--space-16": {
+      "type": "number",
+      "value": 64
+    },
+    "--text-xs": {
+      "type": "number",
+      "value": 12
+    },
+    "--text-sm": {
+      "type": "number",
+      "value": 14
+    },
+    "--text-base": {
+      "type": "number",
+      "value": 16
+    },
+    "--text-lg": {
+      "type": "number",
+      "value": 20
+    },
+    "--text-xl": {
+      "type": "number",
+      "value": 24
+    },
+    "--text-2xl": {
+      "type": "number",
+      "value": 32
+    },
+    "--text-3xl": {
+      "type": "number",
+      "value": 40
+    },
+    "--control-sm": {
+      "type": "number",
+      "value": 44
+    },
+    "--control-md": {
+      "type": "number",
+      "value": 52
+    },
+    "--input-height": {
+      "type": "number",
+      "value": 56
+    },
+    "--icon-sm": {
+      "type": "number",
+      "value": 16
+    },
+    "--icon-md": {
+      "type": "number",
+      "value": 20
+    },
+    "--icon-lg": {
+      "type": "number",
+      "value": 24
+    },
+    "--font-sans": {
+      "type": "string",
+      "value": "Figtree"
+    },
+    "--font-mono": {
+      "type": "string",
+      "value": "IBM Plex Mono"
+    },
+    "--font-weight-normal": {
+      "type": "string",
+      "value": "400"
+    },
+    "--font-weight-medium": {
+      "type": "string",
+      "value": "500"
+    },
+    "--font-weight-semibold": {
+      "type": "string",
+      "value": "600"
+    }
+  }
+}

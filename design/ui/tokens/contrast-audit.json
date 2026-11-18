@@ -1,0 +1,132 @@
+{
+  "method": "sRGB relative luminance contrast ratio",
+  "theme": "light",
+  "pairs": [
+    {
+      "foreground": "--foreground",
+      "background": "--background",
+      "ratio": 14.63,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--foreground",
+      "background": "--card",
+      "ratio": 15.87,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--primary-foreground",
+      "background": "--primary",
+      "ratio": 9.3,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--secondary-foreground",
+      "background": "--secondary",
+      "ratio": 7.9,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--muted-foreground",
+      "background": "--muted",
+      "ratio": 4.96,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--muted-foreground",
+      "background": "--card",
+      "ratio": 5.76,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--muted-foreground",
+      "background": "--background",
+      "ratio": 5.31,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--accent-foreground",
+      "background": "--accent",
+      "ratio": 7.61,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--destructive-foreground",
+      "background": "--destructive",
+      "ratio": 5.63,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--success",
+      "background": "--success-subtle",
+      "ratio": 6.02,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--warning",
+      "background": "--warning-subtle",
+      "ratio": 5.48,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--info",
+      "background": "--info-subtle",
+      "ratio": 6.04,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--destructive",
+      "background": "--card",
+      "ratio": 5.63,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "foreground": "--input",
+      "background": "--card",
+      "ratio": 3.34,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "foreground": "--input",
+      "background": "--background",
+      "ratio": 3.08,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "foreground": "--ring",
+      "background": "--background",
+      "ratio": 8.58,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "foreground": "--ring",
+      "background": "--card",
+      "ratio": 9.3,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "foreground": "--foreground",
+      "background": "--input",
+      "ratio": 4.76,
+      "minimum": 4.5,
+      "pass": true
+    }
+  ]
+}
