@@ -21,6 +21,86 @@ All money movement and account behavior are simulated. The UI should feel like a
 - Screens sharing a template retain separate IDs when their purpose or navigation differs.
 - Persistent tabs belong to primary destinations. Focused forms, reviews, results, and security journeys use contextual back/close navigation rather than tabs that bypass the task.
 
+### Design checklist — pen.dev
+
+Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **12 of 38 screen IDs** and **2 of 9 overlay IDs** have designs.
+
+- **Checked `[x]`:** at least one populated design frame exists for this ID. Frame IDs below locate the design in pen.dev; related variants share the inventory ID in their frame names.
+- **Unchecked `[ ]`:** no design frame was found for this ID during the last check.
+- A checked item records design presence. Required states in section 6, navigation rules, visual review, and runtime verification remain separate checks; notes identify limited context coverage.
+- After adding, replacing, or removing a screen or overlay design, update its checkbox, frame references, coverage notes, and the verification date/counts here. Inspect the canvas before marking it checked; a journey-map mention or reusable component alone does not count.
+
+**Authentication — section 4.1**
+
+- [x] `AUTH-01` Sign in — `pAMku` (empty); validation, submitting, and registration/password-reset confirmation variants also exist.
+- [x] `AUTH-02` Register — `RLExB` (empty); validation and submitting variants also exist.
+- [x] `AUTH-03` Verify registration email — `yTYcq` (waiting); invalid/expired code and resend variants also exist.
+- [x] `AUTH-04` Request password reset — `ejWPg` (empty); invalid email and sending-code variants also exist.
+- [x] `AUTH-05` Verify password-reset OTP — `sE8wz` (waiting); verification, expired-code, resend, and narrow-layout variants also exist.
+- [x] `AUTH-06` Set new password — `h6TTFd` (empty); mismatch, saving, and editing/reveal variants also exist.
+
+**Device enrollment and unlock — section 4.2**
+
+- [x] `DEV-01` Quick unlock — `dxkab` (PIN and passkey), `qhDaX` (PIN only), `hJN3s` (passkey only); error, cancellation, unlocking, and reset-complete variants also exist.
+- [x] `DEV-02` Enrollment offer — `pnkFT` (choose a method).
+- [x] `DEV-03` Passkey setup — `hadka` (ready); unavailable, awaiting-platform, failed, and cancelled variants also exist.
+- [x] `DEV-04` Request PIN reset — `OoXvY` (ready); sending-code and delivery-failure variants also exist.
+- [x] `DEV-05` Verify PIN-reset OTP — `Aabev` (waiting); invalid/expired code, verification, resend, and narrow-layout variants also exist.
+
+**Home and wallets — section 4.3**
+
+- [ ] `HOME-01` Home overview.
+- [ ] `WAL-01` Wallet list.
+- [ ] `WAL-02` Create wallet.
+- [ ] `WAL-03` Main/sub wallet detail.
+- [ ] `WAL-04` Savings wallet detail.
+
+**Savings targets and budgeting — section 4.4**
+
+- [ ] `SAV-01` Create/edit target.
+- [ ] `SAV-02` Target details.
+- [ ] `BUD-01` Create/edit budgeting.
+- [ ] `BUD-02` Budgeting details.
+
+**Money movement — section 4.5**
+
+- [ ] `TX-01` Top-up entry.
+- [ ] `TX-02` Top-up review.
+- [ ] `TX-03` Move entry.
+- [ ] `TX-04` Transfer entry.
+- [ ] `TX-05` Move review.
+- [ ] `TX-06` Transfer review.
+- [ ] `TX-07` Top-up success.
+- [ ] `TX-08` Move success.
+- [ ] `TX-09` Transfer success.
+- [ ] `TX-10` Move/transfer failure.
+
+**Activity — section 4.6**
+
+- [ ] `ACT-01` All-wallet activity.
+- [ ] `ACT-02` Wallet activity.
+- [ ] `ACT-03` Transaction detail.
+
+**Settings and security — section 4.7**
+
+- [ ] `SET-01` Settings.
+- [ ] `SEC-01` Change password.
+- [x] `SEC-02` Set account PIN — `p7YBg` (enrollment), `GfzKs` (verified reset); mismatch, saving, and narrow-layout variants also exist. No dedicated Settings-context frame was found.
+- [ ] `SEC-03` Change account PIN.
+- [ ] `SEC-04` Passkey management.
+
+**Overlays and platform surfaces — section 5**
+
+- [ ] `OV-01` Wallet-type sheet.
+- [ ] `OV-02` Rename-wallet sheet.
+- [ ] `OV-03` Remove-target confirmation.
+- [ ] `OV-04` Cancel-budgeting confirmation.
+- [ ] `OV-05` Remove-passkey confirmation.
+- [ ] `OV-06` Close-wallet confirmation.
+- [x] `OV-07` Replace-enrollment confirmation — `Q5EnzS`.
+- [x] `OV-08` Platform passkey prompt — `WCKE6` (create), `qZYKY` (unlock). These illustrate the platform handoff; the real prompt is owned by the OS/browser.
+- [ ] `OV-09` Logout confirmation.
+
 ## 2. Agreed design decisions
 
 | Area | Decision |
