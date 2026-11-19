@@ -26108,69 +26108,168 @@
               "name": "Home money actions",
               "width": "fill_container",
               "gap": 8,
-              "justifyContent": "space_around",
               "children": [
                 {
-                  "id": "pqYVR",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Top up money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
-                  "fill": "$--primary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "plus",
-                      "fill": "$--primary-foreground"
+                  "type": "frame",
+                  "id": "OBeiv",
+                  "name": "Top up action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "pqYVR",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Top up money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
+                      "fill": "$--primary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "plus",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "fBE6f",
+                      "name": "Top up action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Top up",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "GN1CH",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Move money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
-                  "fill": "$--secondary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "arrow-left-right",
-                      "fill": "$--secondary-foreground"
+                  "type": "frame",
+                  "id": "YIMqz",
+                  "name": "Move action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "GN1CH",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Move money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "arrow-left-right",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "p4YsC",
+                      "name": "Move action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Move",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "h2ebOX",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Transfer money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
-                  "fill": "$--secondary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "arrow-up-right",
-                      "fill": "$--secondary-foreground"
+                  "type": "frame",
+                  "id": "mSzN4",
+                  "name": "Transfer action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "h2ebOX",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Transfer money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "arrow-up-right",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "wYbNa",
+                      "name": "Transfer action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Transfer",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "ediG3",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Others action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Accessible name: Others. Destination awaiting product decision.",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "ellipsis"
+                  "type": "frame",
+                  "id": "INhJ3",
+                  "name": "Others action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "ediG3",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Others action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Accessible name: Others. Destination awaiting product decision.",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "ellipsis"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "BPc2P",
+                      "name": "Others action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Others",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 }
               ]
             },
@@ -26584,69 +26683,168 @@
               "name": "Home money actions",
               "width": "fill_container",
               "gap": 8,
-              "justifyContent": "space_around",
               "children": [
                 {
-                  "id": "yIbFo",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Top up money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
-                  "fill": "$--primary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "plus",
-                      "fill": "$--primary-foreground"
+                  "type": "frame",
+                  "id": "HIRxq",
+                  "name": "Top up action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "yIbFo",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Top up money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
+                      "fill": "$--primary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "plus",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "BzV7R",
+                      "name": "Top up action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Top up",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "ySylH",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Move money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
-                  "fill": "$--secondary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "arrow-left-right",
-                      "fill": "$--secondary-foreground"
+                  "type": "frame",
+                  "id": "RNryb",
+                  "name": "Move action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "ySylH",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Move money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "arrow-left-right",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "A4nO24",
+                      "name": "Move action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Move",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "MQmIh",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Transfer money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
-                  "fill": "$--secondary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "arrow-up-right",
-                      "fill": "$--secondary-foreground"
+                  "type": "frame",
+                  "id": "SP2Iq",
+                  "name": "Transfer action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "MQmIh",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Transfer money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "arrow-up-right",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "eyvNm",
+                      "name": "Transfer action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Transfer",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "M4Sxy6",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Others action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Accessible name: Others. Destination awaiting product decision.",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "ellipsis"
+                  "type": "frame",
+                  "id": "bfWVx",
+                  "name": "Others action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "M4Sxy6",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Others action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Accessible name: Others. Destination awaiting product decision.",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "ellipsis"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "KXRqm",
+                      "name": "Others action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Others",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 }
               ]
             },
@@ -27219,69 +27417,168 @@
               "name": "Home money actions",
               "width": "fill_container",
               "gap": 8,
-              "justifyContent": "space_around",
               "children": [
                 {
-                  "id": "MIXJw",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Top up money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
-                  "fill": "$--primary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "plus",
-                      "fill": "$--primary-foreground"
+                  "type": "frame",
+                  "id": "p0dh7Q",
+                  "name": "Top up action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "MIXJw",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Top up money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
+                      "fill": "$--primary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "plus",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "CZUZ4",
+                      "name": "Top up action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Top up",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "C9ybP",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Move money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
-                  "fill": "$--secondary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "arrow-left-right",
-                      "fill": "$--secondary-foreground"
+                  "type": "frame",
+                  "id": "TON0S",
+                  "name": "Move action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "C9ybP",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Move money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "arrow-left-right",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "gKqBC",
+                      "name": "Move action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Move",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "i5nfM",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Transfer money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
-                  "fill": "$--secondary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "arrow-up-right",
-                      "fill": "$--secondary-foreground"
+                  "type": "frame",
+                  "id": "t6oKC",
+                  "name": "Transfer action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "i5nfM",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Transfer money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "arrow-up-right",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "onunM",
+                      "name": "Transfer action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Transfer",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "a4JuQs",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Others action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Accessible name: Others. Destination awaiting product decision.",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "ellipsis"
+                  "type": "frame",
+                  "id": "BR246",
+                  "name": "Others action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "a4JuQs",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Others action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Accessible name: Others. Destination awaiting product decision.",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "ellipsis"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "L1hde",
+                      "name": "Others action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Others",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 }
               ]
             },
@@ -27854,69 +28151,168 @@
               "name": "Home money actions",
               "width": "fill_container",
               "gap": 8,
-              "justifyContent": "space_around",
               "children": [
                 {
-                  "id": "T0F30w",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Top up money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
-                  "fill": "$--primary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "plus",
-                      "fill": "$--primary-foreground"
+                  "type": "frame",
+                  "id": "B6Gby0",
+                  "name": "Top up action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "T0F30w",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Top up money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
+                      "fill": "$--primary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "plus",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "ljy1a",
+                      "name": "Top up action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Top up",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "E9v0M",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Move money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
-                  "fill": "$--secondary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "arrow-left-right",
-                      "fill": "$--secondary-foreground"
+                  "type": "frame",
+                  "id": "S1oRm",
+                  "name": "Move action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "E9v0M",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Move money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "arrow-left-right",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "QBshu",
+                      "name": "Move action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Move",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "FMSxf",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Transfer money action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
-                  "fill": "$--secondary",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "arrow-up-right",
-                      "fill": "$--secondary-foreground"
+                  "type": "frame",
+                  "id": "dM7Mw",
+                  "name": "Transfer action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "FMSxf",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Transfer money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "arrow-up-right",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "udIah",
+                      "name": "Transfer action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Transfer",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 },
                 {
-                  "id": "xe4J3",
-                  "type": "ref",
-                  "ref": "kPjGo",
-                  "name": "Others action",
-                  "width": 44,
-                  "height": 44,
-                  "context": "Accessible name: Others. Destination awaiting product decision.",
-                  "descendants": {
-                    "h1BnM6": {
-                      "icon": "ellipsis"
+                  "type": "frame",
+                  "id": "iPQtD",
+                  "name": "Others action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "xe4J3",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Others action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Accessible name: Others. Destination awaiting product decision.",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "ellipsis"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n23gWT",
+                      "name": "Others action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Others",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
                     }
-                  }
+                  ]
                 }
               ]
             },
