@@ -88,6 +88,7 @@ This list defines product features, not technical implementation details, priori
 ## Balances and Activity
 
 - Display the total balance and individual wallet balances.
+- On the Wallets screen, provide a hide/show toggle for the total and individual wallet balances.
 - Keep daily spending, reserved money, and savings distinguishable.
 - Show transaction history across all wallets and within each wallet.
 - Show transaction details and their effect on wallet balances.

@@ -23,7 +23,7 @@ All money movement and account behavior are simulated. The UI should feel like a
 
 ### Design checklist — pen.dev
 
-Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **13 of 38 screen IDs** and **2 of 9 overlay IDs** have designs.
+Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **14 of 38 screen IDs** and **3 of 9 overlay IDs** have designs.
 
 - **Checked `[x]`:** at least one populated design frame exists for this ID. Frame IDs below locate the design in pen.dev; related variants share the inventory ID in their frame names.
 - **Unchecked `[ ]`:** no design frame was found for this ID during the last check.
@@ -50,7 +50,7 @@ Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **13
 **Home and wallets — section 4.3**
 
 - [x] `HOME-01` Home overview — `O8Rgfi` (populated), `I2fbM` (first visit, zero balances, main wallet only, empty activity), `D9JFa` (no sub wallets), `k1Qib` (no savings wallets), `M0eP4` (long wallet names and IDR amounts, 320 px). Existing wallets have individual flat Card / Surface instances in a bento arrangement: main spans two columns, other wallets one each, without category subsections. Each sub or savings wallet shows its type below its balance; multiple wallets of either type may exist. Absent wallets add no explanation or creation CTA. Activity is wrapped in its own flat card with its heading and View all outside. Narrow cards stack. Savings target details and outgoing-lock labels are omitted from Home and belong in wallet detail. Top up, Move, Transfer, and Others use icon buttons; the populated Home (`O8Rgfi`, row `EPgw4`) adds visible labels beneath them. Others is intentionally undecided; other onward destinations and accessible names are documented in node context, not implemented interactions.
-- [ ] `WAL-01` Wallet list.
+- [x] `WAL-01` Wallet list — `y3dYdG` (populated), `Bxhs5` (first visit, zero balance, main wallet only), `uauO1` (no sub wallets), `q54Aw` (no savings wallets), `obNC4` (multiple sub/savings wallets, long names and IDR amounts, 320 px), `tBRgy` (closed-wallet return feedback), `CN67s` (balances hidden). The 390 px states use a two-column bento grid with 169 × 169 px wallet and Create wallet cards; the narrow long-content case uses 280 × 280 px cards. Main uses Primary, creation uses Secondary, and both sub and savings wallets use Card (white). A total-balance summary above the grid includes all open wallets and a 44 px eye toggle. Hiding masks the total and each wallet amount with `Rp ••••••`; names, types, icons, counts, and navigation remain visible. Showing restores the amounts. The final Create wallet card opens `OV-01`. The closure example moves Holiday fund’s Rp12.000.000 to main, producing Rp14.450.000 while the total stays Rp18.450.000; its target was removed beforehand and it had no budgeting schedule. Navigation and toggle behavior are documented in node context, not implemented interaction.
 - [ ] `WAL-02` Create wallet.
 - [ ] `WAL-03` Main/sub wallet detail.
 - [ ] `WAL-04` Savings wallet detail.
@@ -91,7 +91,7 @@ Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **13
 
 **Overlays and platform surfaces — section 5**
 
-- [ ] `OV-01` Wallet-type sheet.
+- [x] `OV-01` Wallet-type sheet — `Dg4eL` (390 px), `xgYTu` (320 px), each over the revised bento Wallets screen. Connected descriptive choice rows offer Sub wallet or Savings wallet and lead directly to `WAL-02` with the type selected. No main-wallet option. Close/dismiss returns to unchanged `WAL-01` and restores focus to the Create wallet card. Modal focus containment, background inertness, dismissal, and focus restoration are implementation checks.
 - [ ] `OV-02` Rename-wallet sheet.
 - [ ] `OV-03` Remove-target confirmation.
 - [ ] `OV-04` Cancel-budgeting confirmation.
@@ -110,6 +110,7 @@ Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **13
 | Primary navigation | Home, Wallets, Activity, Settings. Top up, Move, and Transfer are contextual actions, not tabs. |
 | Home balances | Show total balance and each wallet's balance, with persistent main/sub/savings type labels inside individual cards. Do not label total balance as available to spend. Main wallet is the everyday-spending reference, not the only spendable wallet. |
 | Wallet creation | Name-only creation; savings target and budgeting are independent optional setup tasks offered after creating a savings wallet. |
+| Wallets balance visibility | Show the sum of all open wallets, including savings, with a hide/show eye control. Hiding masks the total and individual wallet balances on this view; showing restores the amounts. Names, types, counts, and navigation remain visible. The total is not an available-to-spend claim. Persistence across other screens or sessions is unspecified. |
 | Enrollment | After password sign-in, offer account PIN, passkey, or Not now. Add another method later in Settings. |
 | Device/account switching | One enrolled account per device. Use another account preserves enrollment; replacing it requires explicit confirmation. An unenrolled session does not replace it. |
 | Transaction structure | Separate Top up, Move, and Transfer entry forms; each leads to Review and Result. Contextual entry preselects the relevant wallet. |
@@ -176,7 +177,7 @@ The Still Bank account PIN and the device PIN are different credentials. Passkey
 | ID | Screen / purpose | Entry points | Primary actions | Exits and rules |
 | --- | --- | --- | --- | --- |
 | `HOME-01` | Home overview | Sign-in/unlock completion; Home tab | View balances; open wallet; Top up; Move; Transfer; view recent activity | → wallet details, transaction entry, transaction detail, or Activity. Distinguish main/sub/savings balances and never treat total as wholly available spending money. |
-| `WAL-01` | Wallet list | Wallets tab | View main, sub, and savings wallets; create wallet | → wallet details or wallet-type sheet. Exactly one main wallet exists automatically; it is never user-created. |
+| `WAL-01` | Wallet list | Wallets tab | View total and main/sub/savings balances; hide/show balances; create wallet | → wallet details or wallet-type sheet. Visibility toggles in place. Exactly one main wallet exists automatically; it is never user-created. |
 | `WAL-02` | Create wallet | Wallet-type sheet | Enter name; create chosen sub/savings type | Success → new wallet detail. Savings detail offers optional target and budgeting setup independently. No target or schedule is mandatory. |
 | `WAL-03` | Main/sub wallet detail | Home; wallet list; relevant balance context | View balance/number; Top up; Move; Transfer; wallet activity; rename; close sub wallet | → transaction forms, wallet history, rename/closure overlays. Main wallet has no Close action. |
 | `WAL-04` | Savings wallet detail | Home; wallet list; savings creation | View balance/number, target progress, schedule; Add money; scheduled Move money; Top up; outgoing Move/Transfer; activity; manage wallet | → target/budgeting screens, transaction forms, overlays. Outgoing actions are blocked while a target is unfinished; incoming actions remain available. |
@@ -279,6 +280,7 @@ These are variants of inventory screens, not additional full screens.
 | PIN setup/change | Entry; confirmation mismatch; invalid current PIN; saving; saved. Never conflate account PIN with device PIN. |
 | Passkey | Unavailable device support; awaiting platform prompt; cancelled; failed; configured; removed. Offer password sign-in or another configured method when unlocking fails. |
 | Home/wallets | Initial zero balances; main wallet only; no sub wallets; no savings wallets; populated wallets. Main wallet always exists. |
+| Wallets balance visibility | Visible and hidden total/individual balances; Hide balances and Show balances action labels. Use a fixed-length mask and keep hidden numeric values out of accessible text. Opening/dismissing the type sheet preserves the calling view's visibility state. |
 | Wallet details | No activity; zero balance; renamed; closed-wallet return feedback; eligible/blocked outgoing actions. |
 | Target | No target; unfinished; reached; deadline passed while unfinished; removed. Clearly explain why outgoing money remains locked. |
 | Budgeting | No schedule; Active; Overdue; Ended; insufficient source funds; unavailable source requiring schedule edit; contribution pending/success/failure. No automatic deduction. |

@@ -28686,6 +28686,3168 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "H4R48",
+      "x": 8880,
+      "y": 3157,
+      "name": "12 / Wallets — Journey and coverage",
+      "clip": true,
+      "width": 2200,
+      "fill": "$--primary",
+      "layout": "vertical",
+      "gap": 12,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "pVj4G",
+          "name": "Wallets section label",
+          "fill": "$--primary-foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "WAL-01 + OV-01 / SQUARE WALLETS & BALANCE VISIBILITY",
+          "lineHeight": 1.3333333333,
+          "fontFamily": "$--font-sans",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "cbgHP",
+          "name": "Wallets section title",
+          "fill": "$--primary-foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "A place for every purpose.",
+          "lineHeight": 1.3333333333,
+          "fontFamily": "$--font-sans",
+          "fontSize": 24,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "ZRClP",
+          "name": "Wallets journey and entries",
+          "fill": "$--primary-foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Wallets tab → total balance with Hide / Show balances → square wallet cards or Create wallet → choose Sub / Savings → WAL-02. Total includes all open wallets.",
+          "lineHeight": 1.4285714286,
+          "fontFamily": "$--font-sans",
+          "fontSize": 14
+        },
+        {
+          "type": "text",
+          "id": "h8QpH1",
+          "name": "Wallets canvas review result",
+          "fill": "$--primary-foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Canvas review: seven WAL-01 states + two OV-01 widths · 29 square cards · totals checked · fixed-length balance masks · 44 px eye controls · no visible clipping or root overlap. Runtime checks remain.",
+          "lineHeight": 1.4285714286,
+          "fontFamily": "$--font-sans",
+          "fontSize": 14
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "y3dYdG",
+      "x": 8880,
+      "y": 3457,
+      "name": "WAL-01 / Wallet list — Populated",
+      "context": "WAL-01 populated. Two columns of 169 × 169 px square wallet and Create wallet cards. Total Rp18.450.000 across three open wallets, including savings; not available-to-spend money. Hide balances masks the total and individual wallet amounts; Show balances restores them. Wallet cards → WAL-03 / WAL-04; Create wallet card → OV-01. Static canvas states.",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "SOGOv",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Wallets system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "pGt4F",
+          "name": "Wallets screen content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "yrD4T",
+              "name": "Wallets destination heading",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "JRIag",
+                  "name": "Wallets title",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "h0R7p",
+                  "name": "Wallets introduction",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A place for every purpose.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "zW0O9",
+              "type": "ref",
+              "ref": "kPXhQ",
+              "name": "Wallets total balance and visibility",
+              "width": "fill_container",
+              "descendants": {
+                "aI84C": {
+                  "content": "Rp18.450.000",
+                  "fontSize": 32,
+                  "lineHeight": 1.25
+                },
+                "pQNOq": {
+                  "content": "Across 3 wallets"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "k47VuD",
+              "name": "Wallet bento grid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "zGEax",
+                  "name": "Wallet bento row 1",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "WsEI1",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Daily spending wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-03 for Daily spending. Persistent type: Main wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--primary",
+                          "stroke": "$--primary"
+                        },
+                        "JNUtR": {
+                          "icon": "wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Daily spending",
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp2.450.000",
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "id": "tiJ4Q",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Bills wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-03 for Bills. Persistent type: Sub wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "receipt-text",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Bills",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp4.000.000",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Sub wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Ftlk5",
+                  "name": "Wallet bento row 2",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "qEa6d",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Holiday fund wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-04 for Holiday fund. Persistent type: Savings wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "sprout",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Holiday fund",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp12.000.000",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Savings wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "id": "lbFKO",
+                      "type": "ref",
+                      "ref": "kJs8k",
+                      "name": "Create wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Accessible name Create wallet. Entire card opens OV-01. Choose Sub or Savings, then name-only WAL-02 creation."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "d4x0Sj",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Wallets primary navigation",
+          "width": "fill_container",
+          "context": "Home → HOME-01; Wallets selected; Activity → ACT-01; Settings → SET-01.",
+          "descendants": {
+            "drw7I/dndqz": {
+              "fill": "#00000000"
+            },
+            "drw7I/YB1ow": {
+              "fill": "$--muted-foreground"
+            },
+            "drw7I/s1ycWE": {
+              "fill": "$--muted-foreground",
+              "fontWeight": "400"
+            },
+            "q93Xv/dndqz": {
+              "fill": "$--accent"
+            },
+            "q93Xv/YB1ow": {
+              "fill": "$--primary"
+            },
+            "q93Xv/s1ycWE": {
+              "fill": "$--primary",
+              "fontWeight": "600"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Bxhs5",
+      "x": 9350,
+      "y": 3457,
+      "name": "WAL-01 / Wallet list — First visit, main wallet only",
+      "context": "WAL-01 first visit. One automatically provided main wallet with Rp0, paired with a Create wallet card in the bento grid. Wallet creation is optional. Main card → WAL-03; Create wallet card → OV-01.",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "QwQ2M",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Wallets system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "ksWKe",
+          "name": "Wallets screen content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "W6unW",
+              "name": "Wallets destination heading",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "IP9Mz",
+                  "name": "Wallets title",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "Y8LIp",
+                  "name": "Wallets introduction",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A place for every purpose.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "StuGG",
+              "type": "ref",
+              "ref": "kPXhQ",
+              "name": "Wallets total balance and visibility",
+              "width": "fill_container",
+              "descendants": {
+                "aI84C": {
+                  "content": "Rp0",
+                  "fontSize": 32,
+                  "lineHeight": 1.25
+                },
+                "pQNOq": {
+                  "content": "Across 1 wallet"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "pZ0E5",
+              "name": "Wallet bento grid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "CQmHT",
+                  "name": "Wallet bento row 1",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "Bgbwb",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Daily spending wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-03 for Daily spending. Persistent type: Main wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--primary",
+                          "stroke": "$--primary"
+                        },
+                        "JNUtR": {
+                          "icon": "wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Daily spending",
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp0",
+                          "fill": "$--primary-foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "id": "Tc3IZ",
+                      "type": "ref",
+                      "ref": "kJs8k",
+                      "name": "Create wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Accessible name Create wallet. Entire card opens OV-01. Choose Sub or Savings, then name-only WAL-02 creation."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jDhrL",
+              "name": "First wallet guidance",
+              "context": "Guidance for main-wallet-only state; no wallet creation is mandatory.",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "padding": [
+                8,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "RQSTb",
+                  "name": "Wallet organization invitation",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Make room for your plans",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "qjST7",
+                  "name": "Optional wallet explanation",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Keep everyday money separate from other plans. Create a sub wallet or a savings wallet whenever you need one.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GKp3f",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Wallets primary navigation",
+          "width": "fill_container",
+          "context": "Home → HOME-01; Wallets selected; Activity → ACT-01; Settings → SET-01.",
+          "descendants": {
+            "drw7I/dndqz": {
+              "fill": "#00000000"
+            },
+            "drw7I/YB1ow": {
+              "fill": "$--muted-foreground"
+            },
+            "drw7I/s1ycWE": {
+              "fill": "$--muted-foreground",
+              "fontWeight": "400"
+            },
+            "q93Xv/dndqz": {
+              "fill": "$--accent"
+            },
+            "q93Xv/YB1ow": {
+              "fill": "$--primary"
+            },
+            "q93Xv/s1ycWE": {
+              "fill": "$--primary",
+              "fontWeight": "600"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "uauO1",
+      "x": 9820,
+      "y": 3457,
+      "name": "WAL-01 / Wallet list — No sub wallets",
+      "context": "WAL-01 bento grid with main and savings wallets. Types remain visible; Create wallet is the final half-width card. Main → WAL-03; savings → WAL-04; Create wallet → OV-01.",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "NReVa",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Wallets system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "Ls0u2",
+          "name": "Wallets screen content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "cVcIn",
+              "name": "Wallets destination heading",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Lsctm",
+                  "name": "Wallets title",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "b5md3i",
+                  "name": "Wallets introduction",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A place for every purpose.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "OFthG",
+              "type": "ref",
+              "ref": "kPXhQ",
+              "name": "Wallets total balance and visibility",
+              "width": "fill_container",
+              "descendants": {
+                "aI84C": {
+                  "content": "Rp14.450.000",
+                  "fontSize": 32,
+                  "lineHeight": 1.25
+                },
+                "pQNOq": {
+                  "content": "Across 2 wallets"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "HSfHb",
+              "name": "Wallet bento grid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "pNsPt",
+                  "name": "Wallet bento row 1",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "oAGtf",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Daily spending wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-03 for Daily spending. Persistent type: Main wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--primary",
+                          "stroke": "$--primary"
+                        },
+                        "JNUtR": {
+                          "icon": "wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Daily spending",
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp2.450.000",
+                          "fill": "$--primary-foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "id": "EpkUw",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Holiday fund wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-04 for Holiday fund. Persistent type: Savings wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "sprout",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Holiday fund",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp12.000.000",
+                          "fill": "$--foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Savings wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "KIIZ9",
+                  "name": "Wallet bento row 2",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "GZWJY",
+                      "type": "ref",
+                      "ref": "kJs8k",
+                      "name": "Create wallet card",
+                      "width": 169,
+                      "height": 169,
+                      "context": "Accessible name Create wallet. Entire card opens OV-01. Choose Sub or Savings, then name-only WAL-02 creation."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "B2eMda",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Wallets primary navigation",
+          "width": "fill_container",
+          "context": "Home → HOME-01; Wallets selected; Activity → ACT-01; Settings → SET-01.",
+          "descendants": {
+            "drw7I/dndqz": {
+              "fill": "#00000000"
+            },
+            "drw7I/YB1ow": {
+              "fill": "$--muted-foreground"
+            },
+            "drw7I/s1ycWE": {
+              "fill": "$--muted-foreground",
+              "fontWeight": "400"
+            },
+            "q93Xv/dndqz": {
+              "fill": "$--accent"
+            },
+            "q93Xv/YB1ow": {
+              "fill": "$--primary"
+            },
+            "q93Xv/s1ycWE": {
+              "fill": "$--primary",
+              "fontWeight": "600"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "q54Aw",
+      "x": 10290,
+      "y": 3457,
+      "name": "WAL-01 / Wallet list — No savings wallets",
+      "context": "WAL-01 bento grid with main and sub wallets. Types remain visible; Create wallet is the final half-width card. Wallet cards → WAL-03; Create wallet → OV-01.",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "Jhb7K",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Wallets system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "W6ifc",
+          "name": "Wallets screen content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "gFyYv",
+              "name": "Wallets destination heading",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "A8JdS7",
+                  "name": "Wallets title",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "V3rd7F",
+                  "name": "Wallets introduction",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A place for every purpose.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "FmQaH",
+              "type": "ref",
+              "ref": "kPXhQ",
+              "name": "Wallets total balance and visibility",
+              "width": "fill_container",
+              "descendants": {
+                "aI84C": {
+                  "content": "Rp6.450.000",
+                  "fontSize": 32,
+                  "lineHeight": 1.25
+                },
+                "pQNOq": {
+                  "content": "Across 2 wallets"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "A8VYd",
+              "name": "Wallet bento grid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Z3S3H",
+                  "name": "Wallet bento row 1",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "Ea2jO",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Daily spending wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-03 for Daily spending. Persistent type: Main wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--primary",
+                          "stroke": "$--primary"
+                        },
+                        "JNUtR": {
+                          "icon": "wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Daily spending",
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp2.450.000",
+                          "fill": "$--primary-foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "id": "DSXXS",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Bills wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-03 for Bills. Persistent type: Sub wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "receipt-text",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Bills",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp4.000.000",
+                          "fill": "$--foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Sub wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "sJUx1",
+                  "name": "Wallet bento row 2",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "DbfpZ",
+                      "type": "ref",
+                      "ref": "kJs8k",
+                      "name": "Create wallet card",
+                      "width": 169,
+                      "height": 169,
+                      "context": "Accessible name Create wallet. Entire card opens OV-01. Choose Sub or Savings, then name-only WAL-02 creation."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "qjGaL",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Wallets primary navigation",
+          "width": "fill_container",
+          "context": "Home → HOME-01; Wallets selected; Activity → ACT-01; Settings → SET-01.",
+          "descendants": {
+            "drw7I/dndqz": {
+              "fill": "#00000000"
+            },
+            "drw7I/YB1ow": {
+              "fill": "$--muted-foreground"
+            },
+            "drw7I/s1ycWE": {
+              "fill": "$--muted-foreground",
+              "fontWeight": "400"
+            },
+            "q93Xv/dndqz": {
+              "fill": "$--accent"
+            },
+            "q93Xv/YB1ow": {
+              "fill": "$--primary"
+            },
+            "q93Xv/s1ycWE": {
+              "fill": "$--primary",
+              "fontWeight": "600"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "obNC4",
+      "x": 10760,
+      "y": 3457,
+      "name": "WAL-01 / Wallet list — Multiple wallets, long names and IDR, 320 px",
+      "context": "WAL-01 narrow stress case. Five 280 × 280 px wallet squares and a square Create wallet card. Total Rp137.037.785.790 across five wallets; eye control hides/shows the total and all wallet amounts. Long names wrap; complete total and main amount use 24 px, other card amounts use 20 px. Wallet cards → WAL-03 / WAL-04; Create wallet → OV-01.",
+      "clip": true,
+      "width": 320,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "GCpgp",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Wallets system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "DU38Z",
+          "name": "Wallets screen content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "OpPHo",
+              "name": "Wallets destination heading",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "INoUZ",
+                  "name": "Wallets title",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "bIsXv",
+                  "name": "Wallets introduction",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A place for every purpose.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "Kskk8",
+              "type": "ref",
+              "ref": "kPXhQ",
+              "name": "Wallets total balance and visibility",
+              "width": "fill_container",
+              "descendants": {
+                "aI84C": {
+                  "content": "Rp137.037.785.790",
+                  "fontSize": 24,
+                  "lineHeight": 1.3333333333
+                },
+                "pQNOq": {
+                  "content": "Across 5 wallets"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "dpsYC",
+              "name": "Wallet bento grid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "y3hQj",
+                  "name": "Wallet bento row 1",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "MST9Q",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Daily spending and household essentials wallet card",
+                      "width": "fill_container",
+                      "height": 280,
+                      "context": "Entire wallet card opens WAL-03 for Daily spending and household essentials. Persistent type: Main wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--primary",
+                          "stroke": "$--primary"
+                        },
+                        "JNUtR": {
+                          "icon": "wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Daily spending and household essentials",
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp1.234.567.890",
+                          "fill": "$--primary-foreground",
+                          "fontSize": 24,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "YMeqg",
+                  "name": "Wallet bento row 2",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "lR084",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Household bills and monthly commitments wallet card",
+                      "width": "fill_container",
+                      "height": 280,
+                      "context": "Entire wallet card opens WAL-03 for Household bills and monthly commitments. Persistent type: Sub wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "receipt-text",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Household bills and monthly commitments",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp123.456.789.000",
+                          "fill": "$--foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Sub wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "g2LBTE",
+                  "name": "Wallet bento row 3",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "LkZae",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Everyday groceries and family spending wallet card",
+                      "width": "fill_container",
+                      "height": 280,
+                      "context": "Entire wallet card opens WAL-03 for Everyday groceries and family spending. Persistent type: Sub wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "shopping-basket",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Everyday groceries and family spending",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp0",
+                          "fill": "$--foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Sub wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "XbRkT",
+                  "name": "Wallet bento row 4",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "ezBIG",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Family holiday and travel plans wallet card",
+                      "width": "fill_container",
+                      "height": 280,
+                      "context": "Entire wallet card opens WAL-04 for Family holiday and travel plans. Persistent type: Savings wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "sprout",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Family holiday and travel plans",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp12.345.678.900",
+                          "fill": "$--foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Savings wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "GFWcR",
+                  "name": "Wallet bento row 5",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "xGViq",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Emergency fund and future plans wallet card",
+                      "width": "fill_container",
+                      "height": 280,
+                      "context": "Entire wallet card opens WAL-04 for Emergency fund and future plans. Persistent type: Savings wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "shield-check",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Emergency fund and future plans",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp750.000",
+                          "fill": "$--foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Savings wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "YtIn9",
+                  "name": "Wallet bento row 6",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "pQsEM",
+                      "type": "ref",
+                      "ref": "kJs8k",
+                      "name": "Create wallet card",
+                      "width": "fill_container",
+                      "height": 280,
+                      "context": "Accessible name Create wallet. Entire card opens OV-01. Choose Sub or Savings, then name-only WAL-02 creation."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "PieAc",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Wallets primary navigation",
+          "width": "fill_container",
+          "context": "Home → HOME-01; Wallets selected; Activity → ACT-01; Settings → SET-01.",
+          "descendants": {
+            "drw7I/dndqz": {
+              "fill": "#00000000"
+            },
+            "drw7I/YB1ow": {
+              "fill": "$--muted-foreground"
+            },
+            "drw7I/s1ycWE": {
+              "fill": "$--muted-foreground",
+              "fontWeight": "400"
+            },
+            "q93Xv/dndqz": {
+              "fill": "$--accent"
+            },
+            "q93Xv/YB1ow": {
+              "fill": "$--primary"
+            },
+            "q93Xv/s1ycWE": {
+              "fill": "$--primary",
+              "fontWeight": "600"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Dg4eL",
+      "x": 8880,
+      "y": 4439,
+      "name": "OV-01 / Wallet-type sheet — Choose sub or savings",
+      "context": "OV-01 from the WAL-01 Create wallet card. Sub / Savings choices open name-only WAL-02 creation. Opening/dismissing preserves the caller’s amounts and balance-visibility state; dismissal restores focus to Create wallet. Square-card and total-balance backgrounds are shown. Modal and toggle runtime behavior require implementation.",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "$--background",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "A3ZMB",
+          "x": 0,
+          "y": 0,
+          "name": "WAL-01 square bento underneath wallet-type sheet",
+          "context": "WAL-01 first visit. One automatically provided main wallet with Rp0, paired with a Create wallet card in the bento grid. Wallet creation is optional. Main card → WAL-03; Create wallet card → OV-01.",
+          "clip": true,
+          "width": 390,
+          "height": 844,
+          "fill": "$--background",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "gSgJu",
+              "type": "ref",
+              "ref": "QT5AI",
+              "name": "Wallets system status bar",
+              "width": "fill_container",
+              "height": 62
+            },
+            {
+              "type": "frame",
+              "id": "kcSj2",
+              "name": "Wallets screen content",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": [
+                12,
+                20,
+                24,
+                20
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "MDES4",
+                  "name": "Wallets destination heading",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "x2CGLz",
+                      "name": "Wallets title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wallets",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "rwCcU",
+                      "name": "Wallets introduction",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "A place for every purpose.",
+                      "lineHeight": 1.4285714286,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "id": "fV9sI",
+                  "type": "ref",
+                  "ref": "kPXhQ",
+                  "name": "Wallets total balance and visibility",
+                  "width": "fill_container",
+                  "descendants": {
+                    "aI84C": {
+                      "content": "Rp0",
+                      "fontSize": 32,
+                      "lineHeight": 1.25
+                    },
+                    "pQNOq": {
+                      "content": "Across 1 wallet"
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "xe5ed",
+                  "name": "Wallet bento grid",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "h0u4Ro",
+                      "name": "Wallet bento row 1",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "id": "bk7NC",
+                          "type": "ref",
+                          "ref": "Oy4Yu",
+                          "name": "Daily spending wallet card",
+                          "width": "fill_container",
+                          "height": 169,
+                          "context": "Entire wallet card opens WAL-03 for Daily spending. Persistent type: Main wallet.",
+                          "descendants": {
+                            "JsTZk": {
+                              "fill": "$--primary",
+                              "stroke": "$--primary"
+                            },
+                            "JNUtR": {
+                              "icon": "wallet",
+                              "fill": "$--primary-foreground"
+                            },
+                            "H6upcI": {
+                              "fill": "$--primary-foreground"
+                            },
+                            "C2k4vp/w70eQ": {
+                              "content": "Daily spending",
+                              "fill": "$--primary-foreground"
+                            },
+                            "C2k4vp/aaB25": {
+                              "content": "Rp0",
+                              "fill": "$--primary-foreground",
+                              "fontSize": 20,
+                              "lineHeight": 1.4
+                            },
+                            "C2k4vp/l4MGky": {
+                              "content": "Main wallet",
+                              "fill": "$--primary-foreground"
+                            }
+                          }
+                        },
+                        {
+                          "id": "PIB2k",
+                          "type": "ref",
+                          "ref": "kJs8k",
+                          "name": "Create wallet card",
+                          "width": "fill_container",
+                          "height": 169,
+                          "context": "Accessible name Create wallet. Entire card opens OV-01. Choose Sub or Savings, then name-only WAL-02 creation."
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "YLFBi",
+                  "name": "First wallet guidance",
+                  "context": "Guidance for main-wallet-only state; no wallet creation is mandatory.",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": [
+                    8,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "FHwLz",
+                      "name": "Wallet organization invitation",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Make room for your plans",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YgYYo",
+                      "name": "Optional wallet explanation",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Keep everyday money separate from other plans. Create a sub wallet or a savings wallet whenever you need one.",
+                      "lineHeight": 1.4285714286,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "IKBRW",
+              "type": "ref",
+              "ref": "x6SHJq",
+              "name": "Wallets primary navigation",
+              "width": "fill_container",
+              "context": "Home → HOME-01; Wallets selected; Activity → ACT-01; Settings → SET-01.",
+              "descendants": {
+                "drw7I/dndqz": {
+                  "fill": "#00000000"
+                },
+                "drw7I/YB1ow": {
+                  "fill": "$--muted-foreground"
+                },
+                "drw7I/s1ycWE": {
+                  "fill": "$--muted-foreground",
+                  "fontWeight": "400"
+                },
+                "q93Xv/dndqz": {
+                  "fill": "$--accent"
+                },
+                "q93Xv/YB1ow": {
+                  "fill": "$--primary"
+                },
+                "q93Xv/s1ycWE": {
+                  "fill": "$--primary",
+                  "fontWeight": "600"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "QjNG0",
+          "x": 0,
+          "y": 0,
+          "name": "Wallet-type modal scrim",
+          "context": "Dismiss to unchanged WAL-01. Background is inert while the sheet is open.",
+          "fill": "#18251F80",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "type": "frame",
+          "id": "lig3a",
+          "x": 0,
+          "y": 0,
+          "name": "Wallet-type sheet positioning",
+          "width": 390,
+          "height": 844,
+          "layout": "vertical",
+          "padding": 20,
+          "justifyContent": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "K8HggS",
+              "name": "Wallet-type choice surface",
+              "width": "fill_container",
+              "fill": "$--popover",
+              "cornerRadius": "$--radius-2xl",
+              "layout": "vertical",
+              "gap": 20,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "xSbdv",
+                  "name": "Wallet-type title and close",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ugcua",
+                      "name": "Wallet-type sheet title",
+                      "fill": "$--popover-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Create a wallet",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "al2Ai",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Close wallet-type sheet",
+                      "width": 44,
+                      "height": 44,
+                      "fill": "$--secondary",
+                      "context": "Accessible name: Close wallet-type sheet. Return to WAL-01 without changes.",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "x"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "oaBNS",
+                  "name": "Wallet-type choice explanation",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "How would you like to organize your money?",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "d54XN",
+                  "name": "Available wallet types",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "HNasM",
+                      "type": "ref",
+                      "ref": "ZHfba",
+                      "name": "Sub wallet choice",
+                      "width": "fill_container",
+                      "padding": 16,
+                      "gap": 12,
+                      "context": "Entire row opens WAL-02 with sub type selected. Name-only creation; no target or schedule is required.",
+                      "descendants": {
+                        "NCc7W": {
+                          "icon": "layers-2"
+                        },
+                        "i0Ix7": {
+                          "content": "Sub wallet"
+                        },
+                        "kWHP0": {
+                          "content": "Separate money for bills, spending, or other plans."
+                        }
+                      }
+                    },
+                    {
+                      "id": "E5Vd3",
+                      "type": "ref",
+                      "ref": "ZHfba",
+                      "name": "Savings wallet choice",
+                      "width": "fill_container",
+                      "padding": 16,
+                      "gap": 12,
+                      "context": "Entire row opens WAL-02 with savings type selected. Name-only creation; no target or schedule is required.",
+                      "descendants": {
+                        "NCc7W": {
+                          "icon": "sprout"
+                        },
+                        "i0Ix7": {
+                          "content": "Savings wallet"
+                        },
+                        "kWHP0": {
+                          "content": "Set money aside. Add a target or budgeting later."
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "xgYTu",
+      "x": 9350,
+      "y": 4439,
+      "name": "OV-01 / Wallet-type sheet — Narrow, 320 px",
+      "context": "OV-01 from the WAL-01 Create wallet card. Sub / Savings choices open name-only WAL-02 creation. Opening/dismissing preserves the caller’s amounts and balance-visibility state; dismissal restores focus to Create wallet. Square-card and total-balance backgrounds are shown. Modal and toggle runtime behavior require implementation.",
+      "clip": true,
+      "width": 320,
+      "height": 844,
+      "fill": "$--background",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "gp9q7",
+          "x": 0,
+          "y": 0,
+          "name": "WAL-01 square bento underneath wallet-type sheet",
+          "context": "WAL-01 first visit. One automatically provided main wallet with Rp0, paired with a Create wallet card in the bento grid. Wallet creation is optional. Main card → WAL-03; Create wallet card → OV-01.",
+          "clip": true,
+          "width": 320,
+          "height": 844,
+          "fill": "$--background",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "x7iq0",
+              "type": "ref",
+              "ref": "QT5AI",
+              "name": "Wallets system status bar",
+              "width": "fill_container",
+              "height": 62
+            },
+            {
+              "type": "frame",
+              "id": "T0wvM",
+              "name": "Wallets screen content",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": [
+                12,
+                20,
+                24,
+                20
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "RqsMr",
+                  "name": "Wallets destination heading",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "kD5FK",
+                      "name": "Wallets title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wallets",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "iOQVk",
+                      "name": "Wallets introduction",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "A place for every purpose.",
+                      "lineHeight": 1.4285714286,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "id": "Duttg",
+                  "type": "ref",
+                  "ref": "kPXhQ",
+                  "name": "Wallets total balance and visibility",
+                  "width": "fill_container",
+                  "descendants": {
+                    "aI84C": {
+                      "content": "Rp0",
+                      "fontSize": 32,
+                      "lineHeight": 1.25
+                    },
+                    "pQNOq": {
+                      "content": "Across 1 wallet"
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "K6qxa",
+                  "name": "Wallet bento grid",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "D2WNIG",
+                      "name": "Wallet bento row 1",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "id": "UWYgH",
+                          "type": "ref",
+                          "ref": "Oy4Yu",
+                          "name": "Daily spending wallet card",
+                          "width": "fill_container",
+                          "height": 134,
+                          "context": "Entire wallet card opens WAL-03 for Daily spending. Persistent type: Main wallet.",
+                          "descendants": {
+                            "JsTZk": {
+                              "fill": "$--primary",
+                              "stroke": "$--primary",
+                              "padding": 12
+                            },
+                            "QVA1J": {
+                              "height": 24
+                            },
+                            "e1mH5": {
+                              "height": 24
+                            },
+                            "JNUtR": {
+                              "icon": "wallet",
+                              "fill": "$--primary-foreground",
+                              "width": 24,
+                              "height": 24
+                            },
+                            "H6upcI": {
+                              "fill": "$--primary-foreground"
+                            },
+                            "C2k4vp/w70eQ": {
+                              "content": "Daily spending",
+                              "fill": "$--primary-foreground",
+                              "fontSize": 14,
+                              "lineHeight": 1.4285714286
+                            },
+                            "C2k4vp/aaB25": {
+                              "content": "Rp0",
+                              "fill": "$--primary-foreground",
+                              "fontSize": 16,
+                              "lineHeight": 1.5
+                            },
+                            "C2k4vp/l4MGky": {
+                              "content": "Main wallet",
+                              "fill": "$--primary-foreground"
+                            }
+                          }
+                        },
+                        {
+                          "id": "xHJ2L",
+                          "type": "ref",
+                          "ref": "kJs8k",
+                          "name": "Create wallet card",
+                          "width": "fill_container",
+                          "height": 134,
+                          "context": "Accessible name Create wallet. Entire card opens OV-01. Choose Sub or Savings, then name-only WAL-02 creation.",
+                          "descendants": {
+                            "EVEVZ": {
+                              "padding": 12
+                            },
+                            "Qh3hX": {
+                              "width": 32,
+                              "height": 32
+                            },
+                            "WRMn0": {
+                              "width": 20,
+                              "height": 20
+                            },
+                            "R641RK": {
+                              "fontSize": 14,
+                              "lineHeight": 1.4285714286
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "v0MfD8",
+                  "name": "First wallet guidance",
+                  "context": "Guidance for main-wallet-only state; no wallet creation is mandatory.",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": [
+                    8,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "u56TC",
+                      "name": "Wallet organization invitation",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Make room for your plans",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "w4Kp0l",
+                      "name": "Optional wallet explanation",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Keep everyday money separate from other plans. Create a sub wallet or a savings wallet whenever you need one.",
+                      "lineHeight": 1.4285714286,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "H8aNhq",
+              "type": "ref",
+              "ref": "x6SHJq",
+              "name": "Wallets primary navigation",
+              "width": "fill_container",
+              "context": "Home → HOME-01; Wallets selected; Activity → ACT-01; Settings → SET-01.",
+              "descendants": {
+                "drw7I/dndqz": {
+                  "fill": "#00000000"
+                },
+                "drw7I/YB1ow": {
+                  "fill": "$--muted-foreground"
+                },
+                "drw7I/s1ycWE": {
+                  "fill": "$--muted-foreground",
+                  "fontWeight": "400"
+                },
+                "q93Xv/dndqz": {
+                  "fill": "$--accent"
+                },
+                "q93Xv/YB1ow": {
+                  "fill": "$--primary"
+                },
+                "q93Xv/s1ycWE": {
+                  "fill": "$--primary",
+                  "fontWeight": "600"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "DRy7L",
+          "x": 0,
+          "y": 0,
+          "name": "Wallet-type modal scrim",
+          "context": "Dismiss to unchanged WAL-01. Background is inert while the sheet is open.",
+          "fill": "#18251F80",
+          "width": 320,
+          "height": 844
+        },
+        {
+          "type": "frame",
+          "id": "gaalp",
+          "x": 0,
+          "y": 0,
+          "name": "Wallet-type sheet positioning",
+          "width": 320,
+          "height": 844,
+          "layout": "vertical",
+          "padding": 16,
+          "justifyContent": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "MZySh",
+              "name": "Wallet-type choice surface",
+              "width": "fill_container",
+              "fill": "$--popover",
+              "cornerRadius": "$--radius-2xl",
+              "layout": "vertical",
+              "gap": 20,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "esF2y",
+                  "name": "Wallet-type title and close",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "CsHIM",
+                      "name": "Wallet-type sheet title",
+                      "fill": "$--popover-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Create a wallet",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "RVZzb",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Close wallet-type sheet",
+                      "width": 44,
+                      "height": 44,
+                      "fill": "$--secondary",
+                      "context": "Accessible name: Close wallet-type sheet. Return to WAL-01 without changes.",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "x"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "Lmg4r",
+                  "name": "Wallet-type choice explanation",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "How would you like to organize your money?",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "jhpnq",
+                  "name": "Available wallet types",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "l2SkvI",
+                      "type": "ref",
+                      "ref": "ZHfba",
+                      "name": "Sub wallet choice",
+                      "width": "fill_container",
+                      "padding": 16,
+                      "gap": 12,
+                      "context": "Entire row opens WAL-02 with sub type selected. Name-only creation; no target or schedule is required.",
+                      "descendants": {
+                        "NCc7W": {
+                          "icon": "layers-2"
+                        },
+                        "i0Ix7": {
+                          "content": "Sub wallet"
+                        },
+                        "kWHP0": {
+                          "content": "Separate money for bills, spending, or other plans."
+                        }
+                      }
+                    },
+                    {
+                      "id": "I8MWY",
+                      "type": "ref",
+                      "ref": "ZHfba",
+                      "name": "Savings wallet choice",
+                      "width": "fill_container",
+                      "padding": 16,
+                      "gap": 12,
+                      "context": "Entire row opens WAL-02 with savings type selected. Name-only creation; no target or schedule is required.",
+                      "descendants": {
+                        "NCc7W": {
+                          "icon": "sprout"
+                        },
+                        "i0Ix7": {
+                          "content": "Savings wallet"
+                        },
+                        "kWHP0": {
+                          "content": "Set money aside. Add a target or budgeting later."
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "tBRgy",
+      "x": 9750,
+      "y": 4439,
+      "name": "WAL-01 / Wallet list — Closed-wallet return feedback",
+      "context": "WAL-01 after OV-06 closes Holiday fund, following explicit target removal; no budgeting schedule in this example. Rp12.000.000 moves to main, now Rp14.450.000; Bills stays Rp4.000.000. Total stays Rp18.450.000 across two open wallets. Square cards and the balance-visibility control follow the other Wallets states.",
+      "clip": true,
+      "width": 390,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "i0LZ4",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Wallets system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "vdYuq",
+          "name": "Wallets screen content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "DEMM6",
+              "name": "Wallets destination heading",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Ew07T",
+                  "name": "Wallets title",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "cMMUI",
+                  "name": "Wallets introduction",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A place for every purpose.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "w8bUQX",
+              "type": "ref",
+              "ref": "kPXhQ",
+              "name": "Wallets total balance and visibility",
+              "width": "fill_container",
+              "descendants": {
+                "aI84C": {
+                  "content": "Rp18.450.000",
+                  "fontSize": 32,
+                  "lineHeight": 1.25
+                },
+                "pQNOq": {
+                  "content": "Across 2 wallets"
+                }
+              }
+            },
+            {
+              "id": "gPCHM",
+              "type": "ref",
+              "ref": "qPycb",
+              "name": "Wallet closure success feedback",
+              "width": "fill_container",
+              "context": "Announce closure success and balance relocation when returning from OV-06; runtime live-region behavior requires implementation.",
+              "descendants": {
+                "YgK79": {
+                  "content": "Wallet closed"
+                },
+                "PQHAa": {
+                  "content": "Holiday fund’s Rp12.000.000 was moved to Daily spending."
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "b6pYDf",
+              "name": "Wallet bento grid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bBPPX",
+                  "name": "Wallet bento row 1",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "AzkeX",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Daily spending wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-03 for Daily spending. Persistent type: Main wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--primary",
+                          "stroke": "$--primary"
+                        },
+                        "JNUtR": {
+                          "icon": "wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Daily spending",
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp14.450.000",
+                          "fill": "$--primary-foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "id": "r8ETg",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Bills wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-03 for Bills. Persistent type: Sub wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "receipt-text",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Bills",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp4.000.000",
+                          "fill": "$--foreground",
+                          "fontSize": 20,
+                          "lineHeight": 1.4
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Sub wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "dYKpg",
+                  "name": "Wallet bento row 2",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "WXwI1",
+                      "type": "ref",
+                      "ref": "kJs8k",
+                      "name": "Create wallet card",
+                      "width": 169,
+                      "height": 169,
+                      "context": "Accessible name Create wallet. Entire card opens OV-01. Choose Sub or Savings, then name-only WAL-02 creation."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b1UX0n",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Wallets primary navigation",
+          "width": "fill_container",
+          "context": "Home → HOME-01; Wallets selected; Activity → ACT-01; Settings → SET-01.",
+          "descendants": {
+            "drw7I/dndqz": {
+              "fill": "#00000000"
+            },
+            "drw7I/YB1ow": {
+              "fill": "$--muted-foreground"
+            },
+            "drw7I/s1ycWE": {
+              "fill": "$--muted-foreground",
+              "fontWeight": "400"
+            },
+            "q93Xv/dndqz": {
+              "fill": "$--accent"
+            },
+            "q93Xv/YB1ow": {
+              "fill": "$--primary"
+            },
+            "q93Xv/s1ycWE": {
+              "fill": "$--primary",
+              "fontWeight": "600"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "t6k8B",
+      "x": 7880,
+      "y": -680,
+      "name": "00e / Library — Wallet bento cards",
+      "clip": true,
+      "width": 960,
+      "fill": "$--card",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "I1jvUG",
+          "name": "Wallet bento library heading",
+          "fill": "$--foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Wallets / Bento cards",
+          "lineHeight": 1.3333333333,
+          "fontFamily": "$--font-sans",
+          "fontSize": 24,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "GPwGJ",
+          "name": "Wallet bento reusable masters",
+          "width": "fill_container",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Oy4Yu",
+              "name": "Wallet / Bento card",
+              "context": "WAL-01 square wallet destination card. Main wallet uses Primary with Primary foreground; sub and savings wallets use Card (white). Each keeps its name, balance or mask, and persistent type. Entire card opens WAL-03 / WAL-04.",
+              "reusable": true,
+              "width": 169,
+              "height": 169,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "JsTZk",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Bento wallet surface",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "layout": "vertical",
+                  "padding": 16,
+                  "gap": 0,
+                  "fill": "$--card",
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "type": "frame",
+                      "id": "F3NZIr",
+                      "name": "Bento wallet content",
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "justifyContent": "space_between",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "QVA1J",
+                          "name": "Wallet tile icon and navigation",
+                          "width": "fill_container",
+                          "height": 28,
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "e1mH5",
+                              "name": "Wallet tile icon area",
+                              "width": "fill_container",
+                              "height": 28,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "JNUtR",
+                                  "name": "Wallet tile type icon",
+                                  "width": 28,
+                                  "height": 28,
+                                  "icon": "layers-2",
+                                  "library": "lucide",
+                                  "fill": "$--primary"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "icon",
+                              "id": "H6upcI",
+                              "name": "Wallet tile navigation indicator",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "$--primary"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "C2k4vp",
+                          "type": "ref",
+                          "ref": "y0Zpji",
+                          "name": "Wallet tile identity and balance",
+                          "width": "fill_container",
+                          "padding": 0,
+                          "strokeWidth": 0,
+                          "gap": 4,
+                          "descendants": {
+                            "wU1ww": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "OdX4b": {
+                              "layout": "vertical",
+                              "gap": 0,
+                              "alignItems": "start"
+                            },
+                            "w70eQ": {
+                              "content": "Bills",
+                              "fontSize": 16,
+                              "lineHeight": 1.5
+                            },
+                            "aaB25": {
+                              "content": "Rp4.000.000",
+                              "fontSize": 20,
+                              "lineHeight": 1.4,
+                              "textAlign": "left"
+                            },
+                            "l4MGky": {
+                              "enabled": true,
+                              "width": "fill_container",
+                              "content": "Sub wallet",
+                              "fontSize": 12,
+                              "lineHeight": 1.3333333333
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "kJs8k",
+              "name": "Wallet / Create card",
+              "context": "WAL-01 square Create wallet card with Secondary background and Secondary foreground title. Entire card is one button to OV-01; decorative plus glyph. Same grid footprint as wallet cards.",
+              "reusable": true,
+              "width": 169,
+              "height": 169,
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "EVEVZ",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Create wallet bento surface",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "layout": "vertical",
+                  "padding": 16,
+                  "gap": 0,
+                  "fill": "$--secondary",
+                  "stroke": "$--input",
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "type": "frame",
+                      "id": "TAQPV",
+                      "name": "Create wallet bento content",
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "justifyContent": "space_between",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Qh3hX",
+                          "name": "Create wallet plus disc",
+                          "width": 44,
+                          "height": 44,
+                          "fill": "$--primary",
+                          "cornerRadius": "$--radius-full",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "WRMn0",
+                              "name": "Create wallet plus glyph",
+                              "width": 24,
+                              "height": 24,
+                              "icon": "plus",
+                              "library": "lucide",
+                              "fill": "$--primary-foreground"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "H8py4P",
+                          "name": "Create wallet bento label",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "R641RK",
+                              "name": "Create wallet card title",
+                              "fill": "$--secondary-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Create wallet",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$--font-sans",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "T8puNc",
+                              "name": "Create wallet card description",
+                              "fill": "$--muted-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sub or savings",
+                              "lineHeight": 1.3333333333,
+                              "fontFamily": "$--font-sans",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "IRmQl",
+              "name": "Create wallet card focus specimen",
+              "width": 181,
+              "layout": "vertical",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "u2ydP",
+                  "name": "Create card focus ring and offset",
+                  "context": "Focus convention: 2 px ring, 4 px offset. Entire Create wallet card is one button; plus glyph is decorative.",
+                  "width": 181,
+                  "height": 181,
+                  "cornerRadius": "$--radius-3xl",
+                  "stroke": "$--ring",
+                  "strokeWidth": 2,
+                  "layout": "vertical",
+                  "padding": 4,
+                  "children": [
+                    {
+                      "id": "hhYYq",
+                      "type": "ref",
+                      "ref": "kJs8k",
+                      "name": "Focused Create wallet card",
+                      "width": "fill_container",
+                      "height": "fill_container"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "M3HN5",
+                  "name": "Create card focus specimen caption",
+                  "fill": "$--muted-foreground",
+                  "content": "Focus / Create wallet",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "b1Sca",
+              "name": "Wallet bento usage notes",
+              "fill": "$--muted-foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "WAL-01 / Square cards\n169 px at 390 px.\n280 px for long content at 320 px.\n134 px for compact two-column content.\n\nTotal includes all open wallets. The eye masks the total and wallet amounts together. Create wallet stays the final card → OV-01.",
+              "lineHeight": 1.4285714286,
+              "fontFamily": "$--font-sans",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "oLUDo",
+          "name": "Wallet balance visibility masters and specimens",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "tq8jp",
+              "name": "Wallet balance visibility section heading",
+              "fill": "$--foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Wallets / Balance visibility",
+              "lineHeight": 1.4,
+              "fontFamily": "$--font-sans",
+              "fontSize": 20,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "R2EgZ",
+              "name": "Wallet balance visibility component row",
+              "width": "fill_container",
+              "gap": 48,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "kPXhQ",
+                  "name": "Wallet / Balance summary",
+                  "context": "WAL-01 total across all open wallets, including savings; not an available-to-spend balance. Eye button masks the total and all individual wallet balance amounts on this Wallets view. Visible state action Hide balances; hidden state action Show balances. No persistence across screens or sessions specified.",
+                  "reusable": true,
+                  "width": 350,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "PuG0Z",
+                      "name": "Wallet total balance values",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "oOJwt",
+                          "name": "Wallet total balance label",
+                          "fill": "$--muted-foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Total balance",
+                          "lineHeight": 1.4285714286,
+                          "fontFamily": "$--font-sans",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "aI84C",
+                          "name": "Wallet total balance amount",
+                          "fill": "$--foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Rp18.450.000",
+                          "lineHeight": 1.25,
+                          "fontFamily": "$--font-sans",
+                          "fontSize": 32,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "pQNOq",
+                          "name": "Wallet total balance scope",
+                          "fill": "$--muted-foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Across 3 wallets",
+                          "lineHeight": 1.3333333333,
+                          "fontFamily": "$--font-sans",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "Iixo1",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Toggle Wallets balance visibility",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Accessible name Hide balances. Activating hides the total and each individual wallet balance in this view. One toggle target; restore amounts with Show balances.",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "eye-off"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "b2mIAZ",
+                  "type": "ref",
+                  "ref": "kPXhQ",
+                  "name": "Wallet balance summary — Hidden specimen",
+                  "width": 350,
+                  "context": "Hidden state. Wallets screen total and individual wallet amounts are masked with a fixed-length string. Accessible action Show balances restores the original amounts without changing data.",
+                  "descendants": {
+                    "aI84C": {
+                      "content": "Rp ••••••"
+                    },
+                    "Iixo1": {
+                      "context": "Accessible name Show balances. Activating reveals the total and individual wallet balances; do not expose masked amounts to assistive technology."
+                    },
+                    "Iixo1/h1BnM6": {
+                      "icon": "eye"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "CN67s",
+      "x": 10220,
+      "y": 4439,
+      "name": "WAL-01 / Wallet list — Balances hidden",
+      "context": "WAL-01 hidden balance state. The eye toggle masks both total and individual wallet balances with a fixed-length Rp •••••• string. Names, types, icons, counts, and navigation remain available. Show balances restores the amounts. Do not expose hidden numeric amounts through accessible labels. Persistence outside this Wallets view is unspecified.",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "f3Ucl",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Wallets system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "Sr7Uv",
+          "name": "Wallets screen content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "FzUFZ",
+              "name": "Wallets destination heading",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "BIovp",
+                  "name": "Wallets title",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "NM4Rk",
+                  "name": "Wallets introduction",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A place for every purpose.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "CKOam",
+              "type": "ref",
+              "ref": "kPXhQ",
+              "name": "Wallets total balance and visibility",
+              "width": "fill_container",
+              "descendants": {
+                "aI84C": {
+                  "content": "Rp ••••••",
+                  "fontSize": 32,
+                  "lineHeight": 1.25
+                },
+                "pQNOq": {
+                  "content": "Across 3 wallets"
+                },
+                "Iixo1": {
+                  "context": "Accessible name Show balances. Activating restores the total and wallet balances on this view. The numeric amounts are hidden from accessible text while masked."
+                },
+                "Iixo1/h1BnM6": {
+                  "icon": "eye"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "otJgl",
+              "name": "Wallet bento grid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "lKDN0",
+                  "name": "Wallet bento row 1",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "glvoI",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Daily spending wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-03 for Daily spending. Persistent type: Main wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--primary",
+                          "stroke": "$--primary"
+                        },
+                        "JNUtR": {
+                          "icon": "wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Daily spending",
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp ••••••",
+                          "fill": "$--primary-foreground"
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "id": "Jt2kc",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Bills wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-03 for Bills. Persistent type: Sub wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "receipt-text",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Bills",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp ••••••",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Sub wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "izHrz",
+                  "name": "Wallet bento row 2",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "y3Tc0o",
+                      "type": "ref",
+                      "ref": "Oy4Yu",
+                      "name": "Holiday fund wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Entire wallet card opens WAL-04 for Holiday fund. Persistent type: Savings wallet.",
+                      "descendants": {
+                        "JsTZk": {
+                          "fill": "$--card",
+                          "stroke": "$--border"
+                        },
+                        "JNUtR": {
+                          "icon": "sprout",
+                          "fill": "$--primary"
+                        },
+                        "H6upcI": {
+                          "fill": "$--primary"
+                        },
+                        "C2k4vp/w70eQ": {
+                          "content": "Holiday fund",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/aaB25": {
+                          "content": "Rp ••••••",
+                          "fill": "$--foreground"
+                        },
+                        "C2k4vp/l4MGky": {
+                          "content": "Savings wallet",
+                          "fill": "$--muted-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "id": "fIcIy",
+                      "type": "ref",
+                      "ref": "kJs8k",
+                      "name": "Create wallet card",
+                      "width": "fill_container",
+                      "height": 169,
+                      "context": "Accessible name Create wallet. Entire card opens OV-01. Choose Sub or Savings, then name-only WAL-02 creation."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "NZ3pT",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Wallets primary navigation",
+          "width": "fill_container",
+          "context": "Home → HOME-01; Wallets selected; Activity → ACT-01; Settings → SET-01.",
+          "descendants": {
+            "drw7I/dndqz": {
+              "fill": "#00000000"
+            },
+            "drw7I/YB1ow": {
+              "fill": "$--muted-foreground"
+            },
+            "drw7I/s1ycWE": {
+              "fill": "$--muted-foreground",
+              "fontWeight": "400"
+            },
+            "q93Xv/dndqz": {
+              "fill": "$--accent"
+            },
+            "q93Xv/YB1ow": {
+              "fill": "$--primary"
+            },
+            "q93Xv/s1ycWE": {
+              "fill": "$--primary",
+              "fontWeight": "600"
+            }
+          }
+        }
+      ]
     }
   ],
   "variables": {

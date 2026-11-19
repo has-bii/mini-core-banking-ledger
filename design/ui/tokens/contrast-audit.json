@@ -197,6 +197,13 @@
       "ratio": 8.01,
       "minimum": 3,
       "pass": true
+    },
+    {
+      "foreground": "--muted-foreground",
+      "background": "--accent",
+      "ratio": 4.71,
+      "minimum": 4.5,
+      "pass": true
     }
   ]
 }
