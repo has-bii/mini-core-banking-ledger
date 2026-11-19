@@ -24795,6 +24795,3897 @@
           "fontWeight": "normal"
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "gjAX5",
+      "x": 6600,
+      "y": -680,
+      "name": "00d / Library — Home overview",
+      "clip": true,
+      "width": 1200,
+      "fill": "$--card",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "a3yw8",
+          "name": "Library heading",
+          "fill": "$--foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Home / Wallet and activity previews",
+          "lineHeight": 1.3333333333,
+          "fontFamily": "$--font-sans",
+          "fontSize": 24,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "zVN51",
+          "name": "Home preview masters",
+          "width": "fill_container",
+          "gap": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "y0Zpji",
+              "name": "Wallet / Home preview",
+              "context": "HOME-01 preview. Category labels persist after renaming. Opens WAL-03 or WAL-04; progress and lock only apply to an associated savings target.",
+              "reusable": true,
+              "width": 350,
+              "stroke": "$--border",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": [
+                16,
+                0
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "wU1ww",
+                  "name": "Wallet category and navigation",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "c74fY",
+                      "name": "Wallet category",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Sub wallets",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "K39vAs",
+                      "name": "Open wallet",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "chevron-right",
+                      "library": "lucide",
+                      "fill": "$--primary"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "OdX4b",
+                  "name": "Wallet name and balance",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "w70eQ",
+                      "name": "Wallet name",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Bills",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "aaB25",
+                      "name": "Wallet balance",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Rp4.000.000",
+                      "lineHeight": 1.5,
+                      "textAlign": "right",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "l4MGky",
+                  "x": 0,
+                  "y": 0,
+                  "name": "Wallet supporting context",
+                  "enabled": false,
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": 0,
+                  "content": "Everyday money",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 12
+                },
+                {
+                  "type": "frame",
+                  "id": "dg4aF",
+                  "x": 0,
+                  "y": 0,
+                  "name": "Savings target preview",
+                  "enabled": false,
+                  "width": 0,
+                  "height": 0,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JJ9Rp",
+                      "name": "Target progress",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Rp12.000.000 of Rp20.000.000 · 60%",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12
+                    },
+                    {
+                      "type": "frame",
+                      "id": "nKaOe",
+                      "name": "Savings progress track",
+                      "clip": true,
+                      "width": "fill_container",
+                      "height": 4,
+                      "fill": "$--muted",
+                      "cornerRadius": "$--radius-full",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": "$--radius-full",
+                          "id": "CyAro",
+                          "name": "Saved portion",
+                          "fill": "$--primary",
+                          "width": 190.8,
+                          "height": 4
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "u9ksq",
+                      "name": "Savings outgoing status",
+                      "width": "fill_container",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "tlsLJ",
+                          "name": "Outgoing restriction icon",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "lock-keyhole",
+                          "library": "lucide",
+                          "fill": "$--muted-foreground"
+                        },
+                        {
+                          "type": "text",
+                          "id": "UJExK",
+                          "name": "Outgoing restriction",
+                          "fill": "$--muted-foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Outgoing locked until target is reached",
+                          "lineHeight": 1.3333333333,
+                          "fontFamily": "$--font-sans",
+                          "fontSize": 12
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "UmysQ",
+              "name": "Activity / Home row",
+              "context": "HOME-01 recent activity. Opens ACT-03. An own-wallet move is one global entry, without a debit or credit sign against total balance.",
+              "reusable": true,
+              "width": 350,
+              "stroke": "$--border",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 12,
+              "padding": [
+                16,
+                0
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "jVtsB",
+                  "name": "Transaction type indicator",
+                  "width": 40,
+                  "height": 40,
+                  "fill": "$--secondary",
+                  "cornerRadius": "$--radius-full",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "mK5j8",
+                      "name": "Transaction type icon",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "arrow-left-right",
+                      "library": "lucide",
+                      "fill": "$--primary"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ajJc5",
+                  "name": "Activity description",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "t6uif",
+                      "name": "Transaction title and amount",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Hh953",
+                          "name": "Transaction title",
+                          "fill": "$--foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Moved money",
+                          "lineHeight": 1.4285714286,
+                          "fontFamily": "$--font-sans",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "T5KOdk",
+                          "name": "Transaction amount",
+                          "fill": "$--foreground",
+                          "content": "Rp500.000",
+                          "lineHeight": 1.4285714286,
+                          "fontFamily": "$--font-sans",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "O1NEn5",
+                      "name": "Affected wallets",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Daily spending → Holiday fund",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12
+                    },
+                    {
+                      "type": "text",
+                      "id": "kP5Ro",
+                      "name": "Transaction date",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Today · 10:24",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "O8Rgfi",
+      "x": 6600,
+      "y": 3457,
+      "name": "HOME-01 / Home overview — Populated",
+      "context": "HOME-01. Total is the sum of all open wallets, not available-to-spend money. Main is the everyday reference; sub wallets can also spend. Top up → TX-01; Move → TX-03; Transfer → TX-04; wallets → WAL-03 / WAL-04; recent activity → ACT-03; View all activity → ACT-01. This screen illustrates three wallets, with only Holiday fund outgoing-locked by its unfinished target.",
+      "clip": true,
+      "width": 390,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "NGYWk",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Home system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "Tc1lO",
+          "name": "Home screen content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "YgWrX",
+              "name": "Home greeting and identity",
+              "width": "fill_container",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "CmnYF",
+                  "name": "Home heading",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "BrPYU",
+                      "name": "Home destination label",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Home",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "s9UUwI",
+                      "name": "Home greeting",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Hello, Hasbiy",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Dbiqm",
+                  "name": "Brand clear space",
+                  "width": 48,
+                  "height": 48,
+                  "padding": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "Z2e3T",
+                      "name": "Supplied Still Bank identifier",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../logo/png/still-bank-symbol-color-512.png",
+                        "mode": "contain"
+                      },
+                      "width": 40,
+                      "height": 40
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "uOwrD",
+              "name": "Total balance overview",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "wSpL2",
+                  "name": "Total balance label",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Total balance",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14
+                },
+                {
+                  "type": "text",
+                  "id": "SGMGZ",
+                  "name": "Total balance amount",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Rp18.450.000",
+                  "lineHeight": 1.2,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "fO7R1",
+                  "name": "Total balance context",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Across 3 wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "EPgw4",
+              "name": "Home money actions",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AcfDv",
+                  "name": "Top up action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "FEl7u",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Top up money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
+                      "fill": "$--primary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "plus",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "pXkVT",
+                      "name": "Top up action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Top up",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "a5ThJ",
+                  "name": "Move action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "CIQQY",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Move money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "arrow-left-right",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "x49Npw",
+                      "name": "Move action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Move",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "DSs2q",
+                  "name": "Transfer action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "dpKli",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Transfer money action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "arrow-up-right",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "xmIGu",
+                      "name": "Transfer action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Transfer",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "MfF0j",
+                  "name": "Others action with label",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "BbOZt",
+                      "type": "ref",
+                      "ref": "kPjGo",
+                      "name": "Others action",
+                      "width": 44,
+                      "height": 44,
+                      "context": "Accessible name: Others. Destination awaiting product decision.",
+                      "descendants": {
+                        "h1BnM6": {
+                          "icon": "ellipsis"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "k7KoI",
+                      "name": "Others action label",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Others",
+                      "lineHeight": 1.3333333333,
+                      "textAlign": "center",
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ReATz",
+              "name": "Home wallet overview",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "u9EHI",
+                  "name": "Wallet section heading",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "owWmP",
+                      "name": "Wallet section title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Your wallets",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "f3q89",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "View all wallets",
+                      "height": 44,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "fill": "#00000000",
+                      "context": "Opens WAL-01.",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "View all",
+                          "fontSize": 14,
+                          "fill": "$--primary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "ek0me",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Main wallet highlight",
+                  "width": "fill_container",
+                  "fill": "$--primary",
+                  "stroke": "$--primary",
+                  "padding": 20,
+                  "gap": 0,
+                  "layout": "vertical",
+                  "strokeWidth": 1,
+                  "effect": [],
+                  "context": "HOME-01 main wallet card spans two columns. Opens WAL-03.",
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "id": "w1XJb",
+                      "type": "ref",
+                      "ref": "y0Zpji",
+                      "name": "Main wallet preview",
+                      "width": "fill_container",
+                      "padding": 0,
+                      "strokeWidth": 0,
+                      "context": "Open WAL-03 for Daily spending, the main wallet. This category persists if the wallet is renamed.",
+                      "descendants": {
+                        "c74fY": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "K39vAs": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "OdX4b": {
+                          "layout": "vertical",
+                          "gap": 4,
+                          "alignItems": "start"
+                        },
+                        "w70eQ": {
+                          "content": "Daily spending",
+                          "fill": "$--primary-foreground"
+                        },
+                        "aaB25": {
+                          "content": "Rp2.450.000",
+                          "fontSize": 32,
+                          "lineHeight": 1.25,
+                          "textAlign": "left",
+                          "fill": "$--primary-foreground"
+                        },
+                        "l4MGky": {
+                          "enabled": true,
+                          "width": "fill_container",
+                          "content": "Everyday money",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "ZtaPa",
+                  "name": "Wallet bento row",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "yAsUW",
+                      "type": "ref",
+                      "ref": "etfbu",
+                      "name": "Bills sub wallet card",
+                      "width": "fill_container",
+                      "padding": 16,
+                      "gap": 0,
+                      "strokeWidth": 1,
+                      "effect": [],
+                      "stroke": "$--border",
+                      "descendants": {
+                        "xw3Fc": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        },
+                        "IjYGR": {
+                          "id": "Wxx5h",
+                          "type": "ref",
+                          "ref": "y0Zpji",
+                          "name": "Sub wallet tile content",
+                          "width": "fill_container",
+                          "context": "HOME-01 individual sub wallet preview. Each wallet has its own card; multiple wallets of this type may exist. Opens WAL-03. Target and outgoing-lock details belong in wallet detail.",
+                          "padding": 0,
+                          "strokeWidth": 0,
+                          "descendants": {
+                            "c74fY": {
+                              "content": "Bills",
+                              "name": "Wallet name",
+                              "fontSize": 16,
+                              "fontWeight": "600",
+                              "lineHeight": 1.5,
+                              "fill": "$--foreground"
+                            },
+                            "OdX4b": {
+                              "layout": "vertical",
+                              "gap": 4,
+                              "alignItems": "start",
+                              "name": "Wallet balance block"
+                            },
+                            "w70eQ": {
+                              "content": "Bills",
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "aaB25": {
+                              "content": "Rp4.000.000",
+                              "fontSize": 20,
+                              "lineHeight": 1.4,
+                              "textAlign": "left"
+                            },
+                            "l4MGky": {
+                              "enabled": true,
+                              "width": "fill_container",
+                              "content": "Sub wallet",
+                              "name": "Wallet type"
+                            },
+                            "dg4aF": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "JJ9Rp": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "nKaOe": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "CyAro": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "UJExK": {
+                              "content": "Outgoing locked"
+                            }
+                          }
+                        },
+                        "ao2uW": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        }
+                      }
+                    },
+                    {
+                      "id": "mXCaw",
+                      "type": "ref",
+                      "ref": "etfbu",
+                      "name": "Holiday fund savings wallet card",
+                      "width": "fill_container",
+                      "padding": 16,
+                      "gap": 0,
+                      "strokeWidth": 1,
+                      "effect": [],
+                      "stroke": "$--border",
+                      "descendants": {
+                        "xw3Fc": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        },
+                        "IjYGR": {
+                          "id": "UHinA",
+                          "type": "ref",
+                          "ref": "y0Zpji",
+                          "name": "Savings wallet tile content",
+                          "width": "fill_container",
+                          "strokeWidth": 0,
+                          "context": "HOME-01 individual savings wallet preview. Each wallet has its own card; multiple wallets of this type may exist. Opens WAL-04. Target and outgoing-lock details belong in wallet detail.",
+                          "padding": 0,
+                          "descendants": {
+                            "c74fY": {
+                              "content": "Holiday fund",
+                              "name": "Wallet name",
+                              "fontSize": 16,
+                              "fontWeight": "600",
+                              "lineHeight": 1.5,
+                              "fill": "$--foreground"
+                            },
+                            "OdX4b": {
+                              "layout": "vertical",
+                              "gap": 4,
+                              "alignItems": "start",
+                              "name": "Wallet balance block"
+                            },
+                            "w70eQ": {
+                              "content": "Holiday fund",
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "aaB25": {
+                              "content": "Rp12.000.000",
+                              "fontSize": 20,
+                              "lineHeight": 1.4,
+                              "textAlign": "left"
+                            },
+                            "l4MGky": {
+                              "enabled": true,
+                              "width": "fill_container",
+                              "content": "Savings wallet",
+                              "name": "Wallet type"
+                            },
+                            "dg4aF": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "JJ9Rp": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "nKaOe": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "CyAro": {
+                              "width": 0,
+                              "enabled": false,
+                              "height": 0
+                            },
+                            "UJExK": {
+                              "content": "Outgoing locked"
+                            }
+                          }
+                        },
+                        "ao2uW": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "bpwhD",
+              "name": "Home recent activity",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "K1c2w",
+                  "name": "Activity section heading",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ygP7i",
+                      "name": "Activity section title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Recent activity",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "JUpWw",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "View all activity",
+                      "height": 44,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "fill": "#00000000",
+                      "context": "Opens ACT-01.",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "View all",
+                          "fontSize": 14,
+                          "fill": "$--primary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "GhDH1",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Recent activity card",
+                  "width": "fill_container",
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "gap": 0,
+                  "strokeWidth": 1,
+                  "effect": [],
+                  "stroke": "$--border",
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "type": "frame",
+                      "id": "I6g9z",
+                      "name": "Recent activity content slot",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "fC7mN",
+                          "name": "Recent activity list",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "children": [
+                            {
+                              "id": "abW48",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent own-wallet move",
+                              "width": "fill_container",
+                              "strokeWidth": {
+                                "bottom": 1
+                              },
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "arrow-left-right"
+                                },
+                                "Hh953": {
+                                  "content": "Moved money"
+                                },
+                                "T5KOdk": {
+                                  "content": "Rp500.000",
+                                  "fill": "$--foreground"
+                                },
+                                "O1NEn5": {
+                                  "content": "Daily spending → Holiday fund"
+                                },
+                                "kP5Ro": {
+                                  "content": "Today · 10:24"
+                                }
+                              }
+                            },
+                            {
+                              "id": "b4LnS",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent recipient transfer",
+                              "width": "fill_container",
+                              "strokeWidth": {
+                                "bottom": 1
+                              },
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "arrow-up-right"
+                                },
+                                "Hh953": {
+                                  "content": "Transfer to Ayu"
+                                },
+                                "T5KOdk": {
+                                  "content": "−Rp150.000",
+                                  "fill": "$--foreground"
+                                },
+                                "O1NEn5": {
+                                  "content": "From Daily spending"
+                                },
+                                "kP5Ro": {
+                                  "content": "Yesterday · 08:45"
+                                }
+                              }
+                            },
+                            {
+                              "id": "GRWem",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent top up",
+                              "width": "fill_container",
+                              "strokeWidth": 0,
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "plus"
+                                },
+                                "Hh953": {
+                                  "content": "Top up"
+                                },
+                                "T5KOdk": {
+                                  "content": "+Rp3.100.000",
+                                  "fill": "$--primary"
+                                },
+                                "O1NEn5": {
+                                  "content": "To Daily spending"
+                                },
+                                "kP5Ro": {
+                                  "content": "17 Nov · 14:10"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kMMNE",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Home primary navigation",
+          "width": "fill_container"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "I2fbM",
+      "x": 7070,
+      "y": 3457,
+      "name": "HOME-01 / Home overview — First visit, zero balances",
+      "context": "HOME-01 first visit. Exactly one main wallet exists automatically. All balances are zero, with no sub or savings wallets and no activity. Top up opens TX-01; Move and Transfer open their entry forms with corrective eligibility guidance rather than mutating balances.",
+      "clip": true,
+      "width": 390,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "SYizZ",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Home system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "V5YtUY",
+          "name": "Home screen content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "CoXHI",
+              "name": "Home greeting and identity",
+              "width": "fill_container",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Ay8Hz",
+                  "name": "Home heading",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wQbsX",
+                      "name": "Home destination label",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Home",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "QC290",
+                      "name": "Home greeting",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Hello, Hasbiy",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "fRWgJ",
+                  "name": "Brand clear space",
+                  "width": 48,
+                  "height": 48,
+                  "padding": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "GKHSF",
+                      "name": "Supplied Still Bank identifier",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../logo/png/still-bank-symbol-color-512.png",
+                        "mode": "contain"
+                      },
+                      "width": 40,
+                      "height": 40
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Y90YjI",
+              "name": "Total balance overview",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "czSeG",
+                  "name": "Total balance label",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Total balance",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14
+                },
+                {
+                  "type": "text",
+                  "id": "qvn35",
+                  "name": "Total balance amount",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Rp0",
+                  "lineHeight": 1.2,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "xZASN",
+                  "name": "Total balance context",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Across 1 wallet",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "JJ17f",
+              "name": "Home money actions",
+              "width": "fill_container",
+              "gap": 8,
+              "justifyContent": "space_around",
+              "children": [
+                {
+                  "id": "pqYVR",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Top up money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
+                  "fill": "$--primary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "plus",
+                      "fill": "$--primary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "GN1CH",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Move money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
+                  "fill": "$--secondary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "arrow-left-right",
+                      "fill": "$--secondary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "h2ebOX",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Transfer money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
+                  "fill": "$--secondary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "arrow-up-right",
+                      "fill": "$--secondary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "ediG3",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Others action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Accessible name: Others. Destination awaiting product decision.",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "ellipsis"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "n82ho",
+              "name": "Home wallet overview",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "c9ocE",
+                  "name": "Wallet section heading",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "r4E8v",
+                      "name": "Wallet section title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Your wallets",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "x10cuX",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "View all wallets",
+                      "height": 44,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "fill": "#00000000",
+                      "context": "Opens WAL-01.",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "View all",
+                          "fontSize": 14,
+                          "fill": "$--primary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "yMutW",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Main wallet highlight",
+                  "width": "fill_container",
+                  "fill": "$--primary",
+                  "stroke": "$--primary",
+                  "padding": 20,
+                  "gap": 0,
+                  "layout": "vertical",
+                  "strokeWidth": 1,
+                  "effect": [],
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "id": "lSr9F",
+                      "type": "ref",
+                      "ref": "y0Zpji",
+                      "name": "Main wallet preview",
+                      "width": "fill_container",
+                      "padding": 0,
+                      "strokeWidth": 0,
+                      "context": "Open WAL-03 for Daily spending, the main wallet. This category persists if the wallet is renamed.",
+                      "descendants": {
+                        "c74fY": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "K39vAs": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "OdX4b": {
+                          "layout": "vertical",
+                          "gap": 4,
+                          "alignItems": "start"
+                        },
+                        "w70eQ": {
+                          "content": "Daily spending",
+                          "fill": "$--primary-foreground"
+                        },
+                        "aaB25": {
+                          "content": "Rp0",
+                          "fontSize": 32,
+                          "lineHeight": 1.25,
+                          "textAlign": "left",
+                          "fill": "$--primary-foreground"
+                        },
+                        "l4MGky": {
+                          "enabled": true,
+                          "width": "fill_container",
+                          "content": "Top up to get started",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "o50Ixf",
+              "name": "Home recent activity",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "K4qZ4Y",
+                  "name": "Activity section heading",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "HBaE8",
+                      "name": "Activity section title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Recent activity",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "RnU2O",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "View all activity",
+                      "height": 44,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "fill": "#00000000",
+                      "context": "Opens ACT-01.",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "View all",
+                          "fontSize": 14,
+                          "fill": "$--primary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "r8r8Si",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Empty recent activity card",
+                  "width": "fill_container",
+                  "padding": 20,
+                  "gap": 0,
+                  "strokeWidth": 1,
+                  "effect": [],
+                  "stroke": "$--border",
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "type": "frame",
+                      "id": "WDUJh",
+                      "name": "Empty activity content slot",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "yB4sf",
+                          "name": "Recent activity list",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "tvZp9",
+                              "name": "Empty activity title",
+                              "fill": "$--foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "No activity yet",
+                              "lineHeight": 1.4285714286,
+                              "fontFamily": "$--font-sans",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "G3fa7",
+                              "name": "Empty activity explanation",
+                              "fill": "$--muted-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Your top-ups, moves and transfers will appear here.",
+                              "lineHeight": 1.4285714286,
+                              "fontFamily": "$--font-sans",
+                              "fontSize": 14
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gKshI",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Home primary navigation",
+          "width": "fill_container"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "D9JFa",
+      "x": 7540,
+      "y": 3457,
+      "name": "HOME-01 / Home overview — No sub wallets",
+      "context": "HOME-01. Main Rp2.450.000 + savings Rp12.000.000 = total Rp14.450.000. No sub wallets exist. Create wallets through WAL-01. Holiday fund has an unfinished savings target.",
+      "clip": true,
+      "width": 390,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "fxXIx",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Home system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "Azwf4",
+          "name": "Home screen content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "FGas0",
+              "name": "Home greeting and identity",
+              "width": "fill_container",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "mqhkB",
+                  "name": "Home heading",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "nrsBu",
+                      "name": "Home destination label",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Home",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "pMP9P",
+                      "name": "Home greeting",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Hello, Hasbiy",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "TC6Jz",
+                  "name": "Brand clear space",
+                  "width": 48,
+                  "height": 48,
+                  "padding": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "uCEam",
+                      "name": "Supplied Still Bank identifier",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../logo/png/still-bank-symbol-color-512.png",
+                        "mode": "contain"
+                      },
+                      "width": 40,
+                      "height": 40
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "PVcDD",
+              "name": "Total balance overview",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "cA0W8",
+                  "name": "Total balance label",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Total balance",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14
+                },
+                {
+                  "type": "text",
+                  "id": "U3hgZY",
+                  "name": "Total balance amount",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Rp14.450.000",
+                  "lineHeight": 1.2,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "evNpS",
+                  "name": "Total balance context",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Across 2 wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "NVoFX",
+              "name": "Home money actions",
+              "width": "fill_container",
+              "gap": 8,
+              "justifyContent": "space_around",
+              "children": [
+                {
+                  "id": "yIbFo",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Top up money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
+                  "fill": "$--primary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "plus",
+                      "fill": "$--primary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "ySylH",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Move money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
+                  "fill": "$--secondary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "arrow-left-right",
+                      "fill": "$--secondary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "MQmIh",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Transfer money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
+                  "fill": "$--secondary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "arrow-up-right",
+                      "fill": "$--secondary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "M4Sxy6",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Others action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Accessible name: Others. Destination awaiting product decision.",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "ellipsis"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "JB6yP",
+              "name": "Home wallet overview",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "WH4og",
+                  "name": "Wallet section heading",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "zDj2Y",
+                      "name": "Wallet section title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Your wallets",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "ILRe4",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "View all wallets",
+                      "height": 44,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "fill": "#00000000",
+                      "context": "Opens WAL-01.",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "View all",
+                          "fontSize": 14,
+                          "fill": "$--primary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "VwgRe",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Main wallet highlight",
+                  "width": "fill_container",
+                  "fill": "$--primary",
+                  "stroke": "$--primary",
+                  "padding": 20,
+                  "gap": 0,
+                  "layout": "vertical",
+                  "strokeWidth": 1,
+                  "effect": [],
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "id": "OMfEH",
+                      "type": "ref",
+                      "ref": "y0Zpji",
+                      "name": "Main wallet preview",
+                      "width": "fill_container",
+                      "padding": 0,
+                      "strokeWidth": 0,
+                      "context": "Open WAL-03 for Daily spending, the main wallet. This category persists if the wallet is renamed.",
+                      "descendants": {
+                        "c74fY": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "K39vAs": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "OdX4b": {
+                          "layout": "vertical",
+                          "gap": 4,
+                          "alignItems": "start"
+                        },
+                        "w70eQ": {
+                          "content": "Daily spending",
+                          "fill": "$--primary-foreground"
+                        },
+                        "aaB25": {
+                          "content": "Rp2.450.000",
+                          "fontSize": 32,
+                          "lineHeight": 1.25,
+                          "textAlign": "left",
+                          "fill": "$--primary-foreground"
+                        },
+                        "l4MGky": {
+                          "enabled": true,
+                          "width": "fill_container",
+                          "content": "Everyday money",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "PtsLl",
+                  "name": "Wallet bento row",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "FEr5w",
+                      "type": "ref",
+                      "ref": "etfbu",
+                      "name": "Holiday fund wallet card",
+                      "width": 169,
+                      "padding": 16,
+                      "gap": 0,
+                      "strokeWidth": 1,
+                      "effect": [],
+                      "stroke": "$--border",
+                      "descendants": {
+                        "xw3Fc": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        },
+                        "IjYGR": {
+                          "id": "fewCs",
+                          "type": "ref",
+                          "ref": "y0Zpji",
+                          "name": "Savings wallet tile content",
+                          "width": "fill_container",
+                          "strokeWidth": 0,
+                          "context": "HOME-01 individual savings wallet preview. Each wallet has its own card; multiple wallets of this type may exist. Opens WAL-04. Target and outgoing-lock details belong in wallet detail.",
+                          "padding": 0,
+                          "descendants": {
+                            "c74fY": {
+                              "content": "Holiday fund",
+                              "name": "Wallet name",
+                              "fontSize": 16,
+                              "fontWeight": "600",
+                              "lineHeight": 1.5,
+                              "fill": "$--foreground"
+                            },
+                            "OdX4b": {
+                              "layout": "vertical",
+                              "gap": 4,
+                              "alignItems": "start",
+                              "name": "Wallet balance block"
+                            },
+                            "w70eQ": {
+                              "content": "Holiday fund",
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "aaB25": {
+                              "content": "Rp12.000.000",
+                              "fontSize": 20,
+                              "lineHeight": 1.4,
+                              "textAlign": "left"
+                            },
+                            "l4MGky": {
+                              "enabled": true,
+                              "width": "fill_container",
+                              "content": "Savings wallet",
+                              "name": "Wallet type"
+                            },
+                            "dg4aF": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "JJ9Rp": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "nKaOe": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "CyAro": {
+                              "width": 0,
+                              "enabled": false,
+                              "height": 0
+                            },
+                            "UJExK": {
+                              "content": "Outgoing locked"
+                            }
+                          }
+                        },
+                        "ao2uW": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "O3gCz2",
+              "name": "Home recent activity",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "w8jZN",
+                  "name": "Activity section heading",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "nsDff",
+                      "name": "Activity section title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Recent activity",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "ZxuVY",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "View all activity",
+                      "height": 44,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "fill": "#00000000",
+                      "context": "Opens ACT-01.",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "View all",
+                          "fontSize": 14,
+                          "fill": "$--primary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "OABrW",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Recent activity card",
+                  "width": "fill_container",
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "gap": 0,
+                  "strokeWidth": 1,
+                  "effect": [],
+                  "stroke": "$--border",
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "type": "frame",
+                      "id": "chhyM",
+                      "name": "Recent activity content slot",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "pbCT5",
+                          "name": "Recent activity list",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "children": [
+                            {
+                              "id": "KFy1E",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent own-wallet move",
+                              "width": "fill_container",
+                              "strokeWidth": {
+                                "bottom": 1
+                              },
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "arrow-left-right"
+                                },
+                                "Hh953": {
+                                  "content": "Moved money"
+                                },
+                                "T5KOdk": {
+                                  "content": "Rp500.000",
+                                  "fill": "$--foreground"
+                                },
+                                "O1NEn5": {
+                                  "content": "Daily spending → Holiday fund"
+                                },
+                                "kP5Ro": {
+                                  "content": "Today · 10:24"
+                                }
+                              }
+                            },
+                            {
+                              "id": "ViL3q",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent recipient transfer",
+                              "width": "fill_container",
+                              "strokeWidth": {
+                                "bottom": 1
+                              },
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "arrow-up-right"
+                                },
+                                "Hh953": {
+                                  "content": "Transfer to Ayu"
+                                },
+                                "T5KOdk": {
+                                  "content": "−Rp150.000",
+                                  "fill": "$--foreground"
+                                },
+                                "O1NEn5": {
+                                  "content": "From Daily spending"
+                                },
+                                "kP5Ro": {
+                                  "content": "Yesterday · 08:45"
+                                }
+                              }
+                            },
+                            {
+                              "id": "aZ89G",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent top up",
+                              "width": "fill_container",
+                              "strokeWidth": 0,
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "plus"
+                                },
+                                "Hh953": {
+                                  "content": "Top up"
+                                },
+                                "T5KOdk": {
+                                  "content": "+Rp3.100.000",
+                                  "fill": "$--primary"
+                                },
+                                "O1NEn5": {
+                                  "content": "To Daily spending"
+                                },
+                                "kP5Ro": {
+                                  "content": "17 Nov · 14:10"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "q5U5C",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Home primary navigation",
+          "width": "fill_container"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "k1Qib",
+      "x": 8010,
+      "y": 3457,
+      "name": "HOME-01 / Home overview — No savings wallets",
+      "context": "HOME-01. Main Rp2.450.000 + sub wallets Rp4.000.000 = total Rp6.450.000. No savings wallets exist. Open Wallets to create one. Recent own-wallet move goes to Bills and leaves total unchanged.",
+      "clip": true,
+      "width": 390,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "ZZPzB",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Home system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "b8Dhjp",
+          "name": "Home screen content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "g0rFS",
+              "name": "Home greeting and identity",
+              "width": "fill_container",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "g5scV",
+                  "name": "Home heading",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ldgw2",
+                      "name": "Home destination label",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Home",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "roo13",
+                      "name": "Home greeting",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Hello, Hasbiy",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "tdANR",
+                  "name": "Brand clear space",
+                  "width": 48,
+                  "height": 48,
+                  "padding": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "NjpnI",
+                      "name": "Supplied Still Bank identifier",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../logo/png/still-bank-symbol-color-512.png",
+                        "mode": "contain"
+                      },
+                      "width": 40,
+                      "height": 40
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GS3jc",
+              "name": "Total balance overview",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jwAln",
+                  "name": "Total balance label",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Total balance",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14
+                },
+                {
+                  "type": "text",
+                  "id": "SE2mv",
+                  "name": "Total balance amount",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Rp6.450.000",
+                  "lineHeight": 1.2,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "RC7Bd",
+                  "name": "Total balance context",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Across 2 wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ch1Dw",
+              "name": "Home money actions",
+              "width": "fill_container",
+              "gap": 8,
+              "justifyContent": "space_around",
+              "children": [
+                {
+                  "id": "MIXJw",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Top up money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
+                  "fill": "$--primary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "plus",
+                      "fill": "$--primary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "C9ybP",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Move money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
+                  "fill": "$--secondary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "arrow-left-right",
+                      "fill": "$--secondary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "i5nfM",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Transfer money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
+                  "fill": "$--secondary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "arrow-up-right",
+                      "fill": "$--secondary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "a4JuQs",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Others action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Accessible name: Others. Destination awaiting product decision.",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "ellipsis"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "henTh",
+              "name": "Home wallet overview",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "PKJO3",
+                  "name": "Wallet section heading",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ZI17N",
+                      "name": "Wallet section title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Your wallets",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "rAdCP",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "View all wallets",
+                      "height": 44,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "fill": "#00000000",
+                      "context": "Opens WAL-01.",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "View all",
+                          "fontSize": 14,
+                          "fill": "$--primary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "zknzm",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Main wallet highlight",
+                  "width": "fill_container",
+                  "fill": "$--primary",
+                  "stroke": "$--primary",
+                  "padding": 20,
+                  "gap": 0,
+                  "layout": "vertical",
+                  "strokeWidth": 1,
+                  "effect": [],
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "id": "jsLGP",
+                      "type": "ref",
+                      "ref": "y0Zpji",
+                      "name": "Main wallet preview",
+                      "width": "fill_container",
+                      "padding": 0,
+                      "strokeWidth": 0,
+                      "context": "Open WAL-03 for Daily spending, the main wallet. This category persists if the wallet is renamed.",
+                      "descendants": {
+                        "c74fY": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "K39vAs": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "OdX4b": {
+                          "layout": "vertical",
+                          "gap": 4,
+                          "alignItems": "start"
+                        },
+                        "w70eQ": {
+                          "content": "Daily spending",
+                          "fill": "$--primary-foreground"
+                        },
+                        "aaB25": {
+                          "content": "Rp2.450.000",
+                          "fontSize": 32,
+                          "lineHeight": 1.25,
+                          "textAlign": "left",
+                          "fill": "$--primary-foreground"
+                        },
+                        "l4MGky": {
+                          "enabled": true,
+                          "width": "fill_container",
+                          "content": "Everyday money",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "g4qoK",
+                  "name": "Wallet bento row",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "Q5SiD",
+                      "type": "ref",
+                      "ref": "etfbu",
+                      "name": "Bills wallet card",
+                      "width": 169,
+                      "padding": 16,
+                      "gap": 0,
+                      "strokeWidth": 1,
+                      "effect": [],
+                      "stroke": "$--border",
+                      "descendants": {
+                        "xw3Fc": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        },
+                        "IjYGR": {
+                          "id": "Bckx1",
+                          "type": "ref",
+                          "ref": "y0Zpji",
+                          "name": "Sub wallet tile content",
+                          "width": "fill_container",
+                          "context": "HOME-01 individual sub wallet preview. Each wallet has its own card; multiple wallets of this type may exist. Opens WAL-03. Target and outgoing-lock details belong in wallet detail.",
+                          "padding": 0,
+                          "strokeWidth": 0,
+                          "descendants": {
+                            "c74fY": {
+                              "content": "Bills",
+                              "name": "Wallet name",
+                              "fontSize": 16,
+                              "fontWeight": "600",
+                              "lineHeight": 1.5,
+                              "fill": "$--foreground"
+                            },
+                            "OdX4b": {
+                              "layout": "vertical",
+                              "gap": 4,
+                              "alignItems": "start",
+                              "name": "Wallet balance block"
+                            },
+                            "w70eQ": {
+                              "content": "Bills",
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "aaB25": {
+                              "content": "Rp4.000.000",
+                              "fontSize": 20,
+                              "lineHeight": 1.4,
+                              "textAlign": "left"
+                            },
+                            "l4MGky": {
+                              "enabled": true,
+                              "width": "fill_container",
+                              "content": "Sub wallet",
+                              "name": "Wallet type"
+                            },
+                            "dg4aF": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "JJ9Rp": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "nKaOe": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "CyAro": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "UJExK": {
+                              "content": "Outgoing locked"
+                            }
+                          }
+                        },
+                        "ao2uW": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "WX1db",
+              "name": "Home recent activity",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "NlutM",
+                  "name": "Activity section heading",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "IMo3u",
+                      "name": "Activity section title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Recent activity",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "PSgqW",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "View all activity",
+                      "height": 44,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "fill": "#00000000",
+                      "context": "Opens ACT-01.",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "View all",
+                          "fontSize": 14,
+                          "fill": "$--primary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "gFVc9",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Recent activity card",
+                  "width": "fill_container",
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "gap": 0,
+                  "strokeWidth": 1,
+                  "effect": [],
+                  "stroke": "$--border",
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "type": "frame",
+                      "id": "XLTKy",
+                      "name": "Recent activity content slot",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "fJqKo",
+                          "name": "Recent activity list",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "children": [
+                            {
+                              "id": "Its3y",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent own-wallet move",
+                              "width": "fill_container",
+                              "strokeWidth": {
+                                "bottom": 1
+                              },
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "arrow-left-right"
+                                },
+                                "Hh953": {
+                                  "content": "Moved money"
+                                },
+                                "T5KOdk": {
+                                  "content": "Rp500.000",
+                                  "fill": "$--foreground"
+                                },
+                                "O1NEn5": {
+                                  "content": "Daily spending → Bills"
+                                },
+                                "kP5Ro": {
+                                  "content": "Today · 10:24"
+                                }
+                              }
+                            },
+                            {
+                              "id": "I2xyAU",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent recipient transfer",
+                              "width": "fill_container",
+                              "strokeWidth": {
+                                "bottom": 1
+                              },
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "arrow-up-right"
+                                },
+                                "Hh953": {
+                                  "content": "Transfer to Ayu"
+                                },
+                                "T5KOdk": {
+                                  "content": "−Rp150.000",
+                                  "fill": "$--foreground"
+                                },
+                                "O1NEn5": {
+                                  "content": "From Daily spending"
+                                },
+                                "kP5Ro": {
+                                  "content": "Yesterday · 08:45"
+                                }
+                              }
+                            },
+                            {
+                              "id": "B0EWE",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent top up",
+                              "width": "fill_container",
+                              "strokeWidth": 0,
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "plus"
+                                },
+                                "Hh953": {
+                                  "content": "Top up"
+                                },
+                                "T5KOdk": {
+                                  "content": "+Rp3.100.000",
+                                  "fill": "$--primary"
+                                },
+                                "O1NEn5": {
+                                  "content": "To Daily spending"
+                                },
+                                "kP5Ro": {
+                                  "content": "17 Nov · 14:10"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "nI8qU",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Home primary navigation",
+          "width": "fill_container"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "M0eP4",
+      "x": 8480,
+      "y": 3457,
+      "name": "HOME-01 / Home overview — Long names and IDR, 320 px",
+      "context": "HOME-01 narrow-width check at 320 px. Main Rp245.000.000 + sub Rp400.000.000 + savings Rp354.999.999 = Rp999.999.999. Long renamed wallets retain category identity. Target Rp500.000.000 is approximately 71% funded and outgoing remains locked.",
+      "clip": true,
+      "width": 320,
+      "fill": "$--background",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "V2G2uM",
+          "type": "ref",
+          "ref": "QT5AI",
+          "name": "Home system status bar",
+          "width": "fill_container",
+          "height": 62
+        },
+        {
+          "type": "frame",
+          "id": "PuQYO",
+          "name": "Home screen content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            12,
+            20,
+            24,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "lxiWt",
+              "name": "Home greeting and identity",
+              "width": "fill_container",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Gmv0K",
+                  "name": "Home heading",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "W5vEf",
+                      "name": "Home destination label",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Home",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "HuOme",
+                      "name": "Home greeting",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Hello, Hasbiy",
+                      "lineHeight": 1.3333333333,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "DQEVv",
+                  "name": "Brand clear space",
+                  "width": 48,
+                  "height": 48,
+                  "padding": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "pdMNG",
+                      "name": "Supplied Still Bank identifier",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../logo/png/still-bank-symbol-color-512.png",
+                        "mode": "contain"
+                      },
+                      "width": 40,
+                      "height": 40
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "U1VUqh",
+              "name": "Total balance overview",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "AhWzX",
+                  "name": "Total balance label",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Total balance",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14
+                },
+                {
+                  "type": "text",
+                  "id": "s3LGy",
+                  "name": "Total balance amount",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Rp999.999.999",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 32,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "oSvAl",
+                  "name": "Total balance context",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Across 3 wallets",
+                  "lineHeight": 1.3333333333,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Pm3sn",
+              "name": "Home money actions",
+              "width": "fill_container",
+              "gap": 8,
+              "justifyContent": "space_around",
+              "children": [
+                {
+                  "id": "T0F30w",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Top up money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-01; choose any open destination wallet. Accessible name: Top up.",
+                  "fill": "$--primary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "plus",
+                      "fill": "$--primary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "E9v0M",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Move money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-03; move between own wallets. Accessible name: Move.",
+                  "fill": "$--secondary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "arrow-left-right",
+                      "fill": "$--secondary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "FMSxf",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Transfer money action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Opens TX-04; transfer to another Still Bank user by wallet number. Accessible name: Transfer.",
+                  "fill": "$--secondary",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "arrow-up-right",
+                      "fill": "$--secondary-foreground"
+                    }
+                  }
+                },
+                {
+                  "id": "xe4J3",
+                  "type": "ref",
+                  "ref": "kPjGo",
+                  "name": "Others action",
+                  "width": 44,
+                  "height": 44,
+                  "context": "Accessible name: Others. Destination awaiting product decision.",
+                  "descendants": {
+                    "h1BnM6": {
+                      "icon": "ellipsis"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jVQB8",
+              "name": "Home wallet overview",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AbUcz",
+                  "name": "Wallet section heading",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "HuHPb",
+                      "name": "Wallet section title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Your wallets",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "CPP4b",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "View all wallets",
+                      "height": 44,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "fill": "#00000000",
+                      "context": "Opens WAL-01.",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "View all",
+                          "fontSize": 14,
+                          "fill": "$--primary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "OptN9",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Main wallet highlight",
+                  "width": "fill_container",
+                  "fill": "$--primary",
+                  "stroke": "$--primary",
+                  "padding": 20,
+                  "gap": 0,
+                  "layout": "vertical",
+                  "strokeWidth": 1,
+                  "effect": [],
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "id": "rQ2Dv",
+                      "type": "ref",
+                      "ref": "y0Zpji",
+                      "name": "Main wallet preview",
+                      "width": "fill_container",
+                      "padding": 0,
+                      "strokeWidth": 0,
+                      "context": "Open WAL-03 for Everyday spending and personal expenses, the main wallet. The main wallet category persists after renaming.",
+                      "descendants": {
+                        "c74fY": {
+                          "content": "Main wallet",
+                          "fill": "$--primary-foreground"
+                        },
+                        "K39vAs": {
+                          "fill": "$--primary-foreground"
+                        },
+                        "OdX4b": {
+                          "layout": "vertical",
+                          "gap": 4,
+                          "alignItems": "start"
+                        },
+                        "w70eQ": {
+                          "content": "Everyday spending and personal expenses",
+                          "fill": "$--primary-foreground"
+                        },
+                        "aaB25": {
+                          "content": "Rp245.000.000",
+                          "fontSize": 32,
+                          "lineHeight": 1.25,
+                          "textAlign": "left",
+                          "fill": "$--primary-foreground"
+                        },
+                        "l4MGky": {
+                          "enabled": true,
+                          "width": "fill_container",
+                          "content": "Everyday money",
+                          "fill": "$--primary-foreground"
+                        }
+                      }
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "ilF7X",
+                  "name": "Wallet bento narrow stack",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "qztOz",
+                      "type": "ref",
+                      "ref": "etfbu",
+                      "name": "Household bills and annual commitments wallet card",
+                      "width": "fill_container",
+                      "padding": 16,
+                      "gap": 0,
+                      "strokeWidth": 1,
+                      "effect": [],
+                      "stroke": "$--border",
+                      "descendants": {
+                        "xw3Fc": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        },
+                        "IjYGR": {
+                          "id": "GVN6V",
+                          "type": "ref",
+                          "ref": "y0Zpji",
+                          "name": "Sub wallet tile content",
+                          "width": "fill_container",
+                          "context": "HOME-01 individual sub wallet preview. Each wallet has its own card; multiple wallets of this type may exist. Opens WAL-03. Target and outgoing-lock details belong in wallet detail.",
+                          "padding": 0,
+                          "strokeWidth": 0,
+                          "descendants": {
+                            "c74fY": {
+                              "content": "Household bills and annual commitments",
+                              "name": "Wallet name",
+                              "fontSize": 16,
+                              "fontWeight": "600",
+                              "lineHeight": 1.5,
+                              "fill": "$--foreground"
+                            },
+                            "OdX4b": {
+                              "layout": "vertical",
+                              "gap": 4,
+                              "alignItems": "start",
+                              "name": "Wallet balance block"
+                            },
+                            "w70eQ": {
+                              "content": "Household bills and annual commitments",
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "aaB25": {
+                              "content": "Rp400.000.000",
+                              "textAlign": "left",
+                              "fontSize": 20,
+                              "lineHeight": 1.4
+                            },
+                            "l4MGky": {
+                              "enabled": true,
+                              "width": "fill_container",
+                              "content": "Sub wallet",
+                              "name": "Wallet type"
+                            },
+                            "dg4aF": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "JJ9Rp": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "nKaOe": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "CyAro": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "UJExK": {
+                              "content": "Outgoing locked"
+                            }
+                          }
+                        },
+                        "ao2uW": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        }
+                      }
+                    },
+                    {
+                      "id": "d15RNb",
+                      "type": "ref",
+                      "ref": "etfbu",
+                      "name": "Long-term home renovation savings wallet card",
+                      "width": "fill_container",
+                      "padding": 16,
+                      "gap": 0,
+                      "strokeWidth": 1,
+                      "effect": [],
+                      "stroke": "$--border",
+                      "descendants": {
+                        "xw3Fc": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        },
+                        "IjYGR": {
+                          "id": "pbiZo",
+                          "type": "ref",
+                          "ref": "y0Zpji",
+                          "name": "Savings wallet tile content",
+                          "width": "fill_container",
+                          "strokeWidth": 0,
+                          "context": "HOME-01 individual savings wallet preview. Each wallet has its own card; multiple wallets of this type may exist. Opens WAL-04. Target and outgoing-lock details belong in wallet detail.",
+                          "padding": 0,
+                          "descendants": {
+                            "c74fY": {
+                              "content": "Long-term home renovation savings",
+                              "name": "Wallet name",
+                              "fontSize": 16,
+                              "fontWeight": "600",
+                              "lineHeight": 1.5,
+                              "fill": "$--foreground"
+                            },
+                            "OdX4b": {
+                              "layout": "vertical",
+                              "gap": 4,
+                              "alignItems": "start",
+                              "name": "Wallet balance block"
+                            },
+                            "w70eQ": {
+                              "content": "Long-term home renovation savings",
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "aaB25": {
+                              "content": "Rp354.999.999",
+                              "textAlign": "left",
+                              "fontSize": 20,
+                              "lineHeight": 1.4
+                            },
+                            "l4MGky": {
+                              "enabled": true,
+                              "width": "fill_container",
+                              "content": "Savings wallet",
+                              "name": "Wallet type"
+                            },
+                            "dg4aF": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "JJ9Rp": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "nKaOe": {
+                              "enabled": false,
+                              "width": 0,
+                              "height": 0
+                            },
+                            "CyAro": {
+                              "width": 0,
+                              "enabled": false,
+                              "height": 0
+                            },
+                            "UJExK": {
+                              "content": "Outgoing locked"
+                            }
+                          }
+                        },
+                        "ao2uW": {
+                          "enabled": false,
+                          "width": 0,
+                          "height": 0
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "SQYPQ",
+              "name": "Home recent activity",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "lTBhV",
+                  "name": "Activity section heading",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wCJV0",
+                      "name": "Activity section title",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Recent activity",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "id": "u0t5gf",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "View all activity",
+                      "height": 44,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "fill": "#00000000",
+                      "context": "Opens ACT-01.",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "View all",
+                          "fontSize": 14,
+                          "fill": "$--primary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "ogZC2",
+                  "type": "ref",
+                  "ref": "etfbu",
+                  "name": "Recent activity card",
+                  "width": "fill_container",
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "gap": 0,
+                  "strokeWidth": 1,
+                  "effect": [],
+                  "stroke": "$--border",
+                  "descendants": {
+                    "xw3Fc": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    },
+                    "IjYGR": {
+                      "type": "frame",
+                      "id": "EBOja",
+                      "name": "Recent activity content slot",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Oix7g",
+                          "name": "Recent activity list",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "children": [
+                            {
+                              "id": "E1FFp6",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent own-wallet move",
+                              "width": "fill_container",
+                              "strokeWidth": {
+                                "bottom": 1
+                              },
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "arrow-left-right"
+                                },
+                                "t6uif": {
+                                  "layout": "vertical",
+                                  "gap": 4
+                                },
+                                "Hh953": {
+                                  "content": "Moved money"
+                                },
+                                "T5KOdk": {
+                                  "content": "Rp500.000",
+                                  "fill": "$--foreground"
+                                },
+                                "O1NEn5": {
+                                  "content": "Everyday spending → Home renovation"
+                                },
+                                "kP5Ro": {
+                                  "content": "Today · 10:24"
+                                }
+                              }
+                            },
+                            {
+                              "id": "vlzo4",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent recipient transfer",
+                              "width": "fill_container",
+                              "strokeWidth": {
+                                "bottom": 1
+                              },
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "arrow-up-right"
+                                },
+                                "t6uif": {
+                                  "layout": "vertical",
+                                  "gap": 4
+                                },
+                                "Hh953": {
+                                  "content": "Transfer to Ayu"
+                                },
+                                "T5KOdk": {
+                                  "content": "−Rp150.000",
+                                  "fill": "$--foreground"
+                                },
+                                "O1NEn5": {
+                                  "content": "From Everyday spending"
+                                },
+                                "kP5Ro": {
+                                  "content": "Yesterday · 08:45"
+                                }
+                              }
+                            },
+                            {
+                              "id": "lIefd",
+                              "type": "ref",
+                              "ref": "UmysQ",
+                              "name": "Recent top up",
+                              "width": "fill_container",
+                              "strokeWidth": 0,
+                              "descendants": {
+                                "mK5j8": {
+                                  "icon": "plus"
+                                },
+                                "t6uif": {
+                                  "layout": "vertical",
+                                  "gap": 4
+                                },
+                                "Hh953": {
+                                  "content": "Top up"
+                                },
+                                "T5KOdk": {
+                                  "content": "+Rp3.100.000",
+                                  "fill": "$--primary"
+                                },
+                                "O1NEn5": {
+                                  "content": "To Everyday spending"
+                                },
+                                "kP5Ro": {
+                                  "content": "17 Nov · 14:10"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "ao2uW": {
+                      "enabled": false,
+                      "width": 0,
+                      "height": 0
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CqSNJ",
+          "type": "ref",
+          "ref": "x6SHJq",
+          "name": "Home primary navigation",
+          "width": "fill_container"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "tPTba",
+      "x": 6600,
+      "y": 3157,
+      "name": "11 / Home — Journey and coverage",
+      "clip": true,
+      "width": 2200,
+      "fill": "$--primary",
+      "layout": "vertical",
+      "gap": 12,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "kpvVJ",
+          "name": "Home journey section label",
+          "fill": "$--primary-foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "HOME-01 / HOME OVERVIEW",
+          "lineHeight": 1.3333333333,
+          "fontFamily": "$--font-sans",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "ptCyX",
+          "name": "Home journey section title",
+          "fill": "$--primary-foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Your money, clearly separated.",
+          "lineHeight": 1.3333333333,
+          "fontFamily": "$--font-sans",
+          "fontSize": 24,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "kpGui",
+          "name": "Home journey entry and onward paths",
+          "fill": "$--primary-foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Sign in or unlock → Home → wallet details, Top up, Move, Transfer, or recent activity. Four primary destinations: Home, Wallets, Activity, Settings.",
+          "lineHeight": 1.4285714286,
+          "fontFamily": "$--font-sans",
+          "fontSize": 14
+        },
+        {
+          "type": "text",
+          "id": "ZyQHq",
+          "name": "Home balance rule",
+          "fill": "$--primary-foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Total includes main, sub, and savings wallets. Main is the everyday reference. Unfinished savings targets restrict outgoing money; incoming money remains eligible.",
+          "lineHeight": 1.4285714286,
+          "fontFamily": "$--font-sans",
+          "fontSize": 14
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "C2bih",
+      "x": 6600,
+      "y": 3373,
+      "name": "Home / State index",
+      "clip": true,
+      "width": 2200,
+      "gap": 80,
+      "children": [
+        {
+          "type": "frame",
+          "id": "i9P3Gv",
+          "name": "01 / Populated state label",
+          "width": 390,
+          "layout": "vertical",
+          "gap": 4,
+          "children": [
+            {
+              "type": "text",
+              "id": "eJUNi",
+              "name": "01 / Populated heading",
+              "fill": "$--foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "01 / Populated",
+              "lineHeight": 1.4285714286,
+              "fontFamily": "$--font-sans",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "obm4X",
+              "name": "01 / Populated description",
+              "fill": "$--muted-foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Total, wallet previews, money actions, recent activity",
+              "lineHeight": 1.3333333333,
+              "fontFamily": "$--font-sans",
+              "fontSize": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "XOdgH",
+          "name": "02 / First visit state label",
+          "width": 390,
+          "layout": "vertical",
+          "gap": 4,
+          "children": [
+            {
+              "type": "text",
+              "id": "z0TPQ6",
+              "name": "02 / First visit heading",
+              "fill": "$--foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "02 / First visit",
+              "lineHeight": 1.4285714286,
+              "fontFamily": "$--font-sans",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "CGiQq",
+              "name": "02 / First visit description",
+              "fill": "$--muted-foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Main wallet only · zero balances · empty activity",
+              "lineHeight": 1.3333333333,
+              "fontFamily": "$--font-sans",
+              "fontSize": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "G1AbO",
+          "name": "03 / No sub wallets state label",
+          "width": 390,
+          "layout": "vertical",
+          "gap": 4,
+          "children": [
+            {
+              "type": "text",
+              "id": "Fcem9",
+              "name": "03 / No sub wallets heading",
+              "fill": "$--foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "03 / No sub wallets",
+              "lineHeight": 1.4285714286,
+              "fontFamily": "$--font-sans",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "aNjhX",
+              "name": "03 / No sub wallets description",
+              "fill": "$--muted-foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Main and savings · sub-wallet balance is zero",
+              "lineHeight": 1.3333333333,
+              "fontFamily": "$--font-sans",
+              "fontSize": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "COERF",
+          "name": "04 / No savings wallets state label",
+          "width": 390,
+          "layout": "vertical",
+          "gap": 4,
+          "children": [
+            {
+              "type": "text",
+              "id": "emzew",
+              "name": "04 / No savings wallets heading",
+              "fill": "$--foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "04 / No savings wallets",
+              "lineHeight": 1.4285714286,
+              "fontFamily": "$--font-sans",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "pM7fW",
+              "name": "04 / No savings wallets description",
+              "fill": "$--muted-foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Main and sub · savings balance is zero",
+              "lineHeight": 1.3333333333,
+              "fontFamily": "$--font-sans",
+              "fontSize": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QSv8L",
+          "name": "05 / Narrow layout state label",
+          "width": 320,
+          "layout": "vertical",
+          "gap": 4,
+          "children": [
+            {
+              "type": "text",
+              "id": "GQrvp",
+              "name": "05 / Narrow layout heading",
+              "fill": "$--foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "05 / Narrow layout",
+              "lineHeight": 1.4285714286,
+              "fontFamily": "$--font-sans",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "W6hAU",
+              "name": "05 / Narrow layout description",
+              "fill": "$--muted-foreground",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "320 px · long names and IDR amounts",
+              "lineHeight": 1.3333333333,
+              "fontFamily": "$--font-sans",
+              "fontSize": 12
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {

@@ -1,6 +1,6 @@
 # Still Bank — design system
 
-The design system lives in [still-bank.pen](../still-bank.pen). It contains foundations, reusable masters, component specimens, the `AUTH-01`–`AUTH-06` authentication screens, and device enrollment/unlock screens and supporting states.
+The design system lives in [still-bank.pen](../still-bank.pen). It contains foundations, reusable masters, component specimens, the `AUTH-01`–`AUTH-06` authentication screens, device enrollment/unlock screens, and the `HOME-01` overview with supporting states.
 
 ## Token contract
 
@@ -26,7 +26,7 @@ The design system lives in [still-bank.pen](../still-bank.pen). It contains foun
 | Pill radius | `radius-full`: 999 px; shared by buttons and bordered form inputs |
 | Control sizes | Buttons 52 px; compact and icon targets 44 px; inputs 56 px |
 | Icons | Lucide, 20 px in controls and 24 px in bottom navigation |
-| Elevation | Flat by default; borders and surface contrast provide grouping |
+| Elevation | Flat; cards use Card / Surface's border treatment without shadows |
 
 Figtree's licensed source and existing logo assets are in `../../logo/`. Load the font when implementing the interface. Use supplied logo artwork intact, with its original proportions and clear space.
 
@@ -45,6 +45,8 @@ Figtree's licensed source and existing logo assets are in `../../logo/`. Load th
 | System / Status bar | QT5AI | Shared mobile status-bar specimen; device chrome is illustrative |
 | Feedback / Inline notice | qPycb | Success, error, and information feedback with an icon, title, and description |
 | Security / Method option | ZHfba | Account PIN and passkey choices with an icon, title, description, and navigation indicator |
+| Wallet / Home preview | y0Zpji | Persistent wallet category, editable name, balance, and optional savings target progress and outgoing restriction |
+| Activity / Home row | UmysQ | Transaction type, signed or neutral amount, affected wallet context, and date |
 
 Button variants and states are connected instances of one base. Cards replace the content slot and hide the footer when unused. Navigation examples override the nested item states.
 
@@ -57,6 +59,7 @@ Button variants and states are connected instances of one base. Cards replace th
 - Bottom navigation belongs to primary destinations. Focused forms and security tasks use contextual back or close navigation.
 - Bottom navigation's 20 px lower inset is a design specimen. Implementation must use the device's actual safe-area inset.
 - Cards group content with a shared purpose. Hide unused slots and allow content to determine height.
+- Home uses individual wallet cards in a bento arrangement and a separate recent-activity card, following the flat Card / Surface master. Section headings and View all actions stay outside the cards. Each sub or savings wallet shows its own name, balance, and type; absent wallets add no explanation or creation CTA.
 - Disabled colors deliberately differ from enabled text. They are excluded from the active-text contrast checks.
 - Authentication uses contextual navigation and connected input/button instances. Registration verification and password recovery return to Sign in with a confirmation notice; neither signs the user in automatically.
 - OTP entry uses one text field. Code examples do not prescribe length, format, expiry, resend timing, or password complexity. Those product details remain open.
@@ -101,6 +104,23 @@ Long IDR amounts are not applicable to authentication. Canvas checks do not veri
 - [x] Product intent, MVP scope, inventory sections 4.2/4.7/5/6/7.3, the design system, logo kit, and Wise/Phantom/Coinbase references were consulted.
 
 PIN length/format and OTP timing remain unspecified. Long IDR amounts are not applicable to these screens. Platform prompts are illustrative, not a verified replica of a specific provider. Runtime focus, keyboards, assistive technology, safe areas, email delivery, and real passkey behavior require implementation checks.
+
+## Home overview review
+
+- [x] `HOME-01` has populated, first-visit/zero-balance, main-wallet-only, no-sub-wallet, no-savings-wallet, empty-activity, and 320 px long-name/long-IDR coverage across five screen frames.
+- [x] Total balances equal the main, sub, and savings balances in each example. The main wallet is identified as everyday money; total is labeled across wallets, without an available-to-spend claim.
+- [x] Wallet previews retain their type after renaming. Each sub or savings wallet shows its name above the balance and its type below it, supporting multiple wallets of either type. Home omits savings target amounts, progress, deadlines, and outgoing-lock labels; those details belong in the savings wallet.
+- [x] Money actions, card surfaces, status bars, bottom navigation, wallet previews, and activity rows use connected component instances. Top up, Move, Transfer, and Others use 44 × 44 px icon buttons with accessible names recorded in node context; compact section links retain 44 px height. The populated Home (`O8Rgfi`, action row `EPgw4`) shows centered 12 px labels beneath the icons with an 8 px gap; the icon targets remain 44 × 44 px. The Others destination remains undecided.
+- [x] The main wallet spans the available width; sub and savings wallets each have their own flat Card / Surface instance in the paired row. Missing wallets add no summary or creation CTA, and the 320 px variant stacks wallet cards to preserve long names and amounts.
+- [x] Recent activity rows and the empty activity state are inside a flat Card / Surface instance. Recent activity and View all remain siblings of that card, outside its bounds.
+- [x] An own-wallet move appears once in recent activity with a neutral amount and both wallet names; transfers and top-ups use debit and credit signs. Empty activity explains where future transactions appear.
+- [x] Revised wallet and activity sections were inspected visually across all five variants. Resolved visible-node traversal found no clipping or overlapping siblings; affected root frames do not overlap. Long names wrap and the narrow total uses 32 px type. All work-in-progress placeholder flags are cleared.
+- [x] Existing colors and foundation tokens are reused. The four text/icon contrast pairs used by the revised cards and actions were recomputed and match the contrast audit. CSS and token-export values are unchanged; the existing progress pair remains applicable to the reusable preview's optional progress treatment.
+- [x] Product intent, MVP scope, inventory sections 2/3/4.3/6/7.1/7.8, the design system, supplied logo kit, and Wise/Neo/Chime Home references were consulted.
+
+Home uses the existing bottom-navigation convention. Screen frames expand to show all content on the canvas. Navigation targets are documented in node context; this static design does not verify runtime scrolling, focus order, screen-reader announcements, touch behavior, device safe areas, or live balance updates.
+
+Home cards use connected Card / Surface instances with its 2xl radius and 1 px border, without shadows. The main wallet uses the primary fill and matching border, spanning both columns. At 390 px, other wallets occupy one 169 px column and size to their content. Narrow cards stack and size to their content. Wallet types appear below individual balances, without category subsections or missing-wallet guidance. Foundation colors, CSS tokens, and JSON token values are unchanged; existing contrast pairs still apply.
 
 Contrast checks evaluate the specified pairs mathematically. The canvas shows visual states; keyboard interaction, loading animation, assistive-technology behavior, and device safe areas need verification when implementing the app.
 

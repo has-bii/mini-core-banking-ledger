@@ -23,7 +23,7 @@ All money movement and account behavior are simulated. The UI should feel like a
 
 ### Design checklist — pen.dev
 
-Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **12 of 38 screen IDs** and **2 of 9 overlay IDs** have designs.
+Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **13 of 38 screen IDs** and **2 of 9 overlay IDs** have designs.
 
 - **Checked `[x]`:** at least one populated design frame exists for this ID. Frame IDs below locate the design in pen.dev; related variants share the inventory ID in their frame names.
 - **Unchecked `[ ]`:** no design frame was found for this ID during the last check.
@@ -49,7 +49,7 @@ Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **12
 
 **Home and wallets — section 4.3**
 
-- [ ] `HOME-01` Home overview.
+- [x] `HOME-01` Home overview — `O8Rgfi` (populated), `I2fbM` (first visit, zero balances, main wallet only, empty activity), `D9JFa` (no sub wallets), `k1Qib` (no savings wallets), `M0eP4` (long wallet names and IDR amounts, 320 px). Existing wallets have individual flat Card / Surface instances in a bento arrangement: main spans two columns, other wallets one each, without category subsections. Each sub or savings wallet shows its type below its balance; multiple wallets of either type may exist. Absent wallets add no explanation or creation CTA. Activity is wrapped in its own flat card with its heading and View all outside. Narrow cards stack. Savings target details and outgoing-lock labels are omitted from Home and belong in wallet detail. Top up, Move, Transfer, and Others use icon buttons; the populated Home (`O8Rgfi`, row `EPgw4`) adds visible labels beneath them. Others is intentionally undecided; other onward destinations and accessible names are documented in node context, not implemented interactions.
 - [ ] `WAL-01` Wallet list.
 - [ ] `WAL-02` Create wallet.
 - [ ] `WAL-03` Main/sub wallet detail.
@@ -108,7 +108,7 @@ Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **12
 | Deliverable | One document containing inventory and linked Mermaid flow maps. |
 | Coverage | Entire MVP, including alternate, failure, empty, and blocked states. |
 | Primary navigation | Home, Wallets, Activity, Settings. Top up, Move, and Transfer are contextual actions, not tabs. |
-| Home balances | Show total balance and separate Main wallet, Sub wallets, and Savings balances. Do not label total balance as available to spend. Main wallet is the everyday-spending reference, not the only spendable wallet. |
+| Home balances | Show total balance and each wallet's balance, with persistent main/sub/savings type labels inside individual cards. Do not label total balance as available to spend. Main wallet is the everyday-spending reference, not the only spendable wallet. |
 | Wallet creation | Name-only creation; savings target and budgeting are independent optional setup tasks offered after creating a savings wallet. |
 | Enrollment | After password sign-in, offer account PIN, passkey, or Not now. Add another method later in Settings. |
 | Device/account switching | One enrolled account per device. Use another account preserves enrollment; replacing it requires explicit confirmation. An unenrolled session does not replace it. |
