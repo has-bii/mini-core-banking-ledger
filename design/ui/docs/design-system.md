@@ -21,9 +21,9 @@ The design system lives in [still-bank.pen](../still-bank.pen). It contains foun
 | Token annotations | IBM Plex Mono; documentation only |
 | Type size / line height | 12/16, 14/20, 16/24, 20/28, 24/32, 32/40, 40/48 px |
 | Spacing | 4 px base; 4, 8, 12, 16, 20, 24, 32, 40, 48, 64 px; 2 px optical adjustment |
-| Radius | Base `0.625rem` = 10 px at a 16 px root |
-| Derived radii | sm 6, md 8, lg 10, xl 14, 2xl 18, 3xl 22, 4xl 26 px |
-| Pill radius | `radius-full`: 999 px |
+| Radius | Base `0.875rem` = 14 px at a 16 px root |
+| Derived radii | sm 8.4, md 11.2, lg 14, xl 19.6, 2xl 25.2, 3xl 30.8, 4xl 36.4 px |
+| Pill radius | `radius-full`: 999 px; shared by buttons and bordered form inputs |
 | Control sizes | Buttons 52 px; compact and icon targets 44 px; inputs 56 px |
 | Icons | Lucide, 20 px in controls and 24 px in bottom navigation |
 | Elevation | Flat by default; borders and surface contrast provide grouping |

@@ -77,7 +77,8 @@
               "content": "Forest, Mist, and a clear purpose for every token. A mobile foundation for everyday money.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 16
+              "fontSize": 16,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -290,7 +291,8 @@
               "content": "Use Forest for commitment and selection. Let Mist and white carry the interface. Color supports labels, icons, and visible states.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 14
+              "fontSize": 14,
+              "fontWeight": "normal"
             },
             {
               "type": "frame",
@@ -378,7 +380,8 @@
                               "content": "Page + primary text",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -457,7 +460,8 @@
                               "content": "Contained surfaces",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -536,7 +540,8 @@
                               "content": "Floating surfaces",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -614,7 +619,8 @@
                               "content": "Main actions",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -692,7 +698,8 @@
                               "content": "Supporting actions",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -770,7 +777,8 @@
                               "content": "Quiet areas + secondary text",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -848,7 +856,8 @@
                               "content": "Selected + interactive areas",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -935,7 +944,8 @@
                               "content": "Consequential actions",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -1013,7 +1023,8 @@
                               "content": "Surface separation · #D8DED5",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -1091,7 +1102,8 @@
                               "content": "Control boundary · #839085",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -1169,7 +1181,8 @@
                               "content": "Visible keyboard focus · #214F40",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -1247,7 +1260,8 @@
                               "content": "Completion · text + check icon",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -1325,7 +1339,8 @@
                               "content": "Needs attention · text + icon",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -1403,7 +1418,8 @@
                               "content": "Helpful context · text + icon",
                               "lineHeight": 1.5,
                               "fontFamily": "$--font-sans",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -1445,7 +1461,8 @@
                   "content": "Names mirror shadcn. Values follow Still Bank. Chart and sidebar tokens are defined for compatibility; semantic state colors are small extensions.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "text",
@@ -1457,7 +1474,8 @@
                   "content": "Contrast / Forest on white 9.30:1 · Muted text on muted 4.96:1 · Input border on Mist 3.08:1",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 12
+                  "fontSize": 12,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -1520,7 +1538,8 @@
               "content": "Figtree pairs the warmth of the identity with the clarity of everyday banking.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 16
+              "fontSize": 16,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -1578,7 +1597,8 @@
                   "content": "Regular 400  /  Medium 500  /  Semibold 600",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 16
+                  "fontSize": 16,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "text",
@@ -1590,7 +1610,8 @@
                   "content": "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz  0123456789",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 16
+                  "fontSize": 16,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -2007,7 +2028,8 @@
                       "content": "Move money between your wallets.",
                       "lineHeight": 1.5,
                       "fontFamily": "$--font-sans",
-                      "fontSize": "$--text-base"
+                      "fontSize": "$--text-base",
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -2090,7 +2112,8 @@
                       "content": "Keep a little aside for what comes next.",
                       "lineHeight": 1.4285714285714286,
                       "fontFamily": "$--font-sans",
-                      "fontSize": "$--text-sm"
+                      "fontSize": "$--text-sm",
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -2237,7 +2260,8 @@
               "content": "IDR only · Indonesian grouping · No decimal places for whole-rupiah examples. Keep currency and amount together; reduce the display style when a value needs more room.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 14
+              "fontSize": 14,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -2277,7 +2301,8 @@
                   "content": "Body and form values use 16 / 24. Reserve 12 px for short labels and metadata.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -2310,7 +2335,8 @@
                   "content": "Use size and weight before adding color. Prefer sentence case and left alignment.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -2370,10 +2396,11 @@
               "fill": "$--muted-foreground",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "A four-pixel rhythm, a ten-pixel radius, and one consistent token vocabulary.",
+              "content": "A four-pixel rhythm, a fourteen-pixel radius, and one consistent token vocabulary.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 16
+              "fontSize": 16,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -3009,7 +3036,8 @@
               "content": "2 px is available for fine optical adjustments. Screen-edge padding begins at 24 px; use 16–20 px when space is tight.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 13
+              "fontSize": 13,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -3026,7 +3054,7 @@
               "id": "k2BKZ4",
               "name": "Radius section title",
               "fill": "$--foreground",
-              "content": "Radius / --radius: 0.625rem",
+              "content": "Radius / --radius: 0.875rem",
               "lineHeight": 1.4,
               "fontFamily": "$--font-sans",
               "fontSize": 22,
@@ -3050,7 +3078,7 @@
                     {
                       "type": "frame",
                       "id": "yTRix",
-                      "name": "Radius 6 sample",
+                      "name": "Radius 8.4 sample",
                       "width": "fill_container",
                       "height": 82,
                       "fill": "$--secondary",
@@ -3065,7 +3093,7 @@
                           "id": "uPPVK",
                           "name": "Radius pixel value",
                           "fill": "$--primary",
-                          "content": "6",
+                          "content": "8.4",
                           "lineHeight": 1.4,
                           "fontFamily": "$--font-sans",
                           "fontSize": 24,
@@ -3097,7 +3125,7 @@
                     {
                       "type": "frame",
                       "id": "dyg0v",
-                      "name": "Radius 8 sample",
+                      "name": "Radius 11.2 sample",
                       "width": "fill_container",
                       "height": 82,
                       "fill": "$--secondary",
@@ -3112,7 +3140,7 @@
                           "id": "VeGGs",
                           "name": "Radius pixel value",
                           "fill": "$--primary",
-                          "content": "8",
+                          "content": "11.2",
                           "lineHeight": 1.4,
                           "fontFamily": "$--font-sans",
                           "fontSize": 24,
@@ -3144,7 +3172,7 @@
                     {
                       "type": "frame",
                       "id": "PCYbN",
-                      "name": "Radius 10 sample",
+                      "name": "Radius 14 sample",
                       "width": "fill_container",
                       "height": 82,
                       "fill": "$--secondary",
@@ -3159,7 +3187,7 @@
                           "id": "tDMTd",
                           "name": "Radius pixel value",
                           "fill": "$--primary",
-                          "content": "10",
+                          "content": "14",
                           "lineHeight": 1.4,
                           "fontFamily": "$--font-sans",
                           "fontSize": 24,
@@ -3191,7 +3219,7 @@
                     {
                       "type": "frame",
                       "id": "VTFOc",
-                      "name": "Radius 14 sample",
+                      "name": "Radius 19.6 sample",
                       "width": "fill_container",
                       "height": 82,
                       "fill": "$--secondary",
@@ -3206,7 +3234,7 @@
                           "id": "EBqT4",
                           "name": "Radius pixel value",
                           "fill": "$--primary",
-                          "content": "14",
+                          "content": "19.6",
                           "lineHeight": 1.4,
                           "fontFamily": "$--font-sans",
                           "fontSize": 24,
@@ -3238,7 +3266,7 @@
                     {
                       "type": "frame",
                       "id": "qQIeo",
-                      "name": "Radius 18 sample",
+                      "name": "Radius 25.2 sample",
                       "width": "fill_container",
                       "height": 82,
                       "fill": "$--secondary",
@@ -3253,7 +3281,7 @@
                           "id": "krENf",
                           "name": "Radius pixel value",
                           "fill": "$--primary",
-                          "content": "18",
+                          "content": "25.2",
                           "lineHeight": 1.4,
                           "fontFamily": "$--font-sans",
                           "fontSize": 24,
@@ -3285,7 +3313,7 @@
                     {
                       "type": "frame",
                       "id": "icze3",
-                      "name": "Radius 22 sample",
+                      "name": "Radius 30.8 sample",
                       "width": "fill_container",
                       "height": 82,
                       "fill": "$--secondary",
@@ -3300,7 +3328,7 @@
                           "id": "t6eQf",
                           "name": "Radius pixel value",
                           "fill": "$--primary",
-                          "content": "22",
+                          "content": "30.8",
                           "lineHeight": 1.4,
                           "fontFamily": "$--font-sans",
                           "fontSize": 24,
@@ -3332,7 +3360,7 @@
                     {
                       "type": "frame",
                       "id": "JfPUy",
-                      "name": "Radius 26 sample",
+                      "name": "Radius 36.4 sample",
                       "width": "fill_container",
                       "height": 82,
                       "fill": "$--secondary",
@@ -3347,7 +3375,7 @@
                           "id": "KpA5v",
                           "name": "Radius pixel value",
                           "fill": "$--primary",
-                          "content": "26",
+                          "content": "36.4",
                           "lineHeight": 1.4,
                           "fontFamily": "$--font-sans",
                           "fontSize": 24,
@@ -3377,10 +3405,11 @@
               "fill": "$--muted-foreground",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "Inputs: radius-lg (10). Cards: radius-2xl (18). Emphasized surfaces: radius-3xl (22). Pill actions: radius-full (999), an explicit extension.",
+              "content": "Form inputs and buttons: radius-full (999). Cards: radius-2xl (25.2). Emphasized surfaces: radius-3xl (30.8).",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 14
+              "fontSize": 14,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -3423,7 +3452,8 @@
                   "content": "Compact / icon target",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -3456,7 +3486,8 @@
                   "content": "Standard button",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -3489,7 +3520,8 @@
                   "content": "Input control",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -3522,7 +3554,8 @@
                   "content": "Control / navigation icon",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -3564,7 +3597,8 @@
                   "content": "Five supporting series colors. Future charts must use labels or markers alongside color.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "frame",
@@ -3756,7 +3790,8 @@
                   "content": "Defined as part of the token contract. Primary mobile navigation uses the same surface, accent, and focus relationships.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "frame",
@@ -3849,7 +3884,8 @@
                   "content": "sidebar-border → border   /   sidebar-ring → ring",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 12
+                  "fontSize": 12,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -3892,7 +3928,8 @@
               "content": "Default elevation is flat. Use borders to group content, a visible ring for keyboard focus, and icon + text for feedback. Retain the supplied logo proportions and clear space.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 14
+              "fontSize": 14,
+              "fontWeight": "normal"
             }
           ]
         }
@@ -4093,7 +4130,8 @@
                   "content": "One base supports the primary, secondary, outline, ghost, and destructive treatments. Optional leading icon, trailing icon, and loading indicator.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -4145,7 +4183,7 @@
                       "width": "fill_container",
                       "height": 56,
                       "fill": "$--card",
-                      "cornerRadius": "$--radius-lg",
+                      "cornerRadius": "$--radius-full",
                       "stroke": "$--input",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
@@ -4182,7 +4220,8 @@
                           "content": "Enter a value",
                           "lineHeight": 1.5,
                           "fontFamily": "$--font-sans",
-                          "fontSize": 16
+                          "fontSize": 16,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "frame",
@@ -4240,7 +4279,8 @@
                           "content": "Helpful guidance for this field.",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "$--font-sans",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -4330,7 +4370,8 @@
                       "content": "Available in source wallet: Rp2.450.000",
                       "lineHeight": 1.5,
                       "fontFamily": "$--font-sans",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -4412,7 +4453,8 @@
                           "content": "Supporting description",
                           "lineHeight": 1.5,
                           "fontFamily": "$--font-sans",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -4435,7 +4477,8 @@
                           "content": "Content goes here.",
                           "lineHeight": 1.5,
                           "fontFamily": "$--font-sans",
-                          "fontSize": 16
+                          "fontSize": 16,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -4500,7 +4543,8 @@
                   "content": "Header, content, and footer slots. Hide unused slots. Use a card only when the content benefits from a shared surface.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -4768,7 +4812,8 @@
                   "content": "Labeled tabs for primary destinations. Back or close navigation for focused tasks. The bottom bar includes a 20 px safe-area specimen.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -4831,7 +4876,8 @@
               "content": "A clear primary action, quieter alternatives, and feedback at every interaction.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 16
+              "fontSize": 16,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -4922,7 +4968,8 @@
                   "content": "Use one primary action per task area. Use a verb that describes the outcome, and preserve the button width while submitting.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -5933,7 +5980,8 @@
                   "content": "2 px ring · 4 px offset",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -6008,7 +6056,8 @@
                   "content": "Stable width · repeated submit blocked",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -6083,7 +6132,8 @@
                   "content": "44 px height · supporting actions",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -6134,7 +6184,8 @@
                   "content": "Use 20 px icons inside a 44 px minimum target. Give every icon-only action an accessible label.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -6305,7 +6356,8 @@
               "content": "Persistent labels, comfortable targets, and feedback that explains the next step.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 16
+              "fontSize": 16,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -6394,7 +6446,8 @@
                   "content": "16 px values · 56 px control · 16 px inner inset · 8 px label and helper gaps. Use the input token for the boundary and ring for focus.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -6855,7 +6908,8 @@
                   "content": "Placeholders are examples. A visible label continues to identify the field after typing.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -6888,7 +6942,8 @@
                   "content": "Pair errors with a message and icon. Preserve editable values so the user can correct them.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -6921,7 +6976,8 @@
                   "content": "Password visibility uses a 44 px target. Use the platform keyboard appropriate to the value.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -7056,7 +7112,8 @@
                   "content": "Labels and help can wrap. Keep the input target stable. Reduce large amount type before a value runs out of room.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -7119,7 +7176,8 @@
               "content": "Simple surfaces and familiar navigation, built from the same semantic foundations.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 16
+              "fontSize": 16,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -7406,10 +7464,11 @@
               "fill": "$--muted-foreground",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "24 px padding · 16 px section gaps · radius-2xl (18 px) · optional footer. Card titles wrap naturally; component height grows with content.",
+              "content": "24 px padding · 16 px section gaps · radius-2xl (25.2 px) · optional footer. Card titles wrap naturally; component height grows with content.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 14
+              "fontSize": 14,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -7621,7 +7680,8 @@
               "content": "Home · Wallets · Activity · Settings. The selected capsule, stronger label, and color identify the current destination together. Top up, Move, and Transfer remain contextual actions.",
               "lineHeight": 1.5,
               "fontFamily": "$--font-sans",
-              "fontSize": 14
+              "fontSize": 14,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -7809,7 +7869,8 @@
                   "content": "Retain visible labels. Give keyboard focus its own ring. Keep tabs on primary destinations and use back or close controls for focused tasks.",
                   "lineHeight": 1.5,
                   "fontFamily": "$--font-sans",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -24935,35 +24996,35 @@
     },
     "--radius": {
       "type": "number",
-      "value": 10
+      "value": 14
     },
     "--radius-sm": {
       "type": "number",
-      "value": 6
+      "value": 8.4
     },
     "--radius-md": {
       "type": "number",
-      "value": 8
+      "value": 11.2
     },
     "--radius-lg": {
       "type": "number",
-      "value": 10
+      "value": 14
     },
     "--radius-xl": {
       "type": "number",
-      "value": 14
+      "value": 19.6
     },
     "--radius-2xl": {
       "type": "number",
-      "value": 18
+      "value": 25.2
     },
     "--radius-3xl": {
       "type": "number",
-      "value": 22
+      "value": 30.8
     },
     "--radius-4xl": {
       "type": "number",
-      "value": 26
+      "value": 36.4
     },
     "--radius-full": {
       "type": "number",
