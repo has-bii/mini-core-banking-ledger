@@ -53,8 +53,8 @@ This list defines product features, not technical implementation details, priori
 
 ## Scheduled Budgeting
 
-- Optionally configure budgeting for a savings wallet with an amount, source wallet, period, and finish date.
-- Select a main or sub wallet as the source.
+- Optionally configure budgeting for a savings wallet with an amount, period, and finish date. Do not save a source wallet on the savings wallet or budgeting schedule.
+- Select an open main or sub wallet as the source when initiating each scheduled contribution. A fresh contribution starts without a selected source; the choice belongs to that transaction only.
 - Support daily, weekly, and monthly periods.
 - Display a schedule description and a **Move money** button inside the savings wallet.
 - Require the user to initiate each contribution; do not deduct money automatically.

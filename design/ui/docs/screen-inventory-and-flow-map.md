@@ -23,7 +23,7 @@ All money movement and account behavior are simulated. The UI should feel like a
 
 ### Design checklist — pen.dev
 
-Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **17 of 38 screen IDs** and **5 of 9 overlay IDs** have designs.
+Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **22 of 38 screen IDs** and **7 of 9 overlay IDs** have designs.
 
 - **Checked `[x]`:** at least one populated design frame exists for this ID. Frame IDs below locate the design in pen.dev; related variants share the inventory ID in their frame names.
 - **Unchecked `[ ]`:** no design frame was found for this ID during the last check.
@@ -53,20 +53,22 @@ Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **17
 - [x] `WAL-01` Wallet list — `y3dYdG` (populated), `Bxhs5` (first visit, zero balance, main wallet only), `uauO1` (no sub wallets), `q54Aw` (no savings wallets), `obNC4` (multiple sub/savings wallets, long names and IDR amounts, 320 px), `tBRgy` (closed-wallet return feedback), `CN67s` (balances hidden). The 390 px states use a two-column bento grid with 169 × 169 px wallet and Create wallet cards; the narrow long-content case uses 280 × 280 px cards. Main uses Primary, creation uses Secondary, and both sub and savings wallets use Card (white). A total-balance summary above the grid includes all open wallets and a 44 px eye toggle. Hiding masks the total and each wallet amount with `Rp ••••••`; names, types, icons, counts, and navigation remain visible. Showing restores the amounts. The final Create wallet card opens `OV-01`. The closure example moves Holiday fund’s Rp12.000.000 to main, producing Rp14.450.000 while the total stays Rp18.450.000; its target was removed beforehand and it had no budgeting schedule. Navigation and toggle behavior are documented in node context, not implemented interaction.
 - [x] `WAL-02` Create wallet — `Cu6G1` (sub, empty), `ZSft1` (savings, editing), `Gq2tB` (missing name), `C1fcT` (creating), `XDca3` (long name, 320 px). Creation asks only for a name and opens the new type's detail on success. Target and budgeting remain optional subsequent tasks. Back returns without creating a wallet; pending submission preserves the entered name and prevents repeat submission in the documented interaction intent.
 - [x] `WAL-03` Main/sub wallet detail — `C7RO2b` (main), `QIX2V` (sub), `CUXQd` (new sub, zero balance and empty activity), `riRTK` (renamed sub, long name/IDR, 320 px), `r0CHc` (main Others menu open, Rename only), `wVXYu` (sub Others menu open, 320 px). Persistent type, balance, illustrative unique wallet number, contextual money actions, recent activity, wallet-history entry, and Rename are shown. All detail variants use Top up, Move, Transfer, and Others; Rename and eligible Close live in the shared dropdown rather than bottom buttons. Main has no Close action. The number examples do not define a required format. Navigation is recorded in node context.
-- [x] `WAL-04` Savings wallet detail — `veM8v` (new wallet, no target/schedule, zero balance, empty activity), `Ez5cI` (unfinished target and active budgeting), `SE2db` (target only, no deadline; Others trigger in action row `i728Os`), `WriyT` (same wallet, Others dropdown open), `s2ws6` (budgeting only), `bscFg` (reached target, budgeting continues), `epC63` (passed target deadline and overdue budgeting), `C7BjE` (target removed, ended budgeting retained), `YFDHo` (long name/IDR, 320 px), `y7T8r` (closure blocked by unfinished target), `AsawL` (insufficient budgeting source funds), `EFFaT` (unavailable source requiring schedule edit). All `WAL-04` variants use Others in the money-action row to open an anchored Rename wallet / Close wallet dropdown; bottom management buttons are removed. Rename opens `OV-02`; Close opens `OV-06` when eligible or follows the unfinished-target block with View target. The open dropdown is an inline state, not a new overlay ID. Click/keyboard behavior and dismissal/focus restoration require implementation. Target and budgeting summaries are connected reusable components. Ordinary Add money opens an incoming move without schedule advancement; scheduled Move money opens configured review. Target locks affect outgoing actions only; passing a deadline does not unlock money. Ended schedules omit the scheduled contribution action. Target/budgeting forms/details and transaction review/result screens remain undesigned inventory work; contribution pending/success/failure is not claimed as covered here.
+- [x] `WAL-04` Savings wallet detail — `veM8v` (new wallet, no target/schedule, zero balance, empty activity), `Ez5cI` (unfinished target and active budgeting), `SE2db` (target only, no deadline; Others trigger in action row `i728Os`), `WriyT` (same wallet, Others dropdown open), `s2ws6` (budgeting only), `bscFg` (reached target, budgeting continues), `epC63` (passed target deadline and overdue budgeting), `C7BjE` (target removed, ended budgeting retained), `YFDHo` (long name/IDR, 320 px), `y7T8r` (closure blocked by unfinished target), `AsawL` (choose a source when contributing), `EFFaT` (same guidance, 320 px). All `WAL-04` variants use Others in the money-action row to open an anchored Rename wallet / Close wallet dropdown; bottom management buttons are removed. Rename opens `OV-02`; Close opens `OV-06` when eligible or follows the unfinished-target block with View target. The open dropdown is an inline state, not a new overlay ID. Click/keyboard behavior and dismissal/focus restoration require implementation. Target and budgeting summaries are connected reusable components. Ordinary Add money opens an incoming move without schedule advancement; scheduled Move money opens `TX-03` to choose a source for that contribution, with amount and savings destination prefilled, then `TX-05` review. Target locks affect outgoing actions only; passing a deadline does not unlock money. Ended schedules omit the scheduled contribution action. Target/budgeting forms/details and scheduled source entry are covered below; transaction reviews/results and contribution pending/success/failure remain undesigned.
 
 **Savings targets and budgeting — section 4.4**
 
-- [ ] `SAV-01` Create/edit target.
-- [ ] `SAV-02` Target details.
-- [ ] `BUD-01` Create/edit budgeting.
-- [ ] `BUD-02` Budgeting details.
+- [x] `SAV-01` Create/edit target — `N0raLm` (entered amount and optional deadline), `dRhid` (empty), `ASETN` (edit, no deadline), `pRRNK` (invalid amount/date), `N9bYA` (saving), `S6XMV` (long name/IDR, 320 px). The form explains the outgoing lock before saving an unfinished target; incoming money and independent budgeting remain available. Back discards unsaved changes. Dates are shown as manually entered text; no custom calendar overlay or date-picker behavior is specified.
+- [x] `SAV-02` Target details — `jbFo5` (unfinished), `EYVsi` (no deadline), `SkWvh` (reached), `A98dH2` (deadline passed while unfinished). Connected target progress shows balance/amount, deadline, remaining amount, and outgoing status. Edit opens `SAV-01`; Remove opens `OV-03`. Reaching the amount unlocks outgoing money; passing the deadline does not. Back preserves the caller, including a wallet-closure block.
+- [x] `BUD-01` Create/edit budgeting — `MdgGD` (empty), `I27gs` (edit/current next date), `htuVT` (daily), `uGIHN` (monthly, long name/IDR, 320 px), `OkbeK` (invalid amount/missing finish date), `aSFBw` (saving). Budgeting stores amount, period, and finish date only; there is no saved source or source selector here. Weekly is the initial editable period; selection includes a checkmark. Saving creates/updates the schedule without moving money. Editing shows the current next contribution date; how changing the period recalculates that date remains an open product decision.
+- [x] `BUD-02` Budgeting details — `qCGT9` (Active), `fToZz` (Overdue), `Nwxp5` (Ended). Scheduled Move money opens `TX-03` with scheduled amount and savings destination prefilled, and no selected source on a fresh contribution. Users choose a source for that transaction before `TX-05` review. Active permits early contributions, overdue catch-up advances one installment per success, and Ended omits scheduled Move money. Contribution review, pending transaction, success, and failure remain undesigned `TX-05`/`TX-08`/`TX-10` work.
+
+Confirmed-operation returns extend `WAL-04`: `gmTUY` removes the target and unlocks outgoing money while retaining the active weekly schedule; `D0S4u5` cancels budgeting while retaining the unfinished target, its deadline, and outgoing lock. Both retain the Rp12.000.000 balance and provide feedback plus optional setup. Their activity examples show an incoming own-wallet move; these management operations do not create a money-movement entry.
 
 **Money movement — section 4.5**
 
 - [ ] `TX-01` Top-up entry.
 - [ ] `TX-02` Top-up review.
-- [ ] `TX-03` Move entry.
+- [x] `TX-03` Move entry — scheduled-contribution context only: `C7K0i` (choose source, expanded eligible main/sub choices), `JFcg8` (source selected, 320 px), `bOmPI` (insufficient selected-source balance), `mqwJl` (selected source became unavailable). Source selection belongs to the transaction, never the wallet or schedule. A fresh contribution begins unselected; retry may retain a still-eligible draft choice. Review stays unavailable until the selected source is eligible and funded; correction changes the source in this form or tops up that wallet. Back/cancel leaves the schedule unchanged. Ordinary Move entry, ordinary Add money, and their broader entry states remain undesigned.
 - [ ] `TX-04` Transfer entry.
 - [ ] `TX-05` Move review.
 - [ ] `TX-06` Transfer review.
@@ -93,8 +95,8 @@ Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **17
 
 - [x] `OV-01` Wallet-type sheet — `Dg4eL` (390 px), `xgYTu` (320 px), each over the revised bento Wallets screen. Both use connected Sheet / Content, Header, and Overlay primitives: the surface spans the screen edge to edge and sits flush with the bottom, with rounded top corners and a hidden action footer. Connected descriptive choice rows offer Sub wallet or Savings wallet and lead directly to `WAL-02` with the type selected. No main-wallet option. Close/dismiss returns to unchanged `WAL-01` and restores focus to the Create wallet card. Modal focus containment, background inertness, dismissal, focus restoration, and actual device safe areas are implementation checks.
 - [x] `OV-02` Rename-wallet sheet — `RvtKX` (editing), `CbG74` (missing name), `kjjDr` (saving), `T8kCI` (long name, 320 px). Connected Sheet primitives contain a connected labeled input and Save name/Cancel actions. Invalid input remains inline; success returns to the renamed detail represented by `riRTK`. Cancel/close leaves data unchanged. Backdrops preserve wallet context; modal focus containment, background inertness, dismissal/focus restoration, keyboards, and safe areas need runtime checks.
-- [ ] `OV-03` Remove-target confirmation.
-- [ ] `OV-04` Cancel-budgeting confirmation.
+- [x] `OV-03` Remove-target confirmation — `q0Jr8` (consequences), `xXjIe` (removing), `Fh3eg` (320 px). Connected Sheet primitives explain that the target alone is removed, the balance stays in the wallet, outgoing money unlocks, and budgeting remains unchanged. Keep target/close/dismiss returns unchanged to `SAV-02`; successful removal returns to `WAL-04` (`gmTUY`). Pending intent prevents duplicate/conflicting actions.
+- [x] `OV-04` Cancel-budgeting confirmation — `cakQN` (consequences), `pTghr` (cancelling), `O6kpI` (320 px). Connected Sheet primitives explain that removing the schedule moves no money and preserves the target; this unfinished-target example retains its outgoing lock. Keep schedule/close/dismiss returns unchanged to `BUD-02`; successful cancellation returns to `WAL-04` (`D0S4u5`). Pending intent prevents duplicate/conflicting actions.
 - [ ] `OV-05` Remove-passkey confirmation.
 - [x] `OV-06` Close-wallet confirmation — `WVb1P` (sub wallet), `X6qZWj` (eligible savings with budgeting cancellation), `U7TiH` (closing), `P7JIAk` (savings, 320 px). Connected Sheet primitives show the remaining balance, main-wallet destination, resulting main balance, retained activity, and applicable schedule cancellation. Sub closure moves Rp4.000.000 to main, producing Rp6.450.000; savings closure moves Rp12.000.000 to main, producing Rp14.450.000. Both examples start with main at Rp2.450.000. Keep wallet/close dismisses unchanged. Confirmation returns to `WAL-01` with feedback; existing `tBRgy` illustrates the balance return without a prior schedule. Main cannot enter closure. `y7T8r` separately blocks unfinished-target closure and offers View target; removal is never bundled into confirmation.
 - [x] `OV-07` Replace-enrollment confirmation — `Q5EnzS`. Uses connected Sheet / Content, Header, Footer, and Overlay primitives, full screen width and flush with the bottom. Continue setup authorizes the selected method's setup; replacement happens only after successful setup. Cancel, close, or dismissal preserves the existing enrollment and returns to the caller. Runtime modal behavior and actual device safe areas remain implementation checks.
@@ -114,7 +116,7 @@ Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **17
 | Enrollment | After password sign-in, offer account PIN, passkey, or Not now. Add another method later in Settings. |
 | Device/account switching | One enrolled account per device. Use another account preserves enrollment; replacing it requires explicit confirmation. An unenrolled session does not replace it. |
 | Transaction structure | Separate Top up, Move, and Transfer entry forms; each leads to Review and Result. Contextual entry preselects the relevant wallet. |
-| Savings contributions | Scheduled Move money uses the configured source/amount and advances the schedule on success. Ordinary Add money opens an incoming own-wallet move and does not advance it. |
+| Savings contributions | Budgeting saves amount, period, and finish date, with no source wallet. Scheduled Move money opens `TX-03` with amount/destination prefilled; users choose an open main/sub source for each transaction before review. Only successful scheduled contributions advance the schedule. Ordinary Add money opens an incoming own-wallet move and does not advance it. |
 | Authorization | Confirm on Review submits a transaction; no additional transaction PIN/passkey challenge. |
 | Recovery | Verified registration returns to Sign in. Password recovery returns to Sign in. Forgotten-PIN recovery leads to Set new PIN, then Quick unlock. |
 | Locked savings | Explain the restriction and offer View target. Exclude locked wallets from eligible source choices. Require explicit target removal before closing a wallet with an unfinished target. |
@@ -142,6 +144,7 @@ Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **17
 - Back from a form returns to its originating screen without committing changes. Back from Review returns to the form with inputs retained.
 - Cancelling a sheet/dialog leaves the underlying screen and data unchanged.
 - Wallet-context Top up preselects that wallet as destination; Move/Transfer preselect it as source when eligible. Savings Add money preselects the savings wallet as destination.
+- Scheduled Move money also preselects the savings destination and scheduled amount, but never a source on a fresh contribution. Choose the source in `TX-03`; this selection is not saved on the wallet or schedule. Back from scheduled review returns to this entry with transaction inputs retained.
 - Result Done/Cancel returns to the transaction's originating screen. View transaction opens `ACT-03`; its back action returns to the result while that flow is active.
 - Ordinary detail screens return to their caller. Activity retains its all-wallet or wallet-specific context.
 - Lock retains enrollment and opens Quick unlock. Without enrollment, Lock returns to password Sign in rather than offering an unavailable quick unlock.
@@ -190,8 +193,8 @@ Wallet details display the unique wallet number. Names may change, including the
 | --- | --- | --- | --- | --- |
 | `SAV-01` | Create/edit target | Savings detail without a target; target details | Enter target amount; optionally deadline; save | → savings detail or target detail according to caller. Show the outgoing-lock consequence before saving an unfinished target. |
 | `SAV-02` | Target details | Savings detail; View target from a lock explanation | View amount, progress, optional deadline, and lock status; edit; remove | Edit → target form; remove → `OV-03`. Reached amount unlocks outgoing money; deadline alone never unlocks it. |
-| `BUD-01` | Create/edit budgeting | Savings detail; budgeting detail | Set amount, main/sub source, daily/weekly/monthly period, finish date; save | → savings detail or budgeting detail according to caller. Creation sets initial next contribution date to setup date; editing exposes the current schedule context. |
-| `BUD-02` | Budgeting details | Savings detail | View schedule, source, amount, next date, finish date, status; Move money; edit; cancel | Move money → `TX-05` with configured values; edit → budgeting form; cancel → `OV-04`. Ended schedules have no scheduled contribution action. |
+| `BUD-01` | Create/edit budgeting | Savings detail; budgeting detail | Set amount, daily/weekly/monthly period, finish date; save | → savings detail or budgeting detail according to caller. No source is configured or saved. Creation sets initial next contribution date to setup date; editing exposes the current schedule context. |
+| `BUD-02` | Budgeting details | Savings detail | View schedule, amount, next date, finish date, status; Move money; edit; cancel | Move money → `TX-03` with scheduled amount and savings destination prefilled; choose source for this contribution, then review. Edit → budgeting form; cancel → `OV-04`. Ended schedules have no scheduled contribution action. |
 
 #### Savings and schedule rules
 
@@ -200,6 +203,7 @@ Wallet details display the unique wallet number. Names may change, including the
 - Target states: no target, unfinished/outgoing locked, reached/outgoing unlocked. A passed deadline is progress context only.
 - Budgeting states: no schedule, Active, Overdue, Ended. A schedule is Ended after its finish date, taking precedence over an overdue date.
 - Savings detail shows the schedule description and its **Move money** action while the schedule permits contributions.
+- Savings wallets and budgeting schedules have no saved source. Each scheduled contribution starts in `TX-03` without a source, with the scheduled amount and savings destination prefilled. Choose an eligible open main/sub wallet for that transaction only. Source eligibility and funds errors belong in the transaction flow, not schedule setup or wallet configuration.
 - Each successful scheduled contribution advances the next date by exactly one configured period, including early contributions. Overdue catch-up is one installment per confirmation, never a bulk deduction.
 - Failure leaves the next date and all balances unchanged. Retry must not duplicate a successful contribution.
 - Ordinary Add money, top-ups, and incoming transfers affect balance/target progress but do not advance budgeting.
@@ -212,14 +216,14 @@ Wallet details display the unique wallet number. Names may change, including the
 | --- | --- | --- | --- | --- |
 | `TX-01` | Top-up entry | Home; wallet detail | Enter amount; choose any open destination | → top-up review. No payment-method step. Target-locked savings remain eligible destinations. |
 | `TX-02` | Top-up review | Valid top-up entry | Review amount/destination; Confirm; Back | Confirm → top-up success. Top-up has success only, not a simulated failure result. |
-| `TX-03` | Move entry | Home; wallet detail; savings Add money | Choose eligible own source, different open destination, amount | → move review. Locked savings cannot be sources; they can be destinations. |
+| `TX-03` | Move entry | Home; wallet detail; savings Add money; scheduled Move money | Ordinary move: choose eligible own source, different open destination, amount. Scheduled contribution: choose an open main/sub source; amount and savings destination come from schedule | → move review. A fresh scheduled contribution has no selected source; choice is transaction-only. Locked savings cannot be sources; they can be destinations. |
 | `TX-04` | Transfer entry | Home; wallet detail | Choose eligible source; enter another user's wallet number; resolve recipient; enter amount | → transfer review only after recipient name is displayed. Invalid/unknown recipient and own-wallet destination stay inline; own-wallet moves use Move. |
-| `TX-05` | Move review | Move entry; scheduled Move money | Review source, destination, amount and scheduled context if applicable; Confirm; Back | → move success/failure. Scheduled source/amount come from budgeting; Back returns to its initiating savings context. Ordinary Back returns to editable entry. |
+| `TX-05` | Move review | Move entry, including scheduled contributions | Review source, destination, amount and scheduled context if applicable; Confirm; Back | → move success/failure. Scheduled amount/destination come from budgeting; source is chosen in `TX-03` for this transaction. Back returns to entry with transaction inputs retained. |
 | `TX-06` | Transfer review | Valid transfer entry | Review source, recipient name/wallet number, amount, zero fee; Confirm; Back | → transfer success/failure. Recheck eligibility and funds before applying changes. |
 | `TX-07` | Top-up success | Confirmed top-up | View transaction; Done | → transaction detail or origin. Show credited wallet and amount. |
 | `TX-08` | Move success | Confirmed move, including scheduled contribution | View transaction; Done | → transaction detail or origin. Show both wallet effects. Advance schedule only for a scheduled contribution. |
 | `TX-09` | Transfer success | Confirmed transfer | View transaction; Done | → transaction detail or origin. Show recipient and debit outcome. |
-| `TX-10` | Move/transfer failure | Failed confirmed move/transfer | Explain no money moved; Try again; Cancel | Ordinary retry → entry with inputs retained. Scheduled retry → configured review after eligibility is checked. Cancel → origin. No balance or schedule change. |
+| `TX-10` | Move/transfer failure | Failed confirmed move/transfer | Explain no money moved; Try again; Cancel | Retry → transaction entry with inputs retained and source eligibility/funds rechecked. A scheduled retry can choose another source without editing budgeting. Cancel → origin. No balance or schedule change. |
 
 #### Shared transaction rules
 
@@ -283,7 +287,7 @@ These are variants of inventory screens, not additional full screens.
 | Wallets balance visibility | Visible and hidden total/individual balances; Hide balances and Show balances action labels. Use a fixed-length mask and keep hidden numeric values out of accessible text. Opening/dismissing the type sheet preserves the calling view's visibility state. |
 | Wallet details | No activity; zero balance; renamed; closed-wallet return feedback; eligible/blocked outgoing actions. |
 | Target | No target; unfinished; reached; deadline passed while unfinished; removed. Clearly explain why outgoing money remains locked. |
-| Budgeting | No schedule; Active; Overdue; Ended; insufficient source funds; unavailable source requiring schedule edit; contribution pending/success/failure. No automatic deduction. |
+| Budgeting | No schedule; Active; Overdue; Ended; contribution pending/success/failure. No automatic deduction or saved source. Insufficient/unavailable sources are transaction-entry states; recover by choosing a source for that move, without editing the schedule. |
 | Transaction entry | No eligible source; invalid amount; source/destination conflict; insufficient funds; unknown/invalid recipient; recipient resolved; source locked/unavailable. Provide a corrective path instead of a dead end. |
 | Review/result | Submitting with repeated submission prevented; success; move/transfer failure with unchanged-balance message. Top-up has no failure-result variant. |
 | Activity | Empty global history; empty wallet history; populated list; detail. A zero-activity state explains where completed activity will appear. |
@@ -422,10 +426,13 @@ flowchart TD
     SAV -->|Scheduled Move money| VALID{Schedule permits contribution?}
     BD -->|Move money| VALID
     VALID -->|Ended| ENDED["Ended summary; edit or cancel; ordinary incoming still allowed"]
-    VALID -->|Active / overdue| REVIEW["TX-05 Configured move review"]
+    VALID -->|Active / overdue| SELECT["TX-03 Choose source; scheduled amount and savings destination prefilled"]
+    SELECT -->|Ineligible source / insufficient funds| SELECT
+    SELECT -->|Eligible source selected| REVIEW["TX-05 Scheduled move review"]
+    REVIEW -->|Back; retain transaction inputs| SELECT
     REVIEW -->|Confirmed successfully| SUCCESS["TX-08 Success; advance one period"]
     REVIEW -->|Failure| FAIL["TX-10 Failure; schedule unchanged"]
-    FAIL -->|Try again; recheck| REVIEW
+    FAIL -->|Try again; recheck or change source| SELECT
     SUCCESS -->|Done| SAV
     SAV -->|Ordinary Add money| MOVE["TX-03 Move entry; savings destination selected"]
     MOVE --> ORDINARY["Normal move flow; no schedule advancement"]
@@ -480,7 +487,7 @@ flowchart TD
     DETAIL -->|Back| RESULT["Return to originating success result"]
 ```
 
-This diagram covers ordinary moves. Scheduled contributions enter move review directly and retry there with the configured values, as shown in section 7.5.
+This diagram covers ordinary moves. Scheduled contributions also enter `TX-03`, with amount and savings destination prefilled and source chosen for that transaction. Retry returns to that entry to recheck or change the source, as shown in section 7.5.
 
 ### 7.8 Activity and balance understanding
 
@@ -531,7 +538,7 @@ flowchart TD
 | Device enrollment and unlock | `DEV-01`–`DEV-05`, `SEC-02`–`SEC-04`, `OV-05`, `OV-07`–`OV-09` | 7.3, 7.9 |
 | Wallet management | `WAL-01`–`WAL-04`, `OV-01`, `OV-02`, `OV-06` | 7.4 |
 | Savings targets | `SAV-01`, `SAV-02`, `OV-03`, savings inline states | 7.5 |
-| Scheduled budgeting | `BUD-01`, `BUD-02`, `TX-05`, `TX-08`, `TX-10`, `OV-04` | 7.5 |
+| Scheduled budgeting | `BUD-01`, `BUD-02`, `TX-03`, `TX-05`, `TX-08`, `TX-10`, `OV-04` | 7.5 |
 | Top-up | `TX-01`, `TX-02`, `TX-07` | 7.6 |
 | Move and transfer money | `TX-03`–`TX-06`, `TX-08`–`TX-10` | 7.7 |
 | Balances and activity | `HOME-01`, wallet details, `ACT-01`–`ACT-03` | 7.1, 7.8 |
