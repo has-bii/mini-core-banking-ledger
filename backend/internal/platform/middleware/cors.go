@@ -4,17 +4,17 @@ import (
 	"backend/internal/platform/httpx"
 	"fmt"
 	"net/http"
-	"slices"
 	"strconv"
+	"strings"
 	"time"
 )
 
-// CORSOptions configures allowed origins and CORS response headers.
+// CORSOptions configures the allowed origin and CORS response headers.
 type CORSOptions struct {
-	// Origin lists exact trusted origins, including scheme and optional port,
-	// for example []string{"https://app.example.com", "http://localhost:3000"}.
-	// Wildcards such as "*" are not supported.
-	Origin []string
+	// Origin is one exact trusted origin, including scheme and optional port,
+	// for example "https://app.example.com" or "http://localhost:3000".
+	// Comma-separated lists and wildcards such as "*" are not supported.
+	Origin string
 	// AllowedHeaders lists comma-separated request headers browsers may send,
 	// for example "Content-Type, Authorization".
 	AllowedHeaders string
@@ -36,12 +36,12 @@ type CORSOptions struct {
 // Access-Control-Allow-Origin header.
 //
 // opts must be non-nil. CORS returns an error if a trusted origin is invalid.
-// Treat opts and its Origin slice as immutable after calling CORS.
+// Treat opts as immutable after calling CORS.
 //
 // Example:
 //
 //	cors, err := CORS(&CORSOptions{
-//		Origin:         []string{"https://app.example.com"},
+//		Origin:         "https://app.example.com",
 //		AllowedHeaders: "Content-Type, Authorization",
 //		AllowedMethods: "GET, POST, OPTIONS",
 //		Credentials:    true,
@@ -55,7 +55,7 @@ type CORSOptions struct {
 //	return http.ListenAndServe(":8080", handler)
 func CORS(opts *CORSOptions) (Middleware, error) {
 	// Cross-origin protection: block unsafe cross-origin requests,
-	// except from the origins we explicitly allow.
+	// except from the origin we explicitly allow.
 	cop := http.NewCrossOriginProtection()
 	cop.SetDenyHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// A write failure cannot be replaced with another response.
@@ -67,10 +67,11 @@ func CORS(opts *CORSOptions) (Middleware, error) {
 			nil,
 		))
 	}))
-	for _, o := range opts.Origin {
-		if err := cop.AddTrustedOrigin(o); err != nil {
-			return nil, fmt.Errorf("invalid CORS origin %q: %w", o, err)
-		}
+	if strings.ContainsAny(opts.Origin, ",*") {
+		return nil, fmt.Errorf("invalid CORS origin %q: must be a single exact origin without wildcards", opts.Origin)
+	}
+	if err := cop.AddTrustedOrigin(opts.Origin); err != nil {
+		return nil, fmt.Errorf("invalid CORS origin %q: %w", opts.Origin, err)
 	}
 
 	var maxAge string
@@ -87,7 +88,7 @@ func CORS(opts *CORSOptions) (Middleware, error) {
 			// The response depends on Origin, so caches must know that.
 			w.Header().Add("Vary", "Origin")
 
-			if slices.Contains(opts.Origin, origin) {
+			if origin == opts.Origin {
 				w.Header().Set("Access-Control-Allow-Origin", origin)
 				if opts.Credentials {
 					w.Header().Set("Access-Control-Allow-Credentials", "true")

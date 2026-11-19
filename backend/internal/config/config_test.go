@@ -3,7 +3,6 @@ package config_test
 import (
 	"backend/internal/config"
 	"os"
-	"slices"
 	"strings"
 	"testing"
 )
@@ -12,12 +11,12 @@ func TestLoad_CORSOrigin(t *testing.T) {
 	setupEnv(t)
 	for _, tc := range []struct {
 		name, value string
-		want        []string
+		want        string
 	}{
-		{"empty defaults", "", []string{"http://localhost:3000"}},
-		{"single origin", "https://app.example.com", []string{"https://app.example.com"}},
-		{"multiple origins", "https://app.example.com,https://admin.example.com", []string{"https://app.example.com", "https://admin.example.com"}},
-		{"trim and skip blanks", " , https://app.example.com, ,\thttps://admin.example.com ,", []string{"https://app.example.com", "https://admin.example.com"}},
+		{"empty defaults", "", "http://localhost:3000"},
+		{"single origin", "https://app.example.com", "https://app.example.com"},
+		{"origin with port", "http://localhost:3001", "http://localhost:3001"},
+		{"trim whitespace", " \thttps://app.example.com \t", "https://app.example.com"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Setenv("CORS_ORIGIN", tc.value)
@@ -25,7 +24,7 @@ func TestLoad_CORSOrigin(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if !slices.Equal(cfg.CORSOrigin, tc.want) {
+			if cfg.CORSOrigin != tc.want {
 				t.Fatalf("CORSOrigin = %q, want %q", cfg.CORSOrigin, tc.want)
 			}
 		})
@@ -41,7 +40,7 @@ func TestLoad_UnsetCORSOrigin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !slices.Equal(cfg.CORSOrigin, []string{"http://localhost:3000"}) {
+	if cfg.CORSOrigin != "http://localhost:3000" {
 		t.Fatalf("CORSOrigin = %q, want localhost default", cfg.CORSOrigin)
 	}
 }
@@ -54,12 +53,56 @@ func TestLoad_InvalidCORSOrigin(t *testing.T) {
 		{"whitespace only", " \t "},
 		{"commas only", ",,,"},
 		{"commas and whitespace", " , \t, "},
+		{"multiple origins", "https://app.example.com,https://admin.example.com"},
+		{"trailing comma", "https://app.example.com,"},
+		{"comma in host", "https://app,admin.example.com"},
+		{"wildcard", "*"},
+		{"wildcard host", "https://*.example.com"},
+		{"missing scheme", "app.example.com"},
+		{"missing host", "https://"},
+		{"path", "https://app.example.com/path"},
+		{"query", "https://app.example.com?key=value"},
+		{"fragment", "https://app.example.com#section"},
+		{"malformed URL", "https://%"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Setenv("CORS_ORIGIN", tc.value)
 			_, err := config.Load()
 			if err == nil || !strings.Contains(err.Error(), "CORS_ORIGIN") {
 				t.Fatalf("Load() error = %v, want error naming CORS_ORIGIN", err)
+			}
+		})
+	}
+}
+
+func TestLoad_TrimStringValues(t *testing.T) {
+	setupEnv(t)
+	for key, value := range map[string]string{
+		"APP_ENV":      " \ttest \n",
+		"HTTP_ADDR":    " :9090 ",
+		"DATABASE_URL": " postgresql://unused/test ",
+		"REDIS_URL":    " redis://unused:6379 ",
+		"LOG_LEVEL":    " debug ",
+	} {
+		t.Setenv(key, value)
+	}
+	cfg, err := config.Load()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.Env != "test" || cfg.Addr != ":9090" || cfg.DatabaseURL != "postgresql://unused/test" || cfg.RedisURL != "redis://unused:6379" || cfg.LogLevel != "debug" {
+		t.Fatalf("string values not trimmed: %+v", cfg)
+	}
+}
+
+func TestLoad_WhitespaceOnlyRequiredStrings(t *testing.T) {
+	for _, key := range []string{"DATABASE_URL", "REDIS_URL"} {
+		t.Run(key, func(t *testing.T) {
+			setupEnv(t)
+			t.Setenv(key, " \t ")
+			_, err := config.Load()
+			if err == nil || !strings.Contains(err.Error(), key) {
+				t.Fatalf("Load() error = %v, want error naming %s", err, key)
 			}
 		})
 	}

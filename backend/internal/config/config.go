@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -19,7 +20,7 @@ var (
 
 type Config struct {
 	Env, Addr, DatabaseURL, RedisURL, LogLevel string
-	CORSOrigin                                 []string
+	CORSOrigin                                 string
 	ReadTimeout, ShutdownTimeout               time.Duration
 	RatelimitCapacity, RatelimitRefillRate     float64
 }
@@ -36,22 +37,17 @@ func Load() (Config, error) {
 		DatabaseURL:         getString("DATABASE_URL", ""),
 		RedisURL:            getString("REDIS_URL", ""),
 		LogLevel:            getString("LOG_LEVEL", "info"),
-		CORSOrigin:          strings.Split(getString("CORS_ORIGIN", "http://localhost:3000"), ","),
+		CORSOrigin:          getString("CORS_ORIGIN", "http://localhost:3000"),
 		ReadTimeout:         getDuration("HTTP_READ_TIMEOUT", 5*time.Second, &errs),
 		ShutdownTimeout:     getDuration("SHUTDOWN_TIMEOUT", 10*time.Second, &errs),
 		RatelimitCapacity:   getFloat("RATE_LIMIT_CAPACITY", 50, &errs),
 		RatelimitRefillRate: getFloat("RATE_LIMIT_REFILL_RATE", 10, &errs),
 	}
 
-	origins := cfg.CORSOrigin[:0]
-	for _, origin := range cfg.CORSOrigin {
-		if origin = strings.TrimSpace(origin); origin != "" {
-			origins = append(origins, origin)
-		}
-	}
-	cfg.CORSOrigin = origins
-	if len(cfg.CORSOrigin) == 0 {
-		errs = append(errs, errors.New("CORS_ORIGIN must contain at least one origin"))
+	if strings.ContainsAny(cfg.CORSOrigin, ",*") {
+		errs = append(errs, errors.New("CORS_ORIGIN must be a single exact origin without wildcards"))
+	} else if err := http.NewCrossOriginProtection().AddTrustedOrigin(cfg.CORSOrigin); err != nil {
+		errs = append(errs, fmt.Errorf("CORS_ORIGIN: %w", err))
 	}
 
 	if cfg.RatelimitCapacity < 1 {
@@ -86,7 +82,7 @@ func Load() (Config, error) {
 
 func getString(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {
-		return value
+		return strings.TrimSpace(value)
 	}
 	return fallback
 }

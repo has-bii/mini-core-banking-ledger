@@ -17,24 +17,27 @@ func TestCORS_Origins(t *testing.T) {
 
 	for _, tt := range []struct {
 		name    string
-		origins []string
+		origin  string
 		wantErr bool
 	}{
-		{name: "no trusted origins"},
-		{name: "multiple trusted origins", origins: []string{"https://app.example.com", "http://localhost:3000"}},
-		{name: "wildcard", origins: []string{"*"}, wantErr: true},
-		{name: "empty origin", origins: []string{""}, wantErr: true},
-		{name: "missing scheme", origins: []string{"app.example.com"}, wantErr: true},
-		{name: "missing host", origins: []string{"https://"}, wantErr: true},
-		{name: "path", origins: []string{"https://app.example.com/path"}, wantErr: true},
-		{name: "query", origins: []string{"https://app.example.com?key=value"}, wantErr: true},
-		{name: "fragment", origins: []string{"https://app.example.com#section"}, wantErr: true},
-		{name: "malformed URL", origins: []string{"https://%"}, wantErr: true},
-		{name: "invalid origin after valid origin", origins: []string{"https://app.example.com", "*"}, wantErr: true},
+		{name: "single trusted origin", origin: "https://app.example.com"},
+		{name: "origin with port", origin: "http://localhost:3000"},
+		{name: "multiple origins", origin: "https://app.example.com,http://localhost:3000", wantErr: true},
+		{name: "comma in host", origin: "https://app,admin.example.com", wantErr: true},
+		{name: "wildcard", origin: "*", wantErr: true},
+		{name: "wildcard host", origin: "https://*.example.com", wantErr: true},
+		{name: "empty origin", wantErr: true},
+		{name: "whitespace only", origin: " \t ", wantErr: true},
+		{name: "missing scheme", origin: "app.example.com", wantErr: true},
+		{name: "missing host", origin: "https://", wantErr: true},
+		{name: "path", origin: "https://app.example.com/path", wantErr: true},
+		{name: "query", origin: "https://app.example.com?key=value", wantErr: true},
+		{name: "fragment", origin: "https://app.example.com#section", wantErr: true},
+		{name: "malformed URL", origin: "https://%", wantErr: true},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			mw, err := middleware.CORS(&middleware.CORSOptions{Origin: tt.origins})
+			mw, err := middleware.CORS(&middleware.CORSOptions{Origin: tt.origin})
 			if tt.wantErr {
 				if err == nil {
 					t.Fatal("CORS returned no error for invalid origin")
@@ -72,7 +75,7 @@ func TestCORS_Requests(t *testing.T) {
 	}{
 		{name: "trusted origin", method: http.MethodPost, origin: trusted, wantStatus: http.StatusCreated, wantOrigin: trusted},
 		{name: "trusted origin with credentials", method: http.MethodPost, origin: trusted, credentials: true, wantStatus: http.StatusCreated, wantOrigin: trusted},
-		{name: "second trusted origin with port", method: http.MethodPost, origin: "http://localhost:3000", wantStatus: http.StatusCreated, wantOrigin: "http://localhost:3000"},
+		{name: "other origin with port denied", method: http.MethodPost, origin: "http://localhost:3000", wantStatus: http.StatusForbidden},
 		{name: "untrusted unsafe request", method: http.MethodPost, origin: "https://evil.example", credentials: true, wantStatus: http.StatusForbidden},
 		{name: "origin must match exactly", method: http.MethodPost, origin: trusted + ".evil.example", wantStatus: http.StatusForbidden},
 		{name: "different scheme", method: http.MethodPost, origin: "http://app.example.com", wantStatus: http.StatusForbidden},
@@ -94,7 +97,7 @@ func TestCORS_Requests(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			mw, err := middleware.CORS(&middleware.CORSOptions{
-				Origin:         []string{trusted, "http://localhost:3000"},
+				Origin:         trusted,
 				AllowedMethods: "GET, POST, OPTIONS",
 				AllowedHeaders: "Content-Type, Authorization",
 				Credentials:    tt.credentials,
@@ -198,7 +201,7 @@ func TestCORS_MaxAge(t *testing.T) {
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			mw, err := middleware.CORS(&middleware.CORSOptions{MaxAge: tt.maxAge})
+			mw, err := middleware.CORS(&middleware.CORSOptions{Origin: "https://app.example.com", MaxAge: tt.maxAge})
 			if err != nil {
 				t.Fatalf("CORS: %v", err)
 			}

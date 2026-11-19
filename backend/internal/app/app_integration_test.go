@@ -21,7 +21,7 @@ func TestApp_AuthLifecycle(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
 	h, err := app.New(config.Config{
-		Env: "test", CORSOrigin: []string{"http://localhost:3000"}, RatelimitCapacity: 50, RatelimitRefillRate: 10,
+		Env: "test", CORSOrigin: "http://localhost:3000", RatelimitCapacity: 50, RatelimitRefillRate: 10,
 	}, pool,
 		slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
@@ -108,7 +108,7 @@ func TestApp_SessionLookupFailure(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
 	h, err := app.New(config.Config{
-		Env: "test", CORSOrigin: []string{"http://localhost:3000"}, RatelimitCapacity: 50, RatelimitRefillRate: 10,
+		Env: "test", CORSOrigin: "http://localhost:3000", RatelimitCapacity: 50, RatelimitRefillRate: 10,
 	}, pool,
 		slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
