@@ -91,13 +91,13 @@ Last checked against [still-bank.pen](../still-bank.pen) on **2026-11-19**: **14
 
 **Overlays and platform surfaces — section 5**
 
-- [x] `OV-01` Wallet-type sheet — `Dg4eL` (390 px), `xgYTu` (320 px), each over the revised bento Wallets screen. Connected descriptive choice rows offer Sub wallet or Savings wallet and lead directly to `WAL-02` with the type selected. No main-wallet option. Close/dismiss returns to unchanged `WAL-01` and restores focus to the Create wallet card. Modal focus containment, background inertness, dismissal, and focus restoration are implementation checks.
+- [x] `OV-01` Wallet-type sheet — `Dg4eL` (390 px), `xgYTu` (320 px), each over the revised bento Wallets screen. Both use connected Sheet / Content, Header, and Overlay primitives: the surface spans the screen edge to edge and sits flush with the bottom, with rounded top corners and a hidden action footer. Connected descriptive choice rows offer Sub wallet or Savings wallet and lead directly to `WAL-02` with the type selected. No main-wallet option. Close/dismiss returns to unchanged `WAL-01` and restores focus to the Create wallet card. Modal focus containment, background inertness, dismissal, focus restoration, and actual device safe areas are implementation checks.
 - [ ] `OV-02` Rename-wallet sheet.
 - [ ] `OV-03` Remove-target confirmation.
 - [ ] `OV-04` Cancel-budgeting confirmation.
 - [ ] `OV-05` Remove-passkey confirmation.
 - [ ] `OV-06` Close-wallet confirmation.
-- [x] `OV-07` Replace-enrollment confirmation — `Q5EnzS`.
+- [x] `OV-07` Replace-enrollment confirmation — `Q5EnzS`. Uses connected Sheet / Content, Header, Footer, and Overlay primitives, full screen width and flush with the bottom. Continue setup authorizes the selected method's setup; replacement happens only after successful setup. Cancel, close, or dismissal preserves the existing enrollment and returns to the caller. Runtime modal behavior and actual device safe areas remain implementation checks.
 - [x] `OV-08` Platform passkey prompt — `WCKE6` (create), `qZYKY` (unlock). These illustrate the platform handoff; the real prompt is owned by the OS/browser.
 - [ ] `OV-09` Logout confirmation.
 

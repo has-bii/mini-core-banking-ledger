@@ -21074,14 +21074,15 @@
           ]
         },
         {
-          "type": "rectangle",
-          "id": "z8yz8",
+          "id": "mNX0S",
+          "type": "ref",
+          "ref": "nhldJ",
+          "name": "Replace enrollment / Sheet Overlay",
           "x": 0,
           "y": 0,
-          "name": "Modal scrim",
-          "fill": "#18251F80",
           "width": 390,
-          "height": 844
+          "height": 844,
+          "context": "Dismiss to DEV-02; preserve the prior enrollment. Underlying screen is inert while confirmation is open."
         },
         {
           "type": "frame",
@@ -21092,126 +21093,81 @@
           "width": 390,
           "height": 844,
           "layout": "vertical",
-          "padding": 20,
           "justifyContent": "end",
           "children": [
             {
-              "type": "frame",
-              "id": "W3KBKD",
-              "name": "Replace enrollment confirmation",
+              "id": "HL3Of",
+              "type": "ref",
+              "ref": "h5PRBF",
+              "name": "Replace enrollment / Sheet Content",
               "width": "fill_container",
-              "fill": "$--card",
-              "cornerRadius": "$--radius-2xl",
-              "layout": "vertical",
-              "gap": 20,
-              "padding": 24,
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "hKjHB",
-                  "name": "Enrollment change icon",
-                  "width": 24,
-                  "height": 24,
+              "context": "OV-07. Authorizes setup; old enrollment persists until successful setup. Cancel or failure preserves prior enrollment.",
+              "descendants": {
+                "f2Tk1I": {
+                  "layout": "vertical",
+                  "width": "fill_container"
+                },
+                "f2Tk1I/G9nkv": {
+                  "enabled": true,
                   "icon": "smartphone",
-                  "library": "lucide",
-                  "fill": "$--primary"
+                  "name": "Enrollment change icon"
                 },
-                {
-                  "type": "text",
-                  "id": "g8Obsv",
-                  "name": "Confirmation title",
-                  "fill": "$--foreground",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Replace quick unlock?",
-                  "lineHeight": 1.5,
-                  "fontFamily": "$--font-sans",
-                  "fontSize": 24,
-                  "fontWeight": "600"
+                "f2Tk1I/XU1IZ": {
+                  "content": "Replace quick unlock?"
                 },
-                {
-                  "type": "text",
-                  "id": "r63mB",
-                  "name": "Replacement consequence",
-                  "fill": "$--foreground",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Nadia Putri will lose quick unlock on this device when setup for Arif Rahman succeeds.",
-                  "lineHeight": 1.5,
-                  "fontFamily": "$--font-sans",
-                  "fontSize": 16,
-                  "fontWeight": "normal"
+                "f2Tk1I/ob2ki": {
+                  "context": "Accessible name: Cancel enrollment replacement. Return to DEV-02 and preserve the existing enrolled account."
                 },
-                {
-                  "type": "text",
-                  "id": "t2P6d",
-                  "name": "Preservation explanation",
-                  "fill": "$--muted-foreground",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "If you cancel or setup fails, Nadia’s quick unlock stays in place. Both accounts can still sign in with email and password.",
-                  "lineHeight": 1.4285714285714286,
-                  "fontFamily": "$--font-sans",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
+                "f2Tk1I/Ni2Eq": {
+                  "enabled": false,
+                  "width": 350
                 },
-                {
+                "Vnugh": {
                   "type": "frame",
-                  "id": "v06Vw",
-                  "name": "Replacement actions",
+                  "id": "M9fuHV",
+                  "name": "Enrollment replacement consequences",
                   "width": "fill_container",
                   "layout": "vertical",
-                  "gap": 12,
+                  "gap": 16,
                   "children": [
                     {
-                      "id": "rrRHk",
-                      "type": "ref",
-                      "ref": "CoJBf",
-                      "name": "Continue replacement setup",
+                      "type": "text",
+                      "id": "bUynj",
+                      "name": "Replacement consequence",
+                      "fill": "$--foreground",
+                      "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "height": 52,
-                      "fill": "$--primary",
-                      "padding": [
-                        0,
-                        24
-                      ],
-                      "descendants": {
-                        "f6DJMu": {
-                          "enabled": false,
-                          "fill": "$--primary-foreground"
-                        },
-                        "p2g8tc": {
-                          "content": "Continue setup",
-                          "fill": "$--primary-foreground"
-                        }
-                      }
+                      "content": "Nadia Putri will lose quick unlock on this device when setup for Arif Rahman succeeds.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 16,
+                      "fontWeight": "normal"
                     },
                     {
-                      "id": "V9uLZ6",
-                      "type": "ref",
-                      "ref": "CoJBf",
-                      "name": "Cancel enrollment replacement",
+                      "type": "text",
+                      "id": "Wu92H",
+                      "name": "Preservation explanation",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "height": 52,
-                      "fill": "$--secondary",
-                      "padding": [
-                        0,
-                        24
-                      ],
-                      "descendants": {
-                        "f6DJMu": {
-                          "enabled": false,
-                          "fill": "$--primary"
-                        },
-                        "p2g8tc": {
-                          "content": "Cancel",
-                          "fill": "$--primary"
-                        }
-                      }
+                      "content": "If you cancel or setup fails, Nadia’s quick unlock stays in place. Both accounts can still sign in with email and password.",
+                      "lineHeight": 1.4285714285714286,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     }
                   ]
+                },
+                "I7cXcj/Hp1FR": {
+                  "context": "Continue setup → SEC-02 for PIN or DEV-03 for passkey. Replace enrollment only when setup succeeds."
+                },
+                "I7cXcj/Hp1FR/p2g8tc": {
+                  "content": "Continue setup"
+                },
+                "I7cXcj/XAZZd": {
+                  "context": "Cancel → DEV-02; preserve the prior enrollment."
                 }
-              ]
+              }
             }
           ]
         }
@@ -30718,15 +30674,15 @@
           ]
         },
         {
-          "type": "rectangle",
-          "id": "QjNG0",
+          "id": "B1BHE",
+          "type": "ref",
+          "ref": "nhldJ",
+          "name": "Wallet-type sheet / Sheet Overlay",
           "x": 0,
           "y": 0,
-          "name": "Wallet-type modal scrim",
-          "context": "Dismiss to unchanged WAL-01. Background is inert while the sheet is open.",
-          "fill": "#18251F80",
           "width": 390,
-          "height": 844
+          "height": 844,
+          "context": "Dismiss to unchanged WAL-01. Background inert while open; modal focus containment and focus restoration require implementation."
         },
         {
           "type": "frame",
@@ -30737,81 +30693,35 @@
           "width": 390,
           "height": 844,
           "layout": "vertical",
-          "padding": 20,
           "justifyContent": "end",
           "children": [
             {
-              "type": "frame",
-              "id": "K8HggS",
-              "name": "Wallet-type choice surface",
+              "id": "S6T58t",
+              "type": "ref",
+              "ref": "h5PRBF",
+              "name": "Wallet-type sheet / Sheet Content",
               "width": "fill_container",
-              "fill": "$--popover",
-              "cornerRadius": "$--radius-2xl",
-              "layout": "vertical",
-              "gap": 20,
-              "padding": 24,
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "xSbdv",
-                  "name": "Wallet-type title and close",
-                  "width": "fill_container",
-                  "gap": 8,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "ugcua",
-                      "name": "Wallet-type sheet title",
-                      "fill": "$--popover-foreground",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Create a wallet",
-                      "lineHeight": 1.3333333333,
-                      "fontFamily": "$--font-sans",
-                      "fontSize": 24,
-                      "fontWeight": "600"
-                    },
-                    {
-                      "id": "al2Ai",
-                      "type": "ref",
-                      "ref": "kPjGo",
-                      "name": "Close wallet-type sheet",
-                      "width": 44,
-                      "height": 44,
-                      "fill": "$--secondary",
-                      "context": "Accessible name: Close wallet-type sheet. Return to WAL-01 without changes.",
-                      "descendants": {
-                        "h1BnM6": {
-                          "icon": "x"
-                        }
-                      }
-                    }
-                  ]
+              "context": "OV-01. Full-width bottom sheet. Sub or Savings opens name-only WAL-02. Dismiss preserves wallet data and balance visibility; restore focus to Create wallet.",
+              "descendants": {
+                "f2Tk1I/XU1IZ": {
+                  "content": "Create a wallet"
                 },
-                {
-                  "type": "text",
-                  "id": "oaBNS",
-                  "name": "Wallet-type choice explanation",
-                  "fill": "$--muted-foreground",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "How would you like to organize your money?",
-                  "lineHeight": 1.4285714286,
-                  "fontFamily": "$--font-sans",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
+                "f2Tk1I/ob2ki": {
+                  "context": "Accessible name: Close wallet-type sheet. Dismiss to unchanged WAL-01; restore focus to the Create wallet card."
                 },
-                {
+                "f2Tk1I/Ni2Eq": {
+                  "content": "How would you like to organize your money?"
+                },
+                "Vnugh": {
                   "type": "frame",
-                  "id": "d54XN",
+                  "id": "rKwJa",
                   "name": "Available wallet types",
                   "width": "fill_container",
                   "layout": "vertical",
                   "gap": 12,
                   "children": [
                     {
-                      "id": "HNasM",
+                      "id": "c6GdzR",
                       "type": "ref",
                       "ref": "ZHfba",
                       "name": "Sub wallet choice",
@@ -30832,7 +30742,7 @@
                       }
                     },
                     {
-                      "id": "E5Vd3",
+                      "id": "t8hEV",
                       "type": "ref",
                       "ref": "ZHfba",
                       "name": "Savings wallet choice",
@@ -30853,8 +30763,11 @@
                       }
                     }
                   ]
+                },
+                "I7cXcj": {
+                  "enabled": false
                 }
-              ]
+              }
             }
           ]
         }
@@ -31130,15 +31043,15 @@
           ]
         },
         {
-          "type": "rectangle",
-          "id": "DRy7L",
+          "id": "Anyj8",
+          "type": "ref",
+          "ref": "nhldJ",
+          "name": "Wallet-type sheet / Sheet Overlay",
           "x": 0,
           "y": 0,
-          "name": "Wallet-type modal scrim",
-          "context": "Dismiss to unchanged WAL-01. Background is inert while the sheet is open.",
-          "fill": "#18251F80",
           "width": 320,
-          "height": 844
+          "height": 844,
+          "context": "Dismiss to unchanged WAL-01. Background inert while open; modal focus containment and focus restoration require implementation."
         },
         {
           "type": "frame",
@@ -31149,81 +31062,35 @@
           "width": 320,
           "height": 844,
           "layout": "vertical",
-          "padding": 16,
           "justifyContent": "end",
           "children": [
             {
-              "type": "frame",
-              "id": "MZySh",
-              "name": "Wallet-type choice surface",
+              "id": "IknW1",
+              "type": "ref",
+              "ref": "h5PRBF",
+              "name": "Wallet-type sheet / Sheet Content",
               "width": "fill_container",
-              "fill": "$--popover",
-              "cornerRadius": "$--radius-2xl",
-              "layout": "vertical",
-              "gap": 20,
-              "padding": 20,
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "esF2y",
-                  "name": "Wallet-type title and close",
-                  "width": "fill_container",
-                  "gap": 8,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "CsHIM",
-                      "name": "Wallet-type sheet title",
-                      "fill": "$--popover-foreground",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Create a wallet",
-                      "lineHeight": 1.3333333333,
-                      "fontFamily": "$--font-sans",
-                      "fontSize": 24,
-                      "fontWeight": "600"
-                    },
-                    {
-                      "id": "RVZzb",
-                      "type": "ref",
-                      "ref": "kPjGo",
-                      "name": "Close wallet-type sheet",
-                      "width": 44,
-                      "height": 44,
-                      "fill": "$--secondary",
-                      "context": "Accessible name: Close wallet-type sheet. Return to WAL-01 without changes.",
-                      "descendants": {
-                        "h1BnM6": {
-                          "icon": "x"
-                        }
-                      }
-                    }
-                  ]
+              "context": "OV-01. Full-width bottom sheet. Sub or Savings opens name-only WAL-02. Dismiss preserves wallet data and balance visibility; restore focus to Create wallet.",
+              "descendants": {
+                "f2Tk1I/XU1IZ": {
+                  "content": "Create a wallet"
                 },
-                {
-                  "type": "text",
-                  "id": "Lmg4r",
-                  "name": "Wallet-type choice explanation",
-                  "fill": "$--muted-foreground",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "How would you like to organize your money?",
-                  "lineHeight": 1.4285714286,
-                  "fontFamily": "$--font-sans",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
+                "f2Tk1I/ob2ki": {
+                  "context": "Accessible name: Close wallet-type sheet. Dismiss to unchanged WAL-01; restore focus to the Create wallet card."
                 },
-                {
+                "f2Tk1I/Ni2Eq": {
+                  "content": "How would you like to organize your money?"
+                },
+                "Vnugh": {
                   "type": "frame",
-                  "id": "jhpnq",
+                  "id": "J7HVm",
                   "name": "Available wallet types",
                   "width": "fill_container",
                   "layout": "vertical",
                   "gap": 12,
                   "children": [
                     {
-                      "id": "l2SkvI",
+                      "id": "dVs0a",
                       "type": "ref",
                       "ref": "ZHfba",
                       "name": "Sub wallet choice",
@@ -31244,7 +31111,7 @@
                       }
                     },
                     {
-                      "id": "I8MWY",
+                      "id": "Pk681",
                       "type": "ref",
                       "ref": "ZHfba",
                       "name": "Savings wallet choice",
@@ -31265,8 +31132,11 @@
                       }
                     }
                   ]
+                },
+                "I7cXcj": {
+                  "enabled": false
                 }
-              ]
+              }
             }
           ]
         }
@@ -32242,6 +32112,527 @@
               "fontWeight": "600"
             }
           }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "huy67",
+      "x": 8920,
+      "y": -680,
+      "name": "00f / Library — Sheet primitives",
+      "clip": true,
+      "width": 1840,
+      "fill": "$--background",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "gh4zM",
+          "name": "Sheet library title",
+          "fill": "$--foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Sheets / Bottom, edge to edge",
+          "lineHeight": 1.3333333333,
+          "fontFamily": "$--font-sans",
+          "fontSize": 24,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "NWNtS",
+          "name": "Sheet library introduction",
+          "fill": "$--muted-foreground",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Four connected primitives · Full screen width · Flush bottom edge · Content-driven height",
+          "lineHeight": 1.4285714286,
+          "fontFamily": "$--font-sans",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "sRMMS",
+          "name": "Sheet primitive families",
+          "width": "fill_container",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "zVQDV",
+              "name": "Content master specimen",
+              "width": 390,
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "bL1nZ",
+                  "name": "Content primitive label",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "01 / Content",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "h5PRBF",
+                  "name": "Sheet / Content",
+                  "context": "Full viewport width at x=0; bottom edge meets screen bottom. Position inside a full-screen vertical container with justifyContent=end and zero padding. Header, body slot, optional footer; height follows content. Top corners use radius-2xl; bottom corners are square. The 20 px bottom inset is a specimen; runtime uses actual device safe area.",
+                  "reusable": true,
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "$--popover",
+                  "cornerRadius": [
+                    "$--radius-2xl",
+                    "$--radius-2xl",
+                    0,
+                    0
+                  ],
+                  "layout": "vertical",
+                  "gap": "$--space-5",
+                  "padding": [
+                    24,
+                    20,
+                    20,
+                    20
+                  ],
+                  "children": [
+                    {
+                      "id": "f2Tk1I",
+                      "type": "ref",
+                      "ref": "Zkuos",
+                      "name": "Sheet header",
+                      "width": "fill_container"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Vnugh",
+                      "name": "Sheet body slot",
+                      "slot": [
+                        "ZHfba",
+                        "k8hMD4",
+                        "qPycb"
+                      ],
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": "$--space-4",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "m4c7Qe",
+                          "name": "Sheet body guidance",
+                          "fill": "$--foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Use this area for choices, a form, or a confirmation. Keep the task focused and let content determine the height.",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$--font-sans",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "I7cXcj",
+                      "type": "ref",
+                      "ref": "DX3rD",
+                      "name": "Sheet footer",
+                      "width": "fill_container"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "cEUa9",
+              "name": "Header and footer masters",
+              "width": 350,
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "XhG3v",
+                  "name": "Header primitive label",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "02 / Header",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "Zkuos",
+                  "name": "Sheet / Header",
+                  "context": "Title names the task. Description may be hidden. Close is a connected 44 px Button / Icon; expose an action-specific accessible name. Title wraps and grows; no fixed text heights.",
+                  "reusable": true,
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": "$--space-3",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "G9nkv",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Sheet leading icon",
+                      "enabled": false,
+                      "width": 24,
+                      "height": 24,
+                      "icon": "info",
+                      "library": "lucide",
+                      "fill": "$--primary"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "dtXVi",
+                      "name": "Sheet heading row",
+                      "width": "fill_container",
+                      "gap": "$--space-3",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "XU1IZ",
+                          "name": "Sheet title",
+                          "fill": "$--popover-foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Sheet title",
+                          "lineHeight": 1.3333333333,
+                          "fontFamily": "$--font-sans",
+                          "fontSize": "$--text-xl",
+                          "fontWeight": "$--font-weight-semibold"
+                        },
+                        {
+                          "id": "ob2ki",
+                          "type": "ref",
+                          "ref": "kPjGo",
+                          "name": "Close sheet",
+                          "width": 44,
+                          "height": 44,
+                          "context": "Accessible name: Close sheet. Dismiss without changing data; return focus to the invoker.",
+                          "descendants": {
+                            "h1BnM6": {
+                              "icon": "x"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "Ni2Eq",
+                      "name": "Sheet description",
+                      "fill": "$--muted-foreground",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Provide context for the task.",
+                      "lineHeight": 1.4285714286,
+                      "fontFamily": "$--font-sans",
+                      "fontSize": "$--text-sm",
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "tv7DV",
+                  "name": "Footer primitive label",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "03 / Footer",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "DX3rD",
+                  "name": "Sheet / Footer",
+                  "context": "Stacked connected action buttons. Hide the footer for immediate choice lists. Button height is 52 px. Content supplies the bottom safe-area specimen inset.",
+                  "reusable": true,
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": "$--space-3",
+                  "children": [
+                    {
+                      "id": "Hp1FR",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "Sheet primary action",
+                      "width": "fill_container",
+                      "height": 52,
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "Continue"
+                        }
+                      }
+                    },
+                    {
+                      "id": "XAZZd",
+                      "type": "ref",
+                      "ref": "CoJBf",
+                      "name": "Sheet secondary action",
+                      "width": "fill_container",
+                      "height": 52,
+                      "fill": "$--secondary",
+                      "descendants": {
+                        "p2g8tc": {
+                          "content": "Cancel",
+                          "fill": "$--secondary-foreground"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "tLbDR",
+              "name": "Overlay master specimen",
+              "width": 320,
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jfIas",
+                  "name": "Overlay primitive label",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "04 / Overlay",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "nhldJ",
+                  "name": "Sheet / Overlay",
+                  "context": "Full-screen modal backdrop. Resize to the calling viewport; place above the inert screen and below Sheet / Content. Dismissal preserves data and restores focus. Fill matches the existing modal scrim; no new foundation color.",
+                  "reusable": true,
+                  "width": "fill_container",
+                  "height": 160,
+                  "fill": "#18251F80",
+                  "layout": "none"
+                },
+                {
+                  "type": "text",
+                  "id": "Xcdel",
+                  "name": "Overlay sizing note",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "The master is shown at 320 × 160 px. On screens, resize the overlay to cover the entire viewport.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "LTprM",
+              "name": "Sheet composition guidance",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Gk9QR",
+                  "name": "Sheet usage heading",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Compose once. Reuse everywhere.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "f4gDX",
+                  "name": "Sheet placement rules",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Overlay → bottom-positioning frame → Content.\n\nNo side or bottom margin. Use 20 px horizontal content padding, a 24 px top inset, and the 20 px lower safe-area specimen.\n\nHide unused description, body, or footer slots. Keep the close target at 44 × 44 px and actions at 52 px.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "CfFPs",
+                  "name": "Sheet implementation review notes",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Modal intent: contain focus, make the background inert, support dismissal, and restore the invoker’s focus. These require runtime checks.\n\nOV-08 remains OS-owned; its illustrative platform surface is outside the Still Bank Sheet family.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Y561N",
+          "name": "Sheet narrow-content review",
+          "width": "fill_container",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Ofr7G",
+              "name": "320 px Sheet stress specimen",
+              "width": 320,
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "C2gny",
+                  "name": "Narrow specimen label",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "320 px / Long title and IDR",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "id": "O3sTcD",
+                  "type": "ref",
+                  "ref": "h5PRBF",
+                  "name": "Sheet Content / 320 px long content",
+                  "width": "fill_container",
+                  "context": "Component sizing specimen only. Exercises a wrapped title and description, a complete long IDR amount, 44 px close target, and 52 px actions at 320 px width; does not add a product flow.",
+                  "descendants": {
+                    "f2Tk1I/XU1IZ": {
+                      "content": "A longer title stays readable"
+                    },
+                    "f2Tk1I/Ni2Eq": {
+                      "content": "Titles and descriptions wrap at 320 px."
+                    },
+                    "Vnugh": {
+                      "type": "frame",
+                      "id": "ZsSwF",
+                      "name": "Sheet long-amount body",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "f8idRp",
+                          "name": "Long IDR specimen label",
+                          "fill": "$--muted-foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "IDR amount stress case",
+                          "lineHeight": 1.4285714286,
+                          "fontFamily": "$--font-sans",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Ptd5l",
+                          "name": "Long IDR amount",
+                          "fill": "$--foreground",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Rp137.037.785.790",
+                          "lineHeight": 1.3333333333,
+                          "fontFamily": "$--font-sans",
+                          "fontSize": 24,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "iW24q",
+              "name": "Sheet review checklist",
+              "width": 620,
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "NGrHH",
+                  "name": "Sheet review checklist title",
+                  "fill": "$--foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Canvas review",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "diaqg",
+                  "name": "Sheet review checklist items",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "✓ Content spans the calling screen width and reaches the bottom edge.\n✓ Titles, descriptions, and a long IDR amount remain readable at 320 px.\n✓ Close target is 44 × 44 px; action buttons are 52 px high.\n✓ Slots and nested buttons retain their component connections.\n✓ No visible clipping, collapsed content, or overlapping root frames.\n✓ Existing semantic colors meet their contrast targets.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "BthFI",
+                  "name": "Sheet runtime verification boundary",
+                  "fill": "$--muted-foreground",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Canvas checks cannot verify focus containment, screen-reader behavior, dismissal, device safe areas, keyboards, or runtime scrolling. Validate those during implementation.",
+                  "lineHeight": 1.4285714286,
+                  "fontFamily": "$--font-sans",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
         }
       ]
     }

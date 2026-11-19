@@ -1,6 +1,6 @@
 # Still Bank — design system
 
-The design system lives in [still-bank.pen](../still-bank.pen). It contains foundations, reusable masters, component specimens, the `AUTH-01`–`AUTH-06` authentication screens, device enrollment/unlock screens, the `HOME-01` overview, and the `WAL-01` wallet list with its `OV-01` wallet-type sheet and supporting states.
+The design system lives in [still-bank.pen](../still-bank.pen). It contains foundations, reusable masters including Sheet primitives, component specimens, the `AUTH-01`–`AUTH-06` authentication screens, device enrollment/unlock screens, the `HOME-01` overview, and the `WAL-01` wallet list with its `OV-01` wallet-type sheet and supporting states.
 
 ## Token contract
 
@@ -50,6 +50,10 @@ Figtree's licensed source and existing logo assets are in `../../logo/`. Load th
 | Wallet / Create card | kJs8k | WAL-01 Create wallet action as the final bento tile; whole-card button opens OV-01 |
 | Wallet / Balance summary | kPXhQ | WAL-01 total across all open wallets, wallet count, and 44 px balance-visibility toggle; visible and masked specimens |
 | Activity / Home row | UmysQ | Transaction type, signed or neutral amount, affected wallet context, and date |
+| Sheet / Content | h5PRBF | Edge-to-edge bottom surface with connected header/footer and a replaceable body slot |
+| Sheet / Header | Zkuos | Wrapping title, optional description/leading icon, and connected 44 px close control |
+| Sheet / Footer | DX3rD | Stacked connected 52 px primary/secondary actions; hidden for immediate choice lists |
+| Sheet / Overlay | nhldJ | Full-screen modal scrim above the calling screen and below the sheet |
 
 Button variants and states are connected instances of one base. Cards replace the content slot and hide the footer when unused. Navigation examples override the nested item states.
 
@@ -62,6 +66,8 @@ Button variants and states are connected instances of one base. Cards replace th
 - Bottom navigation belongs to primary destinations. Focused forms and security tasks use contextual back or close navigation.
 - Bottom navigation's 20 px lower inset is a design specimen. Implementation must use the device's actual safe-area inset.
 - Cards group content with a shared purpose. Hide unused slots and allow content to determine height.
+- Sheets span the full screen width at x = 0 and meet the bottom edge, with no outer side or bottom inset. Use a full-screen vertical positioning frame with zero padding and `justifyContent: "end"`; Content uses `fill_container` width and content-driven height. Its top corners use `radius-2xl`, while bottom corners are square. Internal padding is 24 px top and 20 px on the sides/bottom, with a 20 px gap between header, body, and footer. The lower inset is a canvas specimen; implementation must use the device's actual safe area.
+- Compose Sheet / Overlay and Sheet / Content over the calling screen. Replace Content's body slot, override the connected Header/Footer, and hide unused slots. The close control and Cancel dismiss without committing data; contain modal focus, make the background inert, and restore focus to the invoker. These interactions require implementation verification. OS-owned `OV-08` prompts retain their platform presentation rather than using Still Bank Sheet primitives.
 - Home uses individual wallet cards in a bento arrangement and a separate recent-activity card, following the flat Card / Surface master. Section headings and View all actions stay outside the cards. Each sub or savings wallet shows its own name, balance, and type; absent wallets add no explanation or creation CTA.
 - Wallets uses a two-column bento grid at 390 px. Main, sub, savings, and Create wallet each occupy one 169 × 169 px square, with a 12 px gap. An unpaired last tile keeps its column width. Main uses Primary, Create wallet uses Secondary, and both sub and savings wallets use Card (white). Each wallet keeps its name, balance or mask, and type. Long-content 320 px examples use 280 × 280 px full-width squares. Short-content sheet backgrounds use 134 × 134 px squares with 12 px padding, 14 px names, and 16 px amounts. The whole create card is one button, with a decorative plus glyph and the existing 2 px focus ring / 4 px offset convention.
 - Wallets shows Total balance above the grid, with an Across N wallets caption and a 44 × 44 px eye control. The total includes all open wallets and is not labeled available to spend. Use Hide balances with an eye-off glyph while amounts are visible, and Show balances with an eye glyph while hidden. The toggle masks the total and individual wallet balances with a fixed-length `Rp ••••••` string; wallet names, types, counts, and navigation remain visible. Hidden numeric values must be absent from accessible labels. Persistence outside this view is unspecified.
@@ -145,3 +151,13 @@ The canvas editor dropped variable references supplied to width/height during cr
 - [x] Product intent, MVP scope, inventory sections 2/3/4.3/5/6/7.1/7.4, this design system, the logo kit, existing Home and confirmation designs, the Neo wallet-detail reference, the user's Kantong bento-grid reference, and the user's square-card and balance-visibility requirements were consulted. No new logo artwork was placed.
 
 Screen frames show all content on the canvas. Node context records navigation, balance-visibility, and modal intent; runtime toggling, scrolling, keyboard and assistive-technology behavior, modal focus containment, dismissal/focus restoration, safe areas, and live balance changes remain unverified. `WAL-02` and wallet-detail designs remain separate inventory work.
+
+## Sheet primitives review
+
+- [x] Library board `huy67` contains the four reusable Sheet primitives and connected composition specimens. The 320 px stress specimen `O3sTcD` shows a two-line title, description, complete `Rp137.037.785.790` amount, close control, and stacked actions; it adds no product flow. The 320 px `OV-01` screen separately demonstrates description wrapping.
+- [x] `OV-01` frames `Dg4eL` (390 px) and `xgYTu` (320 px), plus `OV-07` frame `Q5EnzS`, use connected Sheet / Content and Sheet / Overlay instances. All three surfaces begin at x = 0, equal the screen width, and end at y = 844. Choice rows still use Security / Method option. The enrollment confirmation retains both consequence messages and Continue setup/Cancel, with a close action equivalent to Cancel.
+- [x] The library and all three affected screens were inspected visually, including close views of the surfaces and the 320 px long-title/long-IDR specimen. Visible resolved traversal found no clipping or overlapping layout siblings; document-root frames do not overlap. Close controls measure 44 × 44 px and action buttons remain 52 px high. Work-in-progress placeholder flags are cleared.
+- [x] All 89 canvas variables match the token JSON. CSS color values match the JSON, and all 29 contrast-audit pairs were recomputed successfully. Sheet text on the white surface measures 15.87:1 for primary text and 5.76:1 for supporting text; primary and secondary action pairs measure 9.3:1 and 7.9:1. Popover colors equal the existing Card pairs. Foundation values and token exports are unchanged.
+- [x] Product intent, MVP scope, inventory decisions/entry rules/section 5 and flow maps 7.3–7.4, this design system, existing wallet-type/enrollment/platform surfaces, and the Neo wallet-detail reference were consulted. No logo artwork was placed or changed. Platform-owned `OV-08` examples remain outside this component migration.
+
+Runtime modal focus, background inertness, dismissal/focus restoration, keyboard and screen-reader behavior, scrolling, and device safe areas remain unverified by the static canvas.
