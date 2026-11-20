@@ -39,9 +39,9 @@ func TestDTO_PasswordValidation(t *testing.T) {
 		{"eight multibyte characters", "éééééééé", nil},
 		{"71 bytes", strings.Repeat("a", 71), nil},
 		{"72 bytes", strings.Repeat("é", 36), nil},
-		{"73 bytes", strings.Repeat("a", 73), validator.ErrorField{"password": {"Password must not exceed 72 bytes."}}},
-		{"over 72 bytes multibyte", strings.Repeat("é", 37), validator.ErrorField{"password": {"Password must not exceed 72 bytes."}}},
-		{"byte limit includes whitespace", strings.Repeat("a", 72) + " ", validator.ErrorField{"password": {"Password must not exceed 72 bytes."}}},
+		{"73 bytes", strings.Repeat("a", 73), validator.ErrorField{"password": {"Password is too long"}}},
+		{"over 72 bytes multibyte", strings.Repeat("é", 37), validator.ErrorField{"password": {"Password is too long"}}},
+		{"byte limit includes whitespace", strings.Repeat("a", 72) + " ", validator.ErrorField{"password": {"Password is too long"}}},
 		{"password whitespace preserved", " 123456 ", nil},
 	} {
 		t.Run(tt.name, func(t *testing.T) {

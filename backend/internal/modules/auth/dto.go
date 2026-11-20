@@ -63,7 +63,7 @@ func authValidationErrors(err error, password string) error {
 		if fields == nil {
 			fields = make(pValidator.ErrorField)
 		}
-		fields["password"] = []string{"Password must not exceed 72 bytes."}
+		fields["password"] = []string{"Password is too long"}
 	}
 	if len(fields) == 0 {
 		return nil
