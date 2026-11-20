@@ -2,7 +2,11 @@
 
 ## Roles
 
-Exercise a layer's public entry point without a database, Redis, an environment file, or a listening HTTP server. Use [integration tests](integration_test_conventions.md#roles) for real persistence or assembled app wiring.
+- **Unit tests.** Exercise a layer's public entry point without a database, Redis, an environment file, or a listening HTTP server.
+- **In-process wiring checks.** Use untagged `internal/app/app_test.go` tests with `httptest` for behavior that depends on app configuration, route registration, or middleware order but does not need real infrastructure.
+- **Coverage ownership.** Test each behavior at the lowest layer that can prove it. Keep utility and middleware edge cases in their own tests, not in handler or app tests. A higher-layer check should catch a failure that lower-layer tests would miss.
+
+Keep untagged tests and [tagged integration tests](integration_test_conventions.md#roles) in separate test files. Both may exercise the same source file when they prove different behavior.
 
 ## How to write
 
@@ -77,7 +81,7 @@ if store.ctx != ctx || store.id != "wallet" || store.userID != ownerID {
 }
 ```
 
-Run the unit suite from `backend/`:
+Run the default suite (unit tests and in-process wiring checks) from `backend/`:
 
 ```sh
 go test -race ./...

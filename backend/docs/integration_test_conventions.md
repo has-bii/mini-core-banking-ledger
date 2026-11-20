@@ -3,7 +3,8 @@
 ## Roles
 
 - **Store tests.** Use `store_integration_test.go` to verify persistence contracts against real backends.
-- **App tests.** Use `internal/app/app_integration_test.go` when the assertion depends on assembled application wiring, such as registration followed by login and an authenticated request. Assert public responses or workflow outcomes.
+- **App tests.** Use `internal/app/app_integration_test.go` for assembled workflows that need real backends, such as registration followed by login and an authenticated request. Assert public responses or workflow outcomes.
+- **Coverage ownership.** Reserve the `integration` build tag for tests that need real infrastructure. Keep [in-process wiring checks](unit_test_conventions.md#roles) untagged and in a separate test file, even when both suites exercise the same source file. Test behavior at the lowest layer that can prove it: keep backend-specific cases with the store and don't repeat utility, middleware, handler, or store test matrices in app workflows.
 
 ## How to write
 
@@ -72,7 +73,7 @@ Supply both fixtures to `app.New` and serve requests in-process with `httptest`.
 
 ## How to run
 
-Run from `backend/`. The first command re-runs only the named Redis contract; the second includes unit tests as well as tagged tests. Use `-shuffle=on` when checking order independence. Report any checks you couldn't run and why.
+Run from `backend/`. The first command re-runs only the named Redis contract; the second includes the default suite as well as tagged tests. Use `-shuffle=on` when checking order independence. Report any checks you couldn't run and why.
 
 ```sh
 go test -race -count=1 -tags=integration ./internal/modules/session -run '^TestStore_SessionLifecycle$'
