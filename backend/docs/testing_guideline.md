@@ -8,14 +8,14 @@ Keep tests small, independent, and focused on observable behavior. Test rules an
 | --- | --- | --- |
 | Payload validation | Unit | Required fields, normalization, format, length boundaries |
 | HTTP handler | Unit for parsing; integration with real services and `httptest` for ordinary outcomes | JSON decoding, status/error mapping, response shape, cookie security |
-| Auth/session service | Integration with real services, stores, and PostgreSQL | Business outcomes, password/token hashing, session lifetime and revocation |
-| Store | Integration with PostgreSQL | Persistence, not-found results, constraint/error translation |
+| Auth/session service | Integration with real services, stores, PostgreSQL, and Redis | Business outcomes, password/token hashing, session lifetime and revocation |
+| Store | Integration with PostgreSQL or Redis, matching the store | Persistence, not-found results, constraint/error translation |
 | Transactional workflow | Integration with PostgreSQL | Successful writes and rollback when a later write fails |
 | Application wiring | Integration through `app.New` | Representative complete workflows, not every input permutation |
 
 - Give each behavioral contract one primary test owner. Validation units own input rules and normalization; auth/session integration tests own business outcomes, hashing, and transactional rollback; store integration tests own persistence, expiry filtering, and constraint translation; HTTP tests own parsing, response/error contracts, and cookie security; app integration tests own representative wiring and a complete lifecycle.
 - Do not repeat behavioral checks across unit and integration tests. Repeated setup operations (such as registering before login) are fine, but do not repeat lower-level matrices or detailed persistence assertions in app tests. A service domain error and its HTTP mapping are different contracts.
-- Exercise real migrations, SQL, transactions, and constraints in integration tests. Do not mock SQL to prove database behavior.
+- Exercise real migrations, SQL, transactions, and constraints in integration tests. Do not mock SQL to prove database behavior. Session persistence, TTL, corruption, and revocation tests use real Redis; reserve Redis command stubs for difficult-to-trigger failure handling.
 - For authentication, verify password/token hashing, rejected credentials, session expiry/revocation, cookie flags, and absence of secrets in JSON or unexpected-error responses.
 - For a bug fix, add a regression test that fails before the fix where practical.
 
@@ -61,7 +61,8 @@ These are review guardrails, not correctness limits:
 - Schema isolation does not make a production or development database an acceptable test target. Missing configuration, Goose, PostgreSQL, or required permissions must fail requested integration tests, not skip them.
 - Database fixtures may force failures with schema-local constraints or set timestamps directly. Do not add production switches or transaction abstractions just for tests.
 - A forcibly terminated test process may leave its schema behind. Verify no tests are using it before manual removal.
-- The current auth/session tests need neither Redis nor a running API server. Unit tests must not load environment files or require external services.
+- Read `REDIS_URL` explicitly from `.env.test` and use `testutil.Redis(t)` for session integration tests. It prefixes real Redis commands with a private per-test namespace and cleans up only those keys; never use `FLUSHDB` or `FLUSHALL`. Use a test Redis instance/database, not production or development session data.
+- Auth/session integration tests require PostgreSQL and Redis, but not a running API server. Unit tests must not load environment files or require external services.
 
 ## 6. Commands and review
 

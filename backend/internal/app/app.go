@@ -15,9 +15,10 @@ import (
 	"backend/internal/platform/middleware"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
-func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler, error) {
+func New(cfg config.Config, pool *pgxpool.Pool, redisClient *redis.Client, log *slog.Logger) (http.Handler, error) {
 	cors, err := middleware.CORS(&middleware.CORSOptions{
 		Origin:         cfg.CORSOrigin,
 		AllowedHeaders: "Content-Type",
@@ -30,7 +31,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 
 	tb := middleware.NewRateLimiter(cfg.RatelimitCapacity, cfg.RatelimitRefillRate)
 
-	sessionSvc := session.NewService(session.NewStore(pool))
+	sessionSvc := session.NewService(session.NewStore(redisClient))
 	authSvc := auth.NewService(user.NewStore(pool), sessionSvc)
 	walletService := wallet.NewService(wallet.NewStore(pool))
 

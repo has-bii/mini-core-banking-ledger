@@ -16,7 +16,7 @@ func TestNew_CORSOrigin(t *testing.T) {
 
 	handler, err := app.New(config.Config{
 		Env: "test", CORSOrigin: "https://app.example.com", RatelimitCapacity: 50, RatelimitRefillRate: 10,
-	}, nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	}, nil, nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,7 +49,7 @@ func TestNew_RateLimitCORS(t *testing.T) {
 	const origin = "http://localhost:3000"
 	handler, err := app.New(config.Config{
 		Env: "test", CORSOrigin: origin, RatelimitCapacity: 1, RatelimitRefillRate: 0.001,
-	}, nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	}, nil, nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +105,7 @@ func TestNew_InvalidSession(t *testing.T) {
 
 	handler, err := app.New(config.Config{
 		Env: "test", CORSOrigin: "http://localhost:3000", RatelimitCapacity: 50, RatelimitRefillRate: 10,
-	}, nil,
+	}, nil, nil,
 		slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)

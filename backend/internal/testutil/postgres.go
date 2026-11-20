@@ -16,30 +16,12 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
 // Postgres migrates a private schema and removes only that schema after the test.
 func Postgres(t *testing.T) *pgxpool.Pool {
 	t.Helper()
-	root, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	for {
-		if _, err := os.Stat(filepath.Join(root, "go.mod")); err == nil {
-			break
-		}
-		parent := filepath.Dir(root)
-		if parent == root {
-			t.Fatal("cannot locate backend/go.mod")
-		}
-		root = parent
-	}
-	values, err := godotenv.Read(filepath.Join(root, ".env.test"))
-	if err != nil {
-		t.Fatalf("read backend/.env.test: %v", err)
-	}
+	root, values := testConfig(t)
 	dsn, err := url.Parse(values["DATABASE_URL"])
 	if err != nil || (dsn.Scheme != "postgres" && dsn.Scheme != "postgresql") || dsn.Host == "" || strings.Trim(dsn.Path, "/") == "" {
 		t.Fatal("backend/.env.test must contain a PostgreSQL DATABASE_URL with an explicit host and test database")

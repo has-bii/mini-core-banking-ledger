@@ -1,6 +1,6 @@
 # Backend
 
-Go HTTP API backed by PostgreSQL, using pgx and Goose SQL migrations.
+Go HTTP API backed by PostgreSQL for persistent business data and Redis for sessions, using pgx and Goose SQL migrations.
 
 Run all commands from `backend/`.
 
@@ -15,7 +15,7 @@ goose -env .env up
 go run ./cmd/api
 ```
 
-The API loads `.env`; existing environment variables take precedence.
+The API loads `.env`; existing environment variables take precedence. `REDIS_URL` is required. Session tokens are hashed before storage, and Redis expires sessions after 24 hours. The local Compose Redis is intentionally nonpersistent: restarting it logs everyone out.
 
 ### Rate limiting
 
@@ -57,27 +57,28 @@ Unit tests cover validation, HTTP parsing, distinct middleware contracts, and di
 
 ### Integration tests
 
-Requires PostgreSQL 18 and the Goose CLI. Start the existing Compose database:
+Requires PostgreSQL 18, Redis, and the Goose CLI. Start the existing Compose services:
 
 ```sh
-docker compose up -d --wait postgres
+docker compose up -d --wait postgres redis
 ```
 
-Create a local `.env.test` containing a dedicated test database URL:
+Create a local `.env.test` containing dedicated test service URLs:
 
 ```dotenv
 DATABASE_URL="postgresql://user:password@localhost:5432/test"
+REDIS_URL="redis://:password@localhost:6379/1"
 ```
 
-Compose creates the `test` database when initializing a fresh volume. For an existing volume, ensure that database exists. `.env.test` is ignored by Git; do not use a production or development database.
+Compose creates the `test` database when initializing a fresh volume. For an existing volume, ensure that database exists. Redis database `1` separates local tests from application sessions in database `0`; each test additionally uses a unique key namespace. `.env.test` is ignored by Git; do not use production or development data as test targets.
 
 ```sh
 go test -race -count=1 -tags=integration ./...
 ```
 
-This runs both unit and integration tests. Integration tests use real services/stores for auth/session business outcomes, password/token hashing, persistence, expiry, atomic registration, transaction rollback, and HTTP response/cookie contracts. The app test owns the wired register → login → me → logout flow without repeating lower-level input matrices or detailed storage checks. See the [testing guidelines](docs/testing_guideline.md) for contract ownership and permitted doubles. Redis and a running API server are not required.
+This runs both unit and integration tests. Integration tests use real services/stores for auth/session business outcomes, password/token hashing, persistence, expiry, atomic registration, transaction rollback, and HTTP response/cookie contracts. The app test owns the wired register → login → me → logout flow without repeating lower-level input matrices or detailed storage checks. See the [testing guidelines](docs/testing_guideline.md) for contract ownership and permitted doubles. A running API server is not required; PostgreSQL and Redis are required.
 
-The shared helper reads `DATABASE_URL` directly from `.env.test`, without falling back to `.env` or the shell's `DATABASE_URL`. It creates a unique schema per integration test, uses only that schema in each pool connection's `search_path`, and applies actual migrations using Goose. Cleanup closes the pool and drops only the schema it created; no shared tables are truncated. The database user needs schema creation privileges. Missing configuration, Goose, or PostgreSQL fails the tests rather than skipping them.
+The shared helpers read `DATABASE_URL` and `REDIS_URL` directly from `.env.test`, without falling back to `.env` or shell variables. It creates a unique schema per integration test, uses only that schema in each pool connection's `search_path`, and applies actual migrations using Goose. Cleanup closes the pool and drops only the schema it created; no shared tables are truncated. The database user needs schema creation privileges. Redis fixtures prefix commands with a random per-test namespace and clean up only their own keys, never flushing a shared database. Missing configuration, Goose, PostgreSQL, or Redis fails the tests rather than skipping them.
 
 If a test process is forcibly killed, cleanup cannot run and a `test_…` schema may remain in the test database. Remove leftover schemas only after confirming no tests are using them.
 

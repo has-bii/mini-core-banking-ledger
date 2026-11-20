@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,7 +19,7 @@ func TestService_RegisterRejectsCredentialsFailure(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
 	users := user.NewStore(pool)
-	svc := auth.NewService(users, session.NewService(session.NewStore(pool)))
+	svc := auth.NewService(users, session.NewService(session.NewStore(testutil.Redis(t))))
 	if _, err := pool.Exec(t.Context(), "ALTER TABLE users ADD CONSTRAINT test_reject_credentials CHECK (false)"); err != nil {
 		t.Fatal(err)
 	}
@@ -46,26 +47,33 @@ func TestService_RegisterRejectsCredentialsFailure(t *testing.T) {
 func TestService_DependencyFailures(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {
-		name, table string
+		name, dependency string
 	}{
 		{"register lookup", "users"},
 		{"login user lookup", "users"},
-		{"login session creation", "sessions"},
-		{"logout deletion", "sessions"},
+		{"login session creation", "redis"},
+		{"logout deletion", "redis"},
 		{"current user lookup", "users"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			pool := testutil.Postgres(t)
-			svc := auth.NewService(user.NewStore(pool), session.NewService(session.NewStore(pool)))
+			client := testutil.Redis(t)
+			svc := auth.NewService(user.NewStore(pool), session.NewService(session.NewStore(client)))
 			payload := auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "password123"}
 			u, err := svc.Register(t.Context(), payload)
 			if err != nil {
 				t.Fatal(err)
 			}
-			// Only this test's schema is affected; each missing table targets one dependency.
-			if _, err := pool.Exec(t.Context(), "DROP TABLE "+tt.table+" CASCADE"); err != nil {
-				t.Fatal(err)
+			if tt.dependency == "redis" {
+				if err := client.Close(); err != nil {
+					t.Fatal(err)
+				}
+			} else {
+				// Only this test's schema is affected.
+				if _, err := pool.Exec(t.Context(), "DROP TABLE "+tt.dependency+" CASCADE"); err != nil {
+					t.Fatal(err)
+				}
 			}
 			switch tt.name {
 			case "register lookup":
@@ -91,6 +99,12 @@ func TestService_DependencyFailures(t *testing.T) {
 					t.Fatal("failed login exposed a user, session, or token")
 				}
 			}
+			if tt.dependency == "redis" {
+				if !errors.Is(err, redis.ErrClosed) {
+					t.Fatalf("service error = %v; want wrapped Redis failure", err)
+				}
+				return
+			}
 			var pgErr *pgconn.PgError
 			if !errors.As(err, &pgErr) || pgErr.Code != "42P01" || !errors.Is(err, pgErr) {
 				t.Fatalf("service error = %v; want wrapped missing-table error", err)
@@ -102,7 +116,7 @@ func TestService_DependencyFailures(t *testing.T) {
 func TestService_RegistrationAndIdentity(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
-	svc := auth.NewService(user.NewStore(pool), session.NewService(session.NewStore(pool)))
+	svc := auth.NewService(user.NewStore(pool), session.NewService(session.NewStore(testutil.Redis(t))))
 	payload := auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "password123"}
 	u, err := svc.Register(t.Context(), payload)
 	if err != nil {
@@ -146,7 +160,8 @@ func TestService_LoginOutcomes(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			pool := testutil.Postgres(t)
-			sessions := session.NewService(session.NewStore(pool))
+			client := testutil.Redis(t)
+			sessions := session.NewService(session.NewStore(client))
 			svc := auth.NewService(user.NewStore(pool), sessions)
 			u, err := svc.Register(t.Context(), auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: "password123"})
 			if err != nil {
@@ -172,9 +187,12 @@ func TestService_LoginOutcomes(t *testing.T) {
 				if name == "unknown email" && !errors.Is(err, user.ErrNotFound) {
 					t.Fatalf("login lost store cause: %v", err)
 				}
-				var count int
-				if err := pool.QueryRow(t.Context(), "SELECT count(*) FROM sessions").Scan(&count); err != nil || count != 0 {
-					t.Fatalf("failed login persisted sessions: count=%d, err=%v", count, err)
+				iter := client.Scan(t.Context(), 0, "session:*", 100).Iterator()
+				if iter.Next(t.Context()) {
+					t.Fatal("failed login persisted a Redis session")
+				}
+				if err := iter.Err(); err != nil {
+					t.Fatalf("scan Redis sessions: %v", err)
 				}
 				return
 			}

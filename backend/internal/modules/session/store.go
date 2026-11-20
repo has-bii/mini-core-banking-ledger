@@ -1,47 +1,84 @@
 package session
 
 import (
-	"backend/internal/platform/postgres"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 )
 
-type Store struct{ db postgres.Beginner }
+const redisSessionPrefix = "session:"
 
-func NewStore(db postgres.Beginner) *Store { return &Store{db: db} }
+type Store struct{ redis *redis.Client }
+
+func NewStore(rds *redis.Client) *Store { return &Store{redis: rds} }
 
 func (s *Store) Create(ctx context.Context, userID, tokenHash string, expiresAt time.Time) (Session, error) {
-	const q = `INSERT INTO sessions (user_id, token, expires_at)
-		VALUES ($1, $2, $3)
-		RETURNING id, user_id, expires_at`
-	var session Session
-	err := s.db.QueryRow(ctx, q, userID, tokenHash, expiresAt).Scan(&session.ID, &session.UserID, &session.ExpiresAt)
+	if !expiresAt.After(time.Now()) {
+		return Session{}, fmt.Errorf("create session: expiration must be in the future")
+	}
+
+	id, err := uuid.NewV7()
+	if err != nil {
+		return Session{}, fmt.Errorf("generate session id: %w", err)
+	}
+
+	session := Session{
+		ID:        id.String(),
+		UserID:    userID,
+		ExpiresAt: expiresAt.UTC(),
+	}
+
+	data, err := json.Marshal(session)
 	if err != nil {
 		return Session{}, fmt.Errorf("create session: %w", err)
 	}
+
+	ttl := time.Until(session.ExpiresAt)
+	if ttl <= 0 {
+		return Session{}, fmt.Errorf("create session: expiration must be in the future")
+	}
+
+	// Store the value and TTL atomically; never overwrite an existing token hash.
+	created, err := s.redis.SetNX(ctx, redisSessionPrefix+tokenHash, data, ttl).Result()
+	if err != nil {
+		return Session{}, fmt.Errorf("create session: %w", err)
+	}
+	if !created {
+		return Session{}, fmt.Errorf("create session: token hash already exists")
+	}
+
 	return session, nil
 }
 
 func (s *Store) FindByTokenHash(ctx context.Context, tokenHash string) (Session, error) {
-	const q = `SELECT id, user_id, expires_at FROM sessions WHERE token = $1 AND expires_at > now()`
-	var session Session
-	err := s.db.QueryRow(ctx, q, tokenHash).Scan(&session.ID, &session.UserID, &session.ExpiresAt)
-	if errors.Is(err, pgx.ErrNoRows) {
+	data, err := s.redis.Get(ctx, redisSessionPrefix+tokenHash).Bytes()
+	if errors.Is(err, redis.Nil) {
 		return Session{}, ErrNotFound
 	}
 	if err != nil {
 		return Session{}, fmt.Errorf("session by token: %w", err)
 	}
+
+	var session Session
+	if err := json.Unmarshal(data, &session); err != nil {
+		return Session{}, fmt.Errorf("decode session: %w", err)
+	}
+	if session.ID == "" || session.UserID == "" || session.ExpiresAt.IsZero() {
+		return Session{}, fmt.Errorf("decode session: missing required fields")
+	}
+	if !session.ExpiresAt.After(time.Now()) {
+		return Session{}, ErrNotFound
+	}
 	return session, nil
 }
 
 func (s *Store) DeleteByTokenHash(ctx context.Context, tokenHash string) error {
-	_, err := s.db.Exec(ctx, `DELETE FROM sessions WHERE token = $1`, tokenHash)
-	if err != nil {
+	if err := s.redis.Del(ctx, redisSessionPrefix+tokenHash).Err(); err != nil {
 		return fmt.Errorf("delete session: %w", err)
 	}
 	return nil

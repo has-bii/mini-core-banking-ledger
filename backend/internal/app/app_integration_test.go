@@ -20,9 +20,10 @@ import (
 func TestApp_AuthLifecycle(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
+	redisClient := testutil.Redis(t)
 	h, err := app.New(config.Config{
 		Env: "test", CORSOrigin: "http://localhost:3000", RatelimitCapacity: 50, RatelimitRefillRate: 10,
-	}, pool,
+	}, pool, redisClient,
 		slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)
@@ -107,16 +108,19 @@ func TestApp_AuthLifecycle(t *testing.T) {
 func TestApp_SessionLookupFailure(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
+	redisClient := testutil.Redis(t)
 	h, err := app.New(config.Config{
 		Env: "test", CORSOrigin: "http://localhost:3000", RatelimitCapacity: 50, RatelimitRefillRate: 10,
-	}, pool,
+	}, pool, redisClient,
 		slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
 		t.Fatal(err)
 	}
 	cookie := &http.Cookie{Name: "session", Value: strings.Repeat("A", 43)}
 	authRequest(t, h, "GET", "/api/auth/me", "", cookie, http.StatusUnauthorized)
-	pool.Close()
+	if err := redisClient.Close(); err != nil {
+		t.Fatal(err)
+	}
 	w := authRequest(t, h, "GET", "/api/auth/me", "", cookie, http.StatusInternalServerError)
 	var body struct {
 		Type, Title, Detail, Instance string

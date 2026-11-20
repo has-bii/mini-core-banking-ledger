@@ -23,7 +23,7 @@ import (
 func realAuthHandler(t *testing.T, secure bool) (http.Handler, *auth.Service, *session.Service) {
 	t.Helper()
 	pool := testutil.Postgres(t)
-	sessions := session.NewService(session.NewStore(pool))
+	sessions := session.NewService(session.NewStore(testutil.Redis(t)))
 	svc := auth.NewService(user.NewStore(pool), sessions)
 	mux := http.NewServeMux()
 	auth.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil)), secure).Register(mux)
