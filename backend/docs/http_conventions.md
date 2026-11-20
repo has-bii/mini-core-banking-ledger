@@ -1,14 +1,24 @@
 # HTTP Conventions
 
+## Roles
+
+- **Handler.** Decode and validate requests, then pass `r.Context()`, verified identity, and request arguments explicitly to the [service](service_conventions.md#roles) for business decisions and persistence. For protected routes, read the verified user ID from context, never from caller-supplied fields or an unverified cookie.
+- **Response writer.** The handler, middleware, or router that writes the response owns its headers and error body. Middleware and the router can respond before the handler runs.
+
 ## How to write
 
 1. **Wire the handler.** In the module's `http.go`, define a concrete `Handler`, a `NewHandler` constructor, and private operation methods. Define a small, unexported interface for the service methods the handler calls. Inject the service and wire the concrete implementation in `internal/app/app.go`.
-2. **Register the route.** Add a method-qualified `http.ServeMux` pattern in `Handler.Register`, relative to the API mount (for example, `GET /wallets/{id}`). Read path variables with `r.PathValue`. Wrap protected routes with `middleware.AuthGuard`; read the verified user ID from context, never from caller-supplied request fields or an unverified cookie.
-3. **Decode and call.** Use `httpx.DecodeJSON` for JSON input: it limits body size and requires one object with no unknown fields. Call the input DTO's `Validate` once. Keep scalar inputs as scalars and keep server-owned values out of the DTO. Pass `r.Context()`, verified identity, and request arguments explicitly to the service. Delegate business decisions and persistence through the service.
-4. **Write success.** Use `httpx.SendSuccess` for JSON (`data` and optional `message`): `200` for a result, `201` for creation. Write `204` without a body. Return a model only if its JSON shape is safe and intentional as the public contract; otherwise map it to a response DTO. Return `[]`, not `null`, when the contract calls for an array.
-5. **Set headers and cookies before committing the response.** Set `httpx.NoStoreHeader` before any handler response on a non-cacheable route, including errors the handler writes. Keep the session cookie's name, path, and domain consistent when issuing and clearing it. Middleware and the router can respond before the handler runs; their headers and error bodies belong to the writer.
-6. **Write failures.** Use `httpx.SendRequestError` to send `application/problem+json`. It checks typed transport and validation errors with `errors.As` before the module's mapper. Match domain sentinels with `errors.Is` and map them to a status and safe detail; leave unexpected failures unmapped for a generic `500`. Keep validation details keyed by JSON field name. Log unexpected causes without passwords, tokens, or request bodies. If writing fails, log the failure instead of attempting a second response.
-7. **Update the contract.** When the public route, input, or response changes, update [OpenAPI](../api/openapi.yaml) and the affected tests.
+2. **Register the route.** Add a method-qualified `http.ServeMux` pattern in `Handler.Register`, relative to the API mount (for example, `GET /wallets/{id}`). Read path variables with `r.PathValue`. Wrap protected routes with `middleware.AuthGuard`.
+3. **Decode and call.** Use `httpx.DecodeJSON` for JSON input: it limits body size and requires one object with no unknown fields. Call the input DTO's `Validate` once. Follow [DTO conventions](dto_conventions.md#roles) for which values belong in the input DTO.
+4. **Write success.** Use `httpx.SendSuccess` for JSON (`data` and optional `message`): `200` for a result, `201` for creation. Write `204` without a body. Return a model only if its JSON shape is safe and intentional as the public contract; otherwise map it to a [response DTO](dto_conventions.md#how-to-write). Return `[]`, not `null`, when the contract calls for an array.
+5. **Set headers and cookies before committing the response.** Set `httpx.NoStoreHeader` before any handler response on a non-cacheable route, including errors the handler writes. Keep the session cookie's name, path, and domain consistent when issuing and clearing it.
+6. **Update the contract.** When the public route, input, or response changes, update [OpenAPI](../api/openapi.yaml) and the affected tests.
+
+## Errors
+
+- **Transport and validation.** Use `httpx.SendRequestError` to send `application/problem+json`. It checks typed transport and validation errors with `errors.As` before the module's mapper. Keep validation details keyed by JSON field name.
+- **Domain errors.** Match sentinels with `errors.Is` and map them to a status and safe detail. Leave unexpected failures unmapped for a generic `500`; log their causes without passwords, tokens, or request bodies.
+- **Write failure.** Log the failure instead of attempting a second response.
 
 ## How to test
 

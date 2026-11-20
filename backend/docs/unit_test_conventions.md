@@ -1,10 +1,20 @@
 # Unit Test Conventions
 
+## Roles
+
+Exercise a layer's public entry point without a database, Redis, an environment file, or a listening HTTP server. Use [integration tests](integration_test_conventions.md#roles) for real persistence or assembled app wiring.
+
 ## How to write
 
-1. **Place the test.** Match the source filename (`http_test.go`, `dto_test.go`, `service_test.go`, or the matching concern suffix). Prefer an external package such as `wallet_test` and exercise the public entry point. Use standard `testing` without a build tag.
+1. **Place the test.** Match the source filename (`http_test.go`, `dto_test.go`, `service_test.go`, or the matching concern suffix). Prefer an external package such as `wallet_test`. Use standard `testing` without a build tag.
 2. **Isolate the case.** Use small handwritten stubs for the interfaces the code consumes. Give each case fresh input and stub state. Use named `t.Run` subtests for related cases, `t.Context()` for calls that take context, and `t.Parallel()` only when cases have no shared mutable state.
-3. **Assert behavior.** Check the result and any dependency calls that are part of the contract. Pass the current `*testing.T` into helpers and call `t.Helper()` there. A unit test runs without a database, Redis, an environment file, or a listening HTTP server.
+3. **Assert behavior.** Check the result and any dependency calls that are part of the contract. Pass the current `*testing.T` into helpers and call `t.Helper()` there.
+
+## Errors
+
+- **HTTP rejection and public error responses:** follow the [handler checks](http_conventions.md#how-to-test).
+- **Structured field errors and normalization on failure:** follow the [DTO checks](dto_conventions.md#how-to-test).
+- **Error preservation, translation, and early exits:** follow the [service checks](service_conventions.md#how-to-test).
 
 ## HTTP route
 
@@ -30,7 +40,7 @@ if svc.ctx != nil {
 
 ## DTO validation
 
-Build the value inside the subtest. Check the structured error rather than the validator's internal string.
+Build the value inside the subtest. This example checks a structured field error and the normalized value after the same call.
 
 ```go
 t.Run("missing wallet type", func(t *testing.T) {
@@ -49,7 +59,7 @@ t.Run("missing wallet type", func(t *testing.T) {
 
 ## Service delegation
 
-Configure the existing `walletStoreStub` in `wallet/service_test.go` to return a wrapped sentinel. Assert that the operation preserves the cause and forwards the owner ID.
+This example uses the existing `walletStoreStub` in `wallet/service_test.go` to check error preservation and owner forwarding together.
 
 ```go
 ctx := t.Context()

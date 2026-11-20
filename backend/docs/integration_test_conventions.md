@@ -1,14 +1,25 @@
 # Integration Test Conventions
 
+## Roles
+
+- **Store tests.** Use `store_integration_test.go` to verify persistence contracts against real backends.
+- **App tests.** Use `internal/app/app_integration_test.go` when the assertion depends on assembled application wiring, such as registration followed by login and an authenticated request. Assert public responses or workflow outcomes.
+
 ## How to write
 
-1. **Place the test.** Use `store_integration_test.go` for a persistence contract and `internal/app/app_integration_test.go` for cross-layer wiring. Put `//go:build integration` on the first line, then a blank line and the package declaration. Prefer an external package and standard `testing`; name store cases `TestStore_<MethodOrBehavior>`.
+1. **Declare the test.** Put `//go:build integration` on the first line, then a blank line and the package declaration. Prefer an external package and standard `testing`; name store cases `TestStore_<MethodOrBehavior>`.
 2. **Isolate the case.** Own the records you arrange and use a fixture per parallel case. Avoid seeded IDs, shared mutable state, and execution-order dependencies. Use named subtests and keep each table focused; prefer at most 12 cases per store behavior, splitting by behavior or explaining a larger table rather than dropping critical cases. Tests that use `t.Setenv` must run sequentially with no parallel ancestors.
-3. **Run and assert.** Call the real constructor and operation with `t.Context()`. Stop with `t.Fatal` on prerequisite failures; use `t.Error` for independent checks. Pass the current `*testing.T` to helpers and call `t.Helper()` there. Register owned cleanup with `t.Cleanup`; give cleanup that outlives `t.Context()` its own bounded context.
+3. **Run and assert.** Call the real constructor and operation with `t.Context()`. Pass the current `*testing.T` to helpers and call `t.Helper()` there. Register owned cleanup with `t.Cleanup`; give cleanup that outlives `t.Context()` its own bounded context.
+
+## Errors
+
+- **Prerequisite failures.** Stop with `t.Fatal` when a prerequisite fails. Missing configuration, services, tooling, or permissions fail the requested test rather than skipping it.
+- **Independent checks.** Use `t.Error` when the other checks can still run.
+- **Backend failure coverage.** Keep backend-specific failure matrices with the store. Follow the [store checks](store_conventions.md#how-to-test) for rollback, conflicts, and backend-specific outcomes.
 
 ## Store fixtures
 
-Follow the [README integration setup](../README.md#integration-tests) for the test services, Goose, and `.env.test`. Fixtures read dedicated test URLs from that file rather than `.env` or shell fallbacks. Use test-only backends; missing configuration, services, tooling, or permissions fail the requested test rather than skipping it.
+Follow the [README integration setup](../README.md#integration-tests) for the test services, Goose, and `.env.test`. Fixtures read dedicated test URLs from that file rather than `.env` or shell fallbacks. Use test-only backends.
 
 ### PostgreSQL
 
@@ -57,7 +68,7 @@ if err != nil || ttl <= 0 || ttl > time.Hour {
 
 ## App wiring
 
-Use an app integration test when the assertion depends on the assembled application, such as registration followed by login and an authenticated request. Supply both fixtures to `app.New` and serve requests in-process with `httptest`. Assert public responses or workflow outcomes; keep backend-specific failure matrices with the store.
+Supply both fixtures to `app.New` and serve requests in-process with `httptest`.
 
 ## How to run
 
