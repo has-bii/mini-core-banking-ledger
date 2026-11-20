@@ -5,7 +5,12 @@ import (
 	"time"
 )
 
-var ErrNotFound = errors.New("session not found or expired")
+var (
+	ErrNotFound          = errors.New("session not found or expired")
+	ErrInvalidUserID     = errors.New("invalid user ID")
+	ErrInvalidExpiration = errors.New("session expiration must be in the future")
+	ErrTokenHashTaken    = errors.New("session token hash already exists")
+)
 
 const Lifetime = 24 * time.Hour
 

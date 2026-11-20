@@ -12,8 +12,8 @@ import (
 
 type userStore interface {
 	Create(context.Context, string, string, string) (user.User, error)
-	FindByID(context.Context, string) (user.User, error)
-	FindByEmail(context.Context, string) (user.User, error)
+	GetByID(context.Context, string) (user.User, error)
+	GetByEmail(context.Context, string) (user.User, error)
 }
 
 type sessionService interface {
@@ -30,8 +30,9 @@ func NewService(users userStore, sessions sessionService) *Service {
 	return &Service{users: users, sessions: sessions}
 }
 
+// Register requires a DTO already normalized and validated by the caller.
 func (s *Service) Register(ctx context.Context, payload RegisterDTO) (user.User, error) {
-	_, err := s.users.FindByEmail(ctx, payload.Email)
+	_, err := s.users.GetByEmail(ctx, payload.Email)
 	if err == nil {
 		return user.User{}, user.ErrEmailTaken
 	}
@@ -55,8 +56,9 @@ func (s *Service) Register(ctx context.Context, payload RegisterDTO) (user.User,
 // A valid cost-10 hash keeps unknown-user checks comparable to password checks.
 const dummyPasswordHash = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy"
 
+// Login requires a DTO already normalized and validated by the caller.
 func (s *Service) Login(ctx context.Context, payload LoginDTO) (user.User, session.Session, string, error) {
-	u, err := s.users.FindByEmail(ctx, payload.Email)
+	u, err := s.users.GetByEmail(ctx, payload.Email)
 	if errors.Is(err, user.ErrNotFound) {
 		_ = comparePassword(dummyPasswordHash, payload.Password)
 		return user.User{}, session.Session{}, "", errors.Join(ErrInvalidCredentials, err)
@@ -85,7 +87,7 @@ func (s *Service) Logout(ctx context.Context, token string) error {
 
 // Me returns the current user for a verified user ID.
 func (s *Service) Me(ctx context.Context, userID string) (user.User, error) {
-	u, err := s.users.FindByID(ctx, userID)
+	u, err := s.users.GetByID(ctx, userID)
 	if errors.Is(err, user.ErrNotFound) {
 		return user.User{}, errors.Join(ErrUnauthenticated, err)
 	}

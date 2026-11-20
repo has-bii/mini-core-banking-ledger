@@ -6,8 +6,9 @@ import (
 )
 
 var (
-	ErrNotFound   = errors.New("user not found")
-	ErrEmailTaken = errors.New("email already taken")
+	ErrNotFound      = errors.New("user not found")
+	ErrEmailTaken    = errors.New("email already taken")
+	ErrInvalidUserID = errors.New("invalid user ID")
 )
 
 type User struct {

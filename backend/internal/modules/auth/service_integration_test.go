@@ -29,7 +29,7 @@ func TestService_RegisterRejectsCredentialsFailure(t *testing.T) {
 	if !errors.As(err, &pgErr) || pgErr.Code != "23514" || pgErr.ConstraintName != "test_reject_credentials" {
 		t.Fatalf("Register() error = %v, want forced credentials constraint failure", err)
 	}
-	if _, err := users.FindByEmail(t.Context(), payload.Email); !errors.Is(err, user.ErrNotFound) {
+	if _, err := users.GetByEmail(t.Context(), payload.Email); !errors.Is(err, user.ErrNotFound) {
 		t.Fatalf("registration left a user after credentials failure: %v", err)
 	}
 	if _, err := pool.Exec(t.Context(), "ALTER TABLE users DROP CONSTRAINT test_reject_credentials"); err != nil {
@@ -41,6 +41,15 @@ func TestService_RegisterRejectsCredentialsFailure(t *testing.T) {
 	}
 	if _, _, _, err := svc.Login(t.Context(), auth.LoginDTO{Email: u.Email, Password: payload.Password}); err != nil {
 		t.Fatalf("successful registration must create usable credentials: %v", err)
+	}
+}
+
+func TestService_Me_InvalidUserID(t *testing.T) {
+	t.Parallel()
+	svc := auth.NewService(user.NewStore(testutil.Postgres(t)), nil)
+	got, err := svc.Me(t.Context(), "not-a-uuid")
+	if got != (user.User{}) || !errors.Is(err, user.ErrInvalidUserID) || errors.Is(err, auth.ErrUnauthenticated) {
+		t.Fatalf("Me() error = %v, want zero user and preserved ErrInvalidUserID, not ErrUnauthenticated", err)
 	}
 }
 
@@ -199,13 +208,13 @@ func TestService_LoginOutcomes(t *testing.T) {
 			if err != nil || got != u || created.UserID != u.ID || token == "" {
 				t.Fatalf("Login() = %+v, %+v, %q, %v", got, created, token, err)
 			}
-			if found, err := sessions.FindByToken(t.Context(), token); err != nil || found != created {
+			if found, err := sessions.GetByToken(t.Context(), token); err != nil || found != created {
 				t.Fatalf("login session = %+v, %v; want %+v", found, err, created)
 			}
 			if err := svc.Logout(t.Context(), token); err != nil {
 				t.Fatal(err)
 			}
-			if _, err := sessions.FindByToken(t.Context(), token); !errors.Is(err, session.ErrNotFound) {
+			if _, err := sessions.GetByToken(t.Context(), token); !errors.Is(err, session.ErrNotFound) {
 				t.Fatalf("logout did not revoke session: %v", err)
 			}
 			for _, absent := range []string{token, "malformed"} {

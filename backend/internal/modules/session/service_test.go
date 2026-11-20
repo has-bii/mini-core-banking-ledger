@@ -22,9 +22,9 @@ func TestService_RejectsMalformedTokens(t *testing.T) {
 			t.Parallel()
 			// A nil store proves malformed input is rejected before persistence.
 			svc := session.NewService(nil)
-			got, err := svc.FindByToken(t.Context(), tt.token)
+			got, err := svc.GetByToken(t.Context(), tt.token)
 			if !errors.Is(err, session.ErrNotFound) || got != (session.Session{}) {
-				t.Fatalf("FindByToken() = %+v, %v; want not found", got, err)
+				t.Fatalf("GetByToken() = %+v, %v; want not found", got, err)
 			}
 			if err := svc.Revoke(t.Context(), tt.token); !errors.Is(err, session.ErrNotFound) {
 				t.Fatalf("Revoke() = %v, want not found", err)

@@ -6,15 +6,16 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
 const uniqueViolation = "23505"
 
-type Store struct{ db postgres.Beginner }
+type Store struct{ db postgres.DBTX }
 
-func NewStore(db postgres.Beginner) *Store { return &Store{db: db} }
+func NewStore(db postgres.DBTX) *Store { return &Store{db: db} }
 
 type scanner interface{ Scan(dest ...any) error }
 
@@ -24,10 +25,14 @@ func scanUser(r scanner) (User, error) {
 	return u, err
 }
 
-func (s *Store) FindByID(ctx context.Context, id string) (User, error) {
+func (s *Store) GetByID(ctx context.Context, userID string) (User, error) {
+	if err := uuid.Validate(userID); err != nil {
+		return User{}, fmt.Errorf("user by id: %w", ErrInvalidUserID)
+	}
+
 	const q = `SELECT id, name, email, password, image, created_at, updated_at FROM users WHERE id = $1`
 
-	u, err := scanUser(s.db.QueryRow(ctx, q, id))
+	u, err := scanUser(s.db.QueryRow(ctx, q, userID))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return User{}, ErrNotFound
 	}
@@ -37,7 +42,7 @@ func (s *Store) FindByID(ctx context.Context, id string) (User, error) {
 	return u, nil
 }
 
-func (s *Store) FindByEmail(ctx context.Context, email string) (User, error) {
+func (s *Store) GetByEmail(ctx context.Context, email string) (User, error) {
 	const q = `SELECT id, name, email, password, image, created_at, updated_at FROM users WHERE email = $1`
 
 	u, err := scanUser(s.db.QueryRow(ctx, q, email))
@@ -50,6 +55,7 @@ func (s *Store) FindByEmail(ctx context.Context, email string) (User, error) {
 	return u, nil
 }
 
+// Create requires normalized, validated name/email values and an already-hashed password.
 func (s *Store) Create(ctx context.Context, name, email, password string) (User, error) {
 	const q = `INSERT INTO users (name, email, password)
 		VALUES ($1, $2, $3)

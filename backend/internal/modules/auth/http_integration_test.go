@@ -28,13 +28,31 @@ func realAuthHandler(t *testing.T, secure bool) (http.Handler, *auth.Service, *s
 	mux := http.NewServeMux()
 	auth.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil)), secure).Register(mux)
 	h := middleware.GetUserFromSession(func(ctx context.Context, token string) (string, error) {
-		current, err := sessions.FindByToken(ctx, token)
+		current, err := sessions.GetByToken(ctx, token)
 		if errors.Is(err, session.ErrNotFound) {
 			return "", nil
 		}
 		return current.UserID, err
 	})(mux)
 	return h, svc, sessions
+}
+
+func TestHandler_Me_InvalidResolvedUserID(t *testing.T) {
+	t.Parallel()
+	svc := auth.NewService(user.NewStore(testutil.Postgres(t)), nil)
+	mux := http.NewServeMux()
+	auth.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+	h := middleware.GetUserFromSession(func(context.Context, string) (string, error) {
+		return "not-a-uuid", nil
+	})(mux)
+	r := httptest.NewRequest("GET", "/auth/me", nil).WithContext(t.Context())
+	r.AddCookie(&http.Cookie{Name: "session", Value: "raw-token"})
+	w := httptest.NewRecorder()
+	h.ServeHTTP(w, r)
+	assertHTTPError(t, w, http.StatusInternalServerError, "Internal Server Error", "internal error")
+	if w.Header().Get("Cache-Control") != "no-store" || len(w.Result().Cookies()) != 0 {
+		t.Error("invalid identity response must not be cached or change cookies")
+	}
 }
 
 func TestHandler_DomainErrorResponses(t *testing.T) {
@@ -97,7 +115,7 @@ func TestHandler_SessionCookiesAndResponses(t *testing.T) {
 				t.Fatalf("login cookies = %v, want one session cookie", cookies)
 			}
 			cookie := cookies[0]
-			current, err := sessions.FindByToken(t.Context(), cookie.Value)
+			current, err := sessions.GetByToken(t.Context(), cookie.Value)
 			if err != nil {
 				t.Fatal(err)
 			}

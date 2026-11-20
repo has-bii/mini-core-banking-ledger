@@ -12,7 +12,7 @@ import (
 
 type sessionStore interface {
 	Create(context.Context, string, string, time.Time) (Session, error)
-	FindByTokenHash(context.Context, string) (Session, error)
+	GetByTokenHash(context.Context, string) (Session, error)
 	DeleteByTokenHash(context.Context, string) error
 }
 
@@ -34,11 +34,11 @@ func (s *Service) Create(ctx context.Context, userID string) (Session, string, e
 	return session, token, nil
 }
 
-func (s *Service) FindByToken(ctx context.Context, token string) (Session, error) {
+func (s *Service) GetByToken(ctx context.Context, token string) (Session, error) {
 	if !validToken(token) {
 		return Session{}, ErrNotFound
 	}
-	return s.store.FindByTokenHash(ctx, hashToken(token))
+	return s.store.GetByTokenHash(ctx, hashToken(token))
 }
 
 func (s *Service) Revoke(ctx context.Context, token string) error {

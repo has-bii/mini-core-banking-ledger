@@ -25,16 +25,25 @@ func TestService_StoreErrors(t *testing.T) {
 	if failure == nil {
 		t.Fatal("closed Redis client must fail")
 	}
-	got, token, err := svc.Create(t.Context(), "user-id")
+	got, token, err := svc.Create(t.Context(), "019a3de4-8750-7000-8000-000000000001")
 	if !errors.Is(err, failure) || got != (session.Session{}) || token != "" {
 		t.Fatalf("Create() = %+v, %q, %v; want no session/token and store error", got, token, err)
 	}
-	got, err = svc.FindByToken(t.Context(), strings.Repeat("A", 43))
+	got, err = svc.GetByToken(t.Context(), strings.Repeat("A", 43))
 	if !errors.Is(err, failure) || got != (session.Session{}) {
-		t.Fatalf("FindByToken() = %+v, %v; want no session and store error", got, err)
+		t.Fatalf("GetByToken() = %+v, %v; want no session and store error", got, err)
 	}
 	if err := svc.Revoke(t.Context(), strings.Repeat("A", 43)); !errors.Is(err, failure) {
 		t.Fatalf("Revoke() = %v, want store error", err)
+	}
+}
+
+func TestService_Create_InvalidUserID(t *testing.T) {
+	t.Parallel()
+	svc := session.NewService(session.NewStore(testutil.Redis(t)))
+	got, token, err := svc.Create(t.Context(), "not-a-uuid")
+	if got != (session.Session{}) || token != "" || !errors.Is(err, session.ErrInvalidUserID) {
+		t.Fatalf("Create() error = %v, want no session/token and preserved ErrInvalidUserID", err)
 	}
 }
 
@@ -57,20 +66,20 @@ func TestService_TokenPersistence(t *testing.T) {
 		t.Fatalf("Create() = %+v, want a stored session with a 24-hour lifetime", created)
 	}
 	digest := sha256.Sum256([]byte(token))
-	stored, err := store.FindByTokenHash(t.Context(), hex.EncodeToString(digest[:]))
+	stored, err := store.GetByTokenHash(t.Context(), hex.EncodeToString(digest[:]))
 	if err != nil || stored != created {
 		t.Fatalf("session not stored under SHA-256 hash: %+v, %v", stored, err)
 	}
-	if _, err := store.FindByTokenHash(t.Context(), token); !errors.Is(err, session.ErrNotFound) {
+	if _, err := store.GetByTokenHash(t.Context(), token); !errors.Is(err, session.ErrNotFound) {
 		t.Fatalf("raw token must not be persisted: %v", err)
 	}
-	if found, err := svc.FindByToken(t.Context(), token); err != nil || found != created {
-		t.Fatalf("FindByToken() = %+v, %v; want %+v", found, err, created)
+	if found, err := svc.GetByToken(t.Context(), token); err != nil || found != created {
+		t.Fatalf("GetByToken() = %+v, %v; want %+v", found, err, created)
 	}
 	if err := svc.Revoke(t.Context(), token); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := store.FindByTokenHash(t.Context(), hex.EncodeToString(digest[:])); !errors.Is(err, session.ErrNotFound) {
+	if _, err := store.GetByTokenHash(t.Context(), hex.EncodeToString(digest[:])); !errors.Is(err, session.ErrNotFound) {
 		t.Fatalf("Revoke() did not delete the hashed token: %v", err)
 	}
 
@@ -81,13 +90,13 @@ func TestService_TokenPersistence(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if found, err := svc.FindByToken(t.Context(), knownToken); err != nil || found != known {
+	if found, err := svc.GetByToken(t.Context(), knownToken); err != nil || found != known {
 		t.Fatalf("known token lookup = %+v, %v", found, err)
 	}
 	if err := svc.Revoke(t.Context(), knownToken); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := store.FindByTokenHash(t.Context(), knownHash); !errors.Is(err, session.ErrNotFound) {
+	if _, err := store.GetByTokenHash(t.Context(), knownHash); !errors.Is(err, session.ErrNotFound) {
 		t.Fatalf("known token revocation did not delete hash: %v", err)
 	}
 }

@@ -12,13 +12,13 @@ import (
 // Failure injection: another registration wins after the email pre-check.
 type registrationRaceStore struct{ cause error }
 
-func (s registrationRaceStore) FindByEmail(context.Context, string) (user.User, error) {
+func (s registrationRaceStore) GetByEmail(context.Context, string) (user.User, error) {
 	return user.User{}, user.ErrNotFound
 }
 func (s registrationRaceStore) Create(context.Context, string, string, string) (user.User, error) {
 	return user.User{}, s.cause
 }
-func (s registrationRaceStore) FindByID(context.Context, string) (user.User, error) {
+func (s registrationRaceStore) GetByID(context.Context, string) (user.User, error) {
 	return user.User{}, user.ErrNotFound
 }
 

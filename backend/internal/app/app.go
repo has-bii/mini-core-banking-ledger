@@ -36,7 +36,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, redisClient *redis.Client, log *
 	walletService := wallet.NewService(wallet.NewStore(pool))
 
 	lookupUserID := func(ctx context.Context, token string) (string, error) {
-		current, err := sessionSvc.FindByToken(ctx, token)
+		current, err := sessionSvc.GetByToken(ctx, token)
 		if errors.Is(err, session.ErrNotFound) {
 			return "", nil
 		}

@@ -111,9 +111,10 @@ Do not implement manual transaction lifecycle in each store, hide nested transac
 
 Use [session/store.go](../internal/modules/session/store.go) as the Redis example. Keep key construction, commands, serialization, and decoding inside the store.
 
-- Use domain-prefixed keys (`session:<tokenHash>`). Token generation and hashing belong to the service; never persist or log raw session tokens.
+- Use domain-prefixed keys (`session:<tokenHash>`). Token generation and hashing belong to the service; never persist or log raw session tokens. Session store callers must supply a service-generated token hash; the store treats it as an opaque key without format validation or normalization.
+- Session creation validates the user ID as a UUID and returns `session.ErrInvalidUserID` before Redis access. It does not query PostgreSQL to verify user existence.
 - Give temporary records explicit expiry. Store the value and TTL atomically; use `SET NX` with expiration when collisions must not overwrite an existing record, as session creation does.
-- Derive TTL from the absolute expiration; reject non-positive remaining lifetime. Do not create a value first and attach its TTL in a separate command.
+- Derive TTL from the absolute expiration; reject non-positive remaining lifetime with `session.ErrInvalidExpiration`. Report creation collisions as `session.ErrTokenHashTaken`. Do not create a value first and attach its TTL in a separate command.
 - Treat missing or expired sessions as domain `ErrNotFound`. Check decoded absolute expiry as well as relying on Redis TTL.
 - Treat malformed JSON or missing required stored fields as unexpected corruption, not as a missing session. Preserve decoding causes where available.
 - Make session deletion idempotent. A successful delete of an absent key is not an error.
@@ -159,12 +160,11 @@ go vet -tags=integration ./...
 
 Use `-shuffle=on` when checking order independence. Report checks not run and why; no coverage percentage or minimum test count is required.
 
-## Existing differences
+## User, session, and auth alignment
 
-This is a convention, not a claim that every existing store already conforms:
+- User lookups use `GetByID` and `GetByEmail`. The user store accepts `postgres.DBTX`, validates lookup UUIDs with `user.ErrInvalidUserID`, and accepts caller-validated scalar creation inputs with an already-hashed password.
+- Session lookup uses `Store.GetByTokenHash` and `Service.GetByToken`. Creation validates user IDs and exposes the expiration/collision sentinels above; deletion remains idempotent.
+- Auth consumes the user store and session service; it has no separate store. Registration and login require caller-normalized, validated DTOs. Password hashing and workflows stay in the service.
+- `auth.Service.Me` receives a verified identity. A missing user maps to `auth.ErrUnauthenticated` (HTTP 401); a malformed user ID preserves `user.ErrInvalidUserID` as an internal contract failure (HTTP 500), not an authentication outcome.
 
-- User/session stores still use `FindBy...`; prefer `GetBy...` for new APIs and rename existing methods only as an intentional API change.
-- The user store accepts `postgres.Beginner` despite not opening transactions, and does not yet apply the identifier validation described above. Narrow dependencies and align validation when deliberately changing that store.
-- Session creation currently returns plain errors for expiration/collision failures; align recognized domain outcomes with sentinels when changing that contract.
-
-The wallet DTO revalidation and wallet store unit tests have been removed to match this convention. Other production behavior is unchanged by this documentation update.
+These API and error-contract changes do not change registration/login/logout policy, session lifetime or cookies, schema, or automatic main-wallet creation.
