@@ -21,6 +21,8 @@ type RegisterDTO struct {
 	Password string `json:"password" validate:"required,min=8"`
 }
 
+// Validate trims Name and Email in place, even if validation fails.
+// It leaves Password unchanged.
 func (p *RegisterDTO) Validate() error {
 	p.Name = strings.TrimSpace(p.Name)
 	p.Email = strings.TrimSpace(p.Email)
@@ -34,6 +36,8 @@ type LoginDTO struct {
 	Password string `json:"password" validate:"required,min=8"`
 }
 
+// Validate trims Email in place, even if validation fails.
+// It leaves Password unchanged.
 func (p *LoginDTO) Validate() error {
 	p.Email = strings.TrimSpace(p.Email)
 	payload := *p

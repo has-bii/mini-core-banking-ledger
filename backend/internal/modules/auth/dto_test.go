@@ -23,7 +23,7 @@ func assertValidationErrors(t *testing.T, err error, want validator.ErrorField) 
 	}
 }
 
-func TestDTO_Validate(t *testing.T) {
+func TestDTO_PasswordValidation(t *testing.T) {
 	t.Parallel()
 	// Keep whitespace, character-count, and bcrypt byte-limit regressions together.
 	for _, tt := range []struct {

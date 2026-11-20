@@ -63,6 +63,33 @@ func TestHandler_PreservesV2Session(t *testing.T) {
 	}
 }
 
+func TestHandler_CreateWallet(t *testing.T) {
+	t.Parallel()
+	want := wallet.Wallet{ID: "01a1c6de-805e-7b0c-a1b1-b851a9c38cce", UserID: walletTestUserID, Name: "Travel", Type: wallet.Savings}
+	store := &walletStoreStub{wallet: want}
+	r := httptest.NewRequest(http.MethodPost, "/wallets", strings.NewReader(`{"name":" Travel ","wallet_type":" savings "}`)).WithContext(t.Context())
+	r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
+	w := httptest.NewRecorder()
+	walletTestHandler(t, store).ServeHTTP(w, r)
+
+	if w.Code != http.StatusCreated {
+		t.Fatalf("status = %d, want %d: %s", w.Code, http.StatusCreated, w.Body.String())
+	}
+	wantInput := wallet.CreateWalletDTO{Name: "Travel", WalletType: "savings"}
+	if store.data == nil || *store.data != wantInput || store.userID != walletTestUserID {
+		t.Errorf("store received input %+v for user %q, want %+v for %q", store.data, store.userID, wantInput, walletTestUserID)
+	}
+	var got struct {
+		Data wallet.Wallet `json:"data"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil {
+		t.Fatal(err)
+	}
+	if got.Data != want {
+		t.Errorf("response data = %+v, want %+v", got.Data, want)
+	}
+}
+
 func TestHandler_CreateWalletRejectsInvalidPayload(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {

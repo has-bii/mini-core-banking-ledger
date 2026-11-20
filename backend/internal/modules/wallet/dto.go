@@ -21,6 +21,8 @@ type CreateWalletDTO struct {
 	WalletType string `json:"wallet_type" validate:"required,oneof=sub_wallet savings"`
 }
 
+// Validate trims Name and WalletType in place before checking the field rules.
+// The fields remain trimmed even if validation fails.
 func (p *CreateWalletDTO) Validate() error {
 	p.Name = strings.TrimSpace(p.Name)
 	p.WalletType = strings.TrimSpace(p.WalletType)

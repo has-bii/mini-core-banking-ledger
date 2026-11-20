@@ -17,17 +17,59 @@ import (
 	"testing"
 )
 
-// Failure injection only: ordinary HTTP outcomes use real services and PostgreSQL.
-type authServiceStub struct{ err error }
+type authServiceStub struct {
+	registerInput auth.RegisterDTO
+	loginInput    auth.LoginDTO
+	err           error
+}
 
-func (s authServiceStub) Register(context.Context, auth.RegisterDTO) (user.User, error) {
+func (s *authServiceStub) Register(_ context.Context, input auth.RegisterDTO) (user.User, error) {
+	s.registerInput = input
 	return user.User{}, s.err
 }
-func (s authServiceStub) Login(context.Context, auth.LoginDTO) (user.User, session.Session, string, error) {
+func (s *authServiceStub) Login(_ context.Context, input auth.LoginDTO) (user.User, session.Session, string, error) {
+	s.loginInput = input
 	return user.User{}, session.Session{}, "", s.err
 }
-func (s authServiceStub) Me(context.Context, string) (user.User, error) { return user.User{}, s.err }
-func (s authServiceStub) Logout(context.Context, string) error          { return s.err }
+func (s *authServiceStub) Me(context.Context, string) (user.User, error) { return user.User{}, s.err }
+func (s *authServiceStub) Logout(context.Context, string) error          { return s.err }
+
+func TestHandler_ForwardsNormalizedDTOs(t *testing.T) {
+	t.Parallel()
+	for _, tt := range []struct {
+		name, path, body string
+		status           int
+		wantRegister     auth.RegisterDTO
+		wantLogin        auth.LoginDTO
+	}{
+		{
+			name: "register", path: "/auth/register", status: http.StatusCreated,
+			body:         `{"name":" Alice ","email":" alice@example.com ","password":" password "}`,
+			wantRegister: auth.RegisterDTO{Name: "Alice", Email: "alice@example.com", Password: " password "},
+		},
+		{
+			name: "login", path: "/auth/login", status: http.StatusOK,
+			body:      `{"email":" alice@example.com ","password":" password "}`,
+			wantLogin: auth.LoginDTO{Email: "alice@example.com", Password: " password "},
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			svc := &authServiceStub{}
+			mux := http.NewServeMux()
+			auth.NewHandler(svc, nil, false).Register(mux)
+			w := httptest.NewRecorder()
+			r := httptest.NewRequest(http.MethodPost, tt.path, strings.NewReader(tt.body)).WithContext(t.Context())
+			mux.ServeHTTP(w, r)
+			if w.Code != tt.status {
+				t.Fatalf("status = %d, want %d", w.Code, tt.status)
+			}
+			if svc.registerInput != tt.wantRegister || svc.loginInput != tt.wantLogin {
+				t.Error("service did not receive the expected normalized fields and unchanged password")
+			}
+		})
+	}
+}
 
 func TestHandler_RejectsInvalidPayload(t *testing.T) {
 	t.Parallel()
@@ -103,7 +145,7 @@ func TestHandler_UnexpectedErrors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			mux := http.NewServeMux()
-			auth.NewHandler(authServiceStub{err: errors.New("secret database credentials")}, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+			auth.NewHandler(&authServiceStub{err: errors.New("secret database credentials")}, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
 			// Resolve identity only to reach the handler's injected failure.
 			h := middleware.GetUserFromSession(func(context.Context, string) (string, error) { return "user-id", nil })(mux)
 			r := httptest.NewRequest(tt.method, tt.path, strings.NewReader(tt.payload))
@@ -146,7 +188,7 @@ func TestHandler_MeRequiresResolvedIdentity(t *testing.T) {
 func TestHandler_DeletedUserAfterResolution(t *testing.T) {
 	t.Parallel()
 	mux := http.NewServeMux()
-	auth.NewHandler(authServiceStub{err: auth.ErrUnauthenticated}, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+	auth.NewHandler(&authServiceStub{err: auth.ErrUnauthenticated}, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
 	h := middleware.GetUserFromSession(func(context.Context, string) (string, error) { return "deleted-user", nil })(mux)
 	r := httptest.NewRequest("GET", "/auth/me", nil)
 	r.AddCookie(&http.Cookie{Name: "session", Value: "raw-token"})
