@@ -26,8 +26,8 @@ func TestUserIDFromContext(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			// A string key with a similar name must not impersonate middleware authentication.
-			ctx := context.WithValue(context.Background(), "userID", "untrusted-user")
+			//nolint:staticcheck // Verify a plain string key cannot impersonate middleware authentication.
+			ctx := context.WithValue(t.Context(), "userID", "untrusted-user")
 			request := httptest.NewRequest(http.MethodGet, "/private", nil).WithContext(ctx)
 			if tt.authenticated {
 				request.AddCookie(&http.Cookie{Name: "session", Value: "session-token"})

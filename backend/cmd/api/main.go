@@ -43,7 +43,11 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	defer redisClient.Close()
+	defer func() {
+		if err := redisClient.Close(); err != nil {
+			log.Warn("close Redis client", "err", err)
+		}
+	}()
 
 	handler, err := app.New(cfg, pool, redisClient, log)
 	if err != nil {
@@ -58,7 +62,11 @@ func run() error {
 		IdleTimeout:       cfg.ShutdownTimeout,
 	}
 
-	defer server.Close()
+	defer func() {
+		if err := server.Close(); err != nil {
+			log.Warn("close HTTP server", "err", err)
+		}
+	}()
 
 	errs := make(chan error, 1)
 	go func() {
