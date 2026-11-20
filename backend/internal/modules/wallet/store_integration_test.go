@@ -1,10 +1,10 @@
 //go:build integration
 
-package account_test
+package wallet_test
 
 import (
-	"backend/internal/modules/account"
 	"backend/internal/modules/user"
+	"backend/internal/modules/wallet"
 	"backend/internal/testutil"
 	"errors"
 	"reflect"
@@ -25,15 +25,15 @@ func TestStore_GetByID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	store := account.NewStore(pool)
-	accounts, err := store.ListByUserID(t.Context(), owner.ID)
+	store := wallet.NewStore(pool)
+	wallets, err := store.ListByUserID(t.Context(), owner.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(accounts) != 1 {
-		t.Fatalf("owner accounts = %d, want 1", len(accounts))
+	if len(wallets) != 1 {
+		t.Fatalf("owner wallets = %d, want 1", len(wallets))
 	}
-	want := accounts[0]
+	want := wallets[0]
 
 	for _, tt := range []struct {
 		name   string
@@ -41,14 +41,14 @@ func TestStore_GetByID(t *testing.T) {
 		userID string
 		err    error
 	}{
-		{name: "returns owned account", id: want.ID, userID: owner.ID},
-		{name: "missing account", id: "00000000-0000-0000-0000-000000000000", userID: owner.ID, err: account.ErrNotFound},
-		{name: "another user's account", id: want.ID, userID: other.ID, err: account.ErrNotFound},
-		{name: "missing user", id: want.ID, userID: "00000000-0000-0000-0000-000000000000", err: account.ErrNotFound},
-		{name: "invalid account ID", id: "invalid", userID: owner.ID, err: account.ErrInvalidAccountID},
-		{name: "empty account ID", userID: owner.ID, err: account.ErrInvalidAccountID},
-		{name: "invalid user ID", id: want.ID, userID: "invalid", err: account.ErrInvalidUserID},
-		{name: "empty user ID", id: want.ID, err: account.ErrInvalidUserID},
+		{name: "returns owned wallet", id: want.ID, userID: owner.ID},
+		{name: "missing wallet", id: "00000000-0000-0000-0000-000000000000", userID: owner.ID, err: wallet.ErrNotFound},
+		{name: "another user's wallet", id: want.ID, userID: other.ID, err: wallet.ErrNotFound},
+		{name: "missing user", id: want.ID, userID: "00000000-0000-0000-0000-000000000000", err: wallet.ErrNotFound},
+		{name: "invalid wallet ID", id: "invalid", userID: owner.ID, err: wallet.ErrInvalidWalletID},
+		{name: "empty wallet ID", userID: owner.ID, err: wallet.ErrInvalidWalletID},
+		{name: "invalid user ID", id: want.ID, userID: "invalid", err: wallet.ErrInvalidUserID},
+		{name: "empty user ID", id: want.ID, err: wallet.ErrInvalidUserID},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := store.GetByID(t.Context(), tt.id, tt.userID)
@@ -56,8 +56,8 @@ func TestStore_GetByID(t *testing.T) {
 				t.Fatalf("GetByID() error = %v, want %v", err, tt.err)
 			}
 			if tt.err != nil {
-				if !reflect.DeepEqual(got, account.Account{}) {
-					t.Errorf("GetByID() returned account on error: %+v", got)
+				if !reflect.DeepEqual(got, wallet.Wallet{}) {
+					t.Errorf("GetByID() returned wallet on error: %+v", got)
 				}
 				return
 			}
@@ -70,16 +70,16 @@ func TestStore_GetByID(t *testing.T) {
 	t.Run("database error", func(t *testing.T) {
 		pool.Close()
 		got, err := store.GetByID(t.Context(), want.ID, owner.ID)
-		if err == nil || errors.Is(err, account.ErrNotFound) || errors.Is(err, account.ErrInvalidAccountID) || errors.Is(err, account.ErrInvalidUserID) {
+		if err == nil || errors.Is(err, wallet.ErrNotFound) || errors.Is(err, wallet.ErrInvalidWalletID) || errors.Is(err, wallet.ErrInvalidUserID) {
 			t.Fatalf("GetByID() error = %v, want database error", err)
 		}
-		if !reflect.DeepEqual(got, account.Account{}) {
-			t.Errorf("GetByID() returned account on error: %+v", got)
+		if !reflect.DeepEqual(got, wallet.Wallet{}) {
+			t.Errorf("GetByID() returned wallet on error: %+v", got)
 		}
 	})
 }
 
-func TestStore_ListAccounts(t *testing.T) {
+func TestStore_ListWallets(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
 
@@ -95,19 +95,19 @@ func TestStore_ListAccounts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	store := account.NewStore(pool)
+	store := wallet.NewStore(pool)
 
-	accounts, err := store.ListByUserID(t.Context(), u.ID)
+	wallets, err := store.ListByUserID(t.Context(), u.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// accounts count
-	if length := len(accounts); length != 1 {
+	// wallets count
+	if length := len(wallets); length != 1 {
 		t.Fatalf("ListByUserID() length != 1, %d", length)
 	}
 
-	got := &accounts[0]
+	got := &wallets[0]
 
 	// Check ownership
 	if got.UserID != u.ID {
@@ -121,11 +121,11 @@ func TestStore_ListAccounts(t *testing.T) {
 	if uuid.Validate(got.UserID) != nil {
 		t.Errorf("Mapping failed! Expected UserID to be valid UUID, got '%v'", got.UserID)
 	}
-	if got.Name != "Main Account" {
-		t.Errorf("Mapping failed! Expected Name to be 'Main Account', got '%v'", got.Name)
+	if got.Name != "Main Wallet" {
+		t.Errorf("Mapping failed! Expected Name to be 'Main Wallet', got '%v'", got.Name)
 	}
-	if got.Type != account.Main {
-		t.Errorf("Mapping failed! Expected Type to be '%v', got '%v'", account.Main, got.Type)
+	if got.Type != wallet.Main {
+		t.Errorf("Mapping failed! Expected Type to be '%v', got '%v'", wallet.Main, got.Type)
 	}
 	if got.SortOrder != 0 {
 		t.Errorf("Mapping failed! Expected SortOrder to be 0, got '%v'", got.SortOrder)
@@ -145,20 +145,20 @@ func TestStore_Create(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	store := account.NewStore(pool)
+	store := wallet.NewStore(pool)
 
 	t.Run("concurrent creates commit with distinct sort orders", func(t *testing.T) {
 		const count = 4
 		type result struct {
-			account account.Account
-			err     error
+			wallet wallet.Wallet
+			err    error
 		}
 		results := make(chan result, count)
 		start := make(chan struct{})
 		for range count {
 			go func() {
 				<-start
-				a, err := store.Create(t.Context(), owner.ID, &account.CreateAccountDTO{Name: "Savings", AccountType: string(account.Savings)})
+				a, err := store.Create(t.Context(), owner.ID, &wallet.CreateWalletDTO{Name: "Savings", WalletType: string(wallet.Savings)})
 				results <- result{a, err}
 			}()
 		}
@@ -171,8 +171,8 @@ func TestStore_Create(t *testing.T) {
 				t.Errorf("Create() error = %v", got.err)
 				continue
 			}
-			a := got.account
-			if a.UserID != owner.ID || a.Name != "Savings" || a.Type != account.Savings || a.Balance != 0 || a.CreatedAt.IsZero() {
+			a := got.wallet
+			if a.UserID != owner.ID || a.Name != "Savings" || a.Type != wallet.Savings || a.Balance != 0 || a.CreatedAt.IsZero() {
 				t.Errorf("Create() = %+v, unexpected fields", a)
 			}
 			if a.SortOrder < 1 || a.SortOrder > count || orders[a.SortOrder] {
@@ -181,12 +181,12 @@ func TestStore_Create(t *testing.T) {
 			orders[a.SortOrder] = true
 			persisted, err := store.GetByID(t.Context(), a.ID, owner.ID)
 			if err != nil || !reflect.DeepEqual(persisted, a) {
-				t.Errorf("persisted account = %+v, %v; want %+v", persisted, err, a)
+				t.Errorf("persisted wallet = %+v, %v; want %+v", persisted, err, a)
 			}
 		}
-		accounts, err := store.ListByUserID(t.Context(), owner.ID)
-		if err != nil || len(accounts) != count+1 {
-			t.Errorf("ListByUserID() count = %d, error = %v; want %d accounts including main", len(accounts), err, count+1)
+		wallets, err := store.ListByUserID(t.Context(), owner.ID)
+		if err != nil || len(wallets) != count+1 {
+			t.Errorf("ListByUserID() count = %d, error = %v; want %d wallets including main", len(wallets), err, count+1)
 		}
 	})
 
@@ -195,13 +195,13 @@ func TestStore_Create(t *testing.T) {
 		userID string
 		err    error
 	}{
-		{name: "missing user", userID: "00000000-0000-0000-0000-000000000000", err: account.ErrNotFound},
-		{name: "invalid user ID", userID: "invalid", err: account.ErrInvalidUserID},
+		{name: "missing user", userID: "00000000-0000-0000-0000-000000000000", err: wallet.ErrNotFound},
+		{name: "invalid user ID", userID: "invalid", err: wallet.ErrInvalidUserID},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.Create(t.Context(), tt.userID, &account.CreateAccountDTO{Name: "Savings", AccountType: string(account.Savings)})
-			if !errors.Is(err, tt.err) || !reflect.DeepEqual(got, account.Account{}) {
-				t.Errorf("Create() = %+v, %v; want zero account, %v", got, err, tt.err)
+			got, err := store.Create(t.Context(), tt.userID, &wallet.CreateWalletDTO{Name: "Savings", WalletType: string(wallet.Savings)})
+			if !errors.Is(err, tt.err) || !reflect.DeepEqual(got, wallet.Wallet{}) {
+				t.Errorf("Create() = %+v, %v; want zero wallet, %v", got, err, tt.err)
 			}
 		})
 	}

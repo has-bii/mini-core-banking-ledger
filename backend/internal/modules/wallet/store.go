@@ -1,4 +1,4 @@
-package account
+package wallet
 
 import (
 	"backend/internal/platform/postgres"
@@ -16,18 +16,18 @@ func NewStore(db postgres.Beginner) *Store { return &Store{db: db} }
 
 type scanner interface{ Scan(dest ...any) error }
 
-func scanAccount(r scanner) (Account, error) {
-	var a Account
+func scanWallet(r scanner) (Wallet, error) {
+	var a Wallet
 	err := r.Scan(&a.ID, &a.UserID, &a.Name, &a.Type, &a.SortOrder, &a.Balance, &a.CreatedAt)
 	return a, err
 }
 
-func (s *Store) ListByUserID(ctx context.Context, userID string) ([]Account, error) {
+func (s *Store) ListByUserID(ctx context.Context, userID string) ([]Wallet, error) {
 	if err := uuid.Validate(userID); err != nil {
 		return nil, fmt.Errorf("list by user id: %w", ErrInvalidUserID)
 	}
 
-	const q = `SELECT id, user_id, name, type, sort_order, balance, created_at FROM accounts
+	const q = `SELECT id, user_id, name, type, sort_order, balance, created_at FROM wallets
 	WHERE user_id = $1
 	ORDER BY sort_order ASC`
 
@@ -35,42 +35,42 @@ func (s *Store) ListByUserID(ctx context.Context, userID string) ([]Account, err
 	if err != nil {
 		return nil, fmt.Errorf("list by user id: %w", err)
 	}
-	return pgx.CollectRows(rows, func(r pgx.CollectableRow) (Account, error) {
-		return scanAccount(r)
+	return pgx.CollectRows(rows, func(r pgx.CollectableRow) (Wallet, error) {
+		return scanWallet(r)
 	})
 }
 
-func (s *Store) GetByID(ctx context.Context, ID, userID string) (Account, error) {
+func (s *Store) GetByID(ctx context.Context, ID, userID string) (Wallet, error) {
 	if err := uuid.Validate(ID); err != nil {
-		return Account{}, fmt.Errorf("account by id: %w", ErrInvalidAccountID)
+		return Wallet{}, fmt.Errorf("wallet by id: %w", ErrInvalidWalletID)
 	}
 	if err := uuid.Validate(userID); err != nil {
-		return Account{}, fmt.Errorf("account by id: %w", ErrInvalidUserID)
+		return Wallet{}, fmt.Errorf("wallet by id: %w", ErrInvalidUserID)
 	}
 
-	const q = `SELECT id, user_id, name, type, sort_order, balance, created_at FROM accounts
+	const q = `SELECT id, user_id, name, type, sort_order, balance, created_at FROM wallets
 	WHERE id = $1 AND user_id = $2`
 
-	a, err := scanAccount(s.db.QueryRow(ctx, q, ID, userID))
+	a, err := scanWallet(s.db.QueryRow(ctx, q, ID, userID))
 	if errors.Is(err, pgx.ErrNoRows) {
-		return Account{}, ErrNotFound
+		return Wallet{}, ErrNotFound
 	}
 	if err != nil {
-		return Account{}, fmt.Errorf("account by id: %w", err)
+		return Wallet{}, fmt.Errorf("wallet by id: %w", err)
 	}
 	return a, nil
 }
 
-func (s *Store) Create(ctx context.Context, userID string, data *CreateAccountDTO) (Account, error) {
+func (s *Store) Create(ctx context.Context, userID string, data *CreateWalletDTO) (Wallet, error) {
 	if err := uuid.Validate(userID); err != nil {
-		return Account{}, fmt.Errorf("create account: %w", ErrInvalidUserID)
+		return Wallet{}, fmt.Errorf("create wallet: %w", ErrInvalidUserID)
 	}
 
 	if errs := data.Validate(); errs != nil {
-		return Account{}, fmt.Errorf("create account: %w", errs)
+		return Wallet{}, fmt.Errorf("create wallet: %w", errs)
 	}
 
-	var a Account
+	var a Wallet
 	err := postgres.InTx(ctx, s.db, func(tx pgx.Tx) error {
 		// Serialize sort-order allocation for this user until the transaction commits.
 		var lockedUserID string
@@ -79,12 +79,12 @@ func (s *Store) Create(ctx context.Context, userID string, data *CreateAccountDT
 			return ErrNotFound
 		}
 		if err != nil {
-			return fmt.Errorf("lock account owner: %w", err)
+			return fmt.Errorf("lock wallet owner: %w", err)
 		}
 
 		var lastSortOrder int
 		err = tx.QueryRow(ctx,
-			`SELECT sort_order FROM accounts WHERE user_id = $1 ORDER BY sort_order DESC LIMIT 1`,
+			`SELECT sort_order FROM wallets WHERE user_id = $1 ORDER BY sort_order DESC LIMIT 1`,
 			userID).Scan(&lastSortOrder)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrNotFound
@@ -93,19 +93,19 @@ func (s *Store) Create(ctx context.Context, userID string, data *CreateAccountDT
 			return err
 		}
 		err = tx.QueryRow(ctx,
-			`INSERT INTO accounts (user_id, name, type, sort_order)
+			`INSERT INTO wallets (user_id, name, type, sort_order)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, user_id, name, type, sort_order, balance, created_at`,
-			userID, data.Name, data.AccountType, lastSortOrder+1,
+			userID, data.Name, data.WalletType, lastSortOrder+1,
 		).Scan(&a.ID, &a.UserID, &a.Name, &a.Type, &a.SortOrder, &a.Balance, &a.CreatedAt)
 
 		if err != nil {
-			return fmt.Errorf("create account: %w", err)
+			return fmt.Errorf("create wallet: %w", err)
 		}
 		return nil
 	})
 	if err != nil {
-		return Account{}, err
+		return Wallet{}, err
 	}
 	return a, nil
 }

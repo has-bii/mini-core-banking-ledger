@@ -1,4 +1,4 @@
-package account
+package wallet
 
 import (
 	"backend/internal/platform/httpx"
@@ -10,26 +10,26 @@ import (
 )
 
 type Handler struct {
-	accountService *Service
-	log            *slog.Logger
+	walletService *Service
+	log           *slog.Logger
 }
 
-func NewHandler(accountService *Service, log *slog.Logger) *Handler {
+func NewHandler(walletService *Service, log *slog.Logger) *Handler {
 	if log == nil {
 		log = slog.Default()
 	}
-	return &Handler{accountService: accountService, log: log}
+	return &Handler{walletService: walletService, log: log}
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
-	mux.Handle("POST /accounts", middleware.AuthGuard(h.createAccount))
-	mux.Handle("GET /accounts", middleware.AuthGuard(h.getAccounts))
-	mux.Handle("GET /accounts/{id}", middleware.AuthGuard(h.getAccount))
+	mux.Handle("POST /wallets", middleware.AuthGuard(h.createWallet))
+	mux.Handle("GET /wallets", middleware.AuthGuard(h.getWallets))
+	mux.Handle("GET /wallets/{id}", middleware.AuthGuard(h.getWallet))
 }
 
-func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) createWallet(w http.ResponseWriter, r *http.Request) {
 	httpx.NoStoreHeader(w)
-	var payload CreateAccountDTO
+	var payload CreateWalletDTO
 	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
 		h.sendError(w, r, err)
 		return
@@ -39,7 +39,7 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userID, _ := middleware.UserIDFromContext(r.Context())
-	data, err := h.accountService.CreateUserAccount(r.Context(), userID, &payload)
+	data, err := h.walletService.CreateUserWallet(r.Context(), userID, &payload)
 	if err != nil {
 		h.sendError(w, r, err)
 		return
@@ -47,10 +47,10 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 	h.sendSuccess(w, r, http.StatusCreated, data)
 }
 
-func (h *Handler) getAccount(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) getWallet(w http.ResponseWriter, r *http.Request) {
 	httpx.NoStoreHeader(w)
 	userID, _ := middleware.UserIDFromContext(r.Context())
-	data, err := h.accountService.GetUserAccount(r.Context(), r.PathValue("id"), userID)
+	data, err := h.walletService.GetUserWallet(r.Context(), r.PathValue("id"), userID)
 	if err != nil {
 		h.sendError(w, r, err)
 		return
@@ -58,10 +58,10 @@ func (h *Handler) getAccount(w http.ResponseWriter, r *http.Request) {
 	h.sendSuccess(w, r, http.StatusOK, data)
 }
 
-func (h *Handler) getAccounts(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) getWallets(w http.ResponseWriter, r *http.Request) {
 	httpx.NoStoreHeader(w)
 	userID, _ := middleware.UserIDFromContext(r.Context())
-	data, err := h.accountService.GetUserAccounts(r.Context(), userID)
+	data, err := h.walletService.GetUserWallets(r.Context(), userID)
 	if err != nil {
 		h.sendError(w, r, err)
 		return
@@ -71,7 +71,7 @@ func (h *Handler) getAccounts(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) sendSuccess(w http.ResponseWriter, r *http.Request, status int, data any) {
 	if err := httpx.SendSuccess(w, status, httpx.NewSuccessResponse("", data)); err != nil {
-		h.log.ErrorContext(r.Context(), "write account response", "err", err)
+		h.log.ErrorContext(r.Context(), "write wallet response", "err", err)
 	}
 }
 
@@ -86,15 +86,15 @@ func (h *Handler) sendError(w http.ResponseWriter, r *http.Request, err error) {
 		status, detail = http.StatusBadRequest, fields.Error()
 	case errors.Is(err, ErrNotFound):
 		status, detail = http.StatusNotFound, ErrNotFound.Error()
-	case errors.Is(err, ErrInvalidAccountID):
-		status, detail = http.StatusBadRequest, ErrInvalidAccountID.Error()
+	case errors.Is(err, ErrInvalidWalletID):
+		status, detail = http.StatusBadRequest, ErrInvalidWalletID.Error()
 	case errors.Is(err, ErrInvalidUserID):
 		status, detail = http.StatusBadRequest, ErrInvalidUserID.Error()
 	}
 	if status == http.StatusInternalServerError {
-		h.log.ErrorContext(r.Context(), "account request failed", "err", err, "method", r.Method, "path", r.URL.Path)
+		h.log.ErrorContext(r.Context(), "wallet request failed", "err", err, "method", r.Method, "path", r.URL.Path)
 	}
 	if err := httpx.SendError(w, httpx.NewErrorResponse(http.StatusText(status), status, detail, r.URL.Path, fields)); err != nil {
-		h.log.ErrorContext(r.Context(), "write account error response", "err", err)
+		h.log.ErrorContext(r.Context(), "write wallet error response", "err", err)
 	}
 }

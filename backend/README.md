@@ -41,6 +41,8 @@ goose -env .env create add_user_field sql
 
 Edit generated files in `migrations/` under `-- +goose Up` and `-- +goose Down`.
 
+The wallet migration replaces the original account migration in development history. Existing development databases created with the account schema must be reset before applying migrations; `goose up` will not rename an already-applied schema. Resetting deletes existing data. The API now uses `/api/wallets`, `wallet_type`, and `sub_wallet`; legacy account routes and fields are not supported.
+
 ## Tests and checks
 
 Run commands from `backend/`.
@@ -93,8 +95,8 @@ No coverage threshold is enforced.
 
 See [api/openapi.yaml](api/openapi.yaml) (OpenAPI 3.0.3) for implemented endpoints, request and response schemas, validation, errors, and session cookies.
 
-Registration, login, and account creation use `go-playground/validator/v10` built-in rules. Invalid JSON or fields return `400`; bodies exceeding 1 MiB return `413`. Validation reports all invalid fields, first failed rule per field.
+Registration, login, and wallet creation use `go-playground/validator/v10` built-in rules. Invalid JSON or fields return `400`; bodies exceeding 1 MiB return `413`. Validation reports all invalid fields, first failed rule per field.
 
-Auth, account, and shared middleware use `application/problem+json` errors (`type`, `title`, `status`, `detail`, `instance`, and optional validation `errors` keyed by JSON field name). Success responses contain `data` and an optional `message`; logout remains an empty `204`. CSRF rejections from Go's cross-origin protection return `403` problem details using the same error format. Consumers must support this error contract; legacy error codes and detail arrays are not returned.
+Auth, wallet, and shared middleware use `application/problem+json` errors (`type`, `title`, `status`, `detail`, `instance`, and optional validation `errors` keyed by JSON field name). Success responses contain `data` and an optional `message`; logout remains an empty `204`. CSRF rejections from Go's cross-origin protection return `403` problem details using the same error format. Consumers must support this error contract; legacy error codes and detail arrays are not returned.
 
 See [architecture guidelines](docs/architecture.md) for layer responsibilities, transactions, and validation rules.

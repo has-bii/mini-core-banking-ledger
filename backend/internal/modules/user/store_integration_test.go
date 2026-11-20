@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestStore_CreateMainAccount(t *testing.T) {
+func TestStore_CreateMainWallet(t *testing.T) {
 	t.Parallel()
 	db := testutil.Postgres(t)
 	store := user.NewStore(db)
@@ -18,19 +18,19 @@ func TestStore_CreateMainAccount(t *testing.T) {
 		t.Fatal(err)
 	}
 	var count int
-	if err := db.QueryRow(t.Context(), `SELECT count(*) FROM accounts WHERE user_id = $1`, created.ID).Scan(&count); err != nil {
+	if err := db.QueryRow(t.Context(), `SELECT count(*) FROM wallets WHERE user_id = $1`, created.ID).Scan(&count); err != nil {
 		t.Fatal(err)
 	}
 	if count != 1 {
-		t.Fatalf("account count = %d, want 1", count)
+		t.Fatalf("wallet count = %d, want 1", count)
 	}
-	var name, accountType string
+	var name, walletType string
 	var sortOrder, balance int64
-	if err := db.QueryRow(t.Context(), `SELECT name, type, sort_order, balance FROM accounts WHERE user_id = $1`, created.ID).Scan(&name, &accountType, &sortOrder, &balance); err != nil {
+	if err := db.QueryRow(t.Context(), `SELECT name, type, sort_order, balance FROM wallets WHERE user_id = $1`, created.ID).Scan(&name, &walletType, &sortOrder, &balance); err != nil {
 		t.Fatal(err)
 	}
-	if name != "Main Account" || accountType != "main" || sortOrder != 0 || balance != 0 {
-		t.Fatalf("main account = (%q, %q, %d, %d), want (Main Account, main, 0, 0)", name, accountType, sortOrder, balance)
+	if name != "Main Wallet" || walletType != "main" || sortOrder != 0 || balance != 0 {
+		t.Fatalf("main wallet = (%q, %q, %d, %d), want (Main Wallet, main, 0, 0)", name, walletType, sortOrder, balance)
 	}
 }
 

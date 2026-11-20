@@ -3,13 +3,13 @@ info:
   title: Mini Core Banking Ledger API
   version: 0.1.0
   description: |
-    Contract for the implemented authentication and account APIs.
+    Contract for the implemented authentication and wallet APIs.
     JSON request bodies must contain exactly one JSON object, must not exceed
     1 MiB, and must not contain unknown fields. Empty, malformed, non-object,
     and otherwise invalid bodies return 400. Oversized bodies return 413,
     including oversized trailing whitespace.
 
-    Auth, account, and shared middleware use problem details
+    Auth, wallet, and shared middleware use problem details
     (application/problem+json): type, title, status, detail, instance, and
     optional validation errors keyed by JSON field name. Success responses use
     data and an optional message; logout returns an empty 204.
@@ -52,7 +52,7 @@ servers:
     description: Local development (default HTTP_ADDR)
 tags:
   - name: Auth
-  - name: Accounts
+  - name: Wallets
 paths:
   /auth/register:
     post:
@@ -233,17 +233,17 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalError'
-  /accounts:
+  /wallets:
     post:
-      tags: [Accounts]
-      operationId: createAccount
-      summary: Create an account for the current user
+      tags: [Wallets]
+      operationId: createWallet
+      summary: Create an wallet for the current user
       description: |
-        Requires a valid, unexpired session. Creates a sub_account or savings
-        account owned by the current user, with a zero balance and the next
-        sort_order. Main accounts cannot be created through this endpoint.
+        Requires a valid, unexpired session. Creates a sub_wallet or savings
+        wallet owned by the current user, with a zero balance and the next
+        sort_order. Main wallets cannot be created through this endpoint.
         Ownership, balance, and sort_order are assigned by the server and must
-        not be supplied in the request. Responses from the account handler
+        not be supplied in the request. Responses from the wallet handler
         and authentication guard include Cache-Control: no-store; errors from
         shared middleware may omit this header.
       security:
@@ -253,73 +253,73 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAccountRequest'
+              $ref: '#/components/schemas/CreateWalletRequest'
             example:
               name: Travel
-              account_type: savings
+              wallet_type: savings
       responses:
         '201':
-          description: Account created for the current user.
+          description: Wallet created for the current user.
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountResponse'
+                $ref: '#/components/schemas/WalletResponse'
         '400':
-          $ref: '#/components/responses/AccountBadRequest'
+          $ref: '#/components/responses/WalletBadRequest'
         '413':
-          $ref: '#/components/responses/AccountPayloadTooLarge'
+          $ref: '#/components/responses/WalletPayloadTooLarge'
         '401':
-          $ref: '#/components/responses/AccountUnauthenticated'
+          $ref: '#/components/responses/WalletUnauthenticated'
         '403':
           $ref: '#/components/responses/CrossOriginForbidden'
         '404':
-          $ref: '#/components/responses/AccountNotFound'
+          $ref: '#/components/responses/WalletNotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
-          $ref: '#/components/responses/AccountInternalError'
+          $ref: '#/components/responses/WalletInternalError'
     get:
-      tags: [Accounts]
-      operationId: getAccounts
-      summary: List the current user's accounts
+      tags: [Wallets]
+      operationId: getWallets
+      summary: List the current user's wallets
       description: |
-        Requires a valid, unexpired session. Returns only accounts belonging to
+        Requires a valid, unexpired session. Returns only wallets belonging to
         the current user, ordered by sort_order ascending. Query parameters
-        are ignored. Responses from the account
+        are ignored. Responses from the wallet
         handler and authentication guard include Cache-Control: no-store;
         errors from the shared middleware may omit this header.
       security:
         - sessionCookie: []
       responses:
         '200':
-          description: Accounts for the current user; an empty array if none exist.
+          description: Wallets for the current user; an empty array if none exist.
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountsResponse'
+                $ref: '#/components/schemas/WalletsResponse'
         '400':
-          $ref: '#/components/responses/AccountBadRequest'
+          $ref: '#/components/responses/WalletBadRequest'
         '401':
-          $ref: '#/components/responses/AccountUnauthenticated'
+          $ref: '#/components/responses/WalletUnauthenticated'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
-          $ref: '#/components/responses/AccountInternalError'
-  /accounts/{id}:
+          $ref: '#/components/responses/WalletInternalError'
+  /wallets/{id}:
     get:
-      tags: [Accounts]
-      operationId: getAccount
-      summary: Get one of the current user's accounts
+      tags: [Wallets]
+      operationId: getWallet
+      summary: Get one of the current user's wallets
       description: |
         Requires a valid, unexpired session. Returns 404 for both missing
-        accounts and accounts belonging to another user. Query parameters
-        are ignored. Responses from the account handler and authentication
+        wallets and wallets belonging to another user. Query parameters
+        are ignored. Responses from the wallet handler and authentication
         guard include Cache-Control: no-store; errors from shared middleware
         may omit this header.
       security:
@@ -328,30 +328,30 @@ paths:
         - name: id
           in: path
           required: true
-          description: ID of an account belonging to the current user.
+          description: ID of an wallet belonging to the current user.
           schema:
             type: string
             format: uuid
       responses:
         '200':
-          description: The requested account belonging to the current user.
+          description: The requested wallet belonging to the current user.
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountResponse'
+                $ref: '#/components/schemas/WalletResponse'
         '400':
-          $ref: '#/components/responses/AccountBadRequest'
+          $ref: '#/components/responses/WalletBadRequest'
         '401':
-          $ref: '#/components/responses/AccountUnauthenticated'
+          $ref: '#/components/responses/WalletUnauthenticated'
         '404':
-          $ref: '#/components/responses/AccountNotFound'
+          $ref: '#/components/responses/WalletNotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
-          $ref: '#/components/responses/AccountInternalError'
+          $ref: '#/components/responses/WalletInternalError'
 components:
   securitySchemes:
     sessionCookie:
@@ -361,7 +361,7 @@ components:
       description: Opaque session token set by login; expires after 24 hours.
   headers:
     NoStore:
-      description: Prevents caching of session-related and account responses.
+      description: Prevents caching of session-related and wallet responses.
       schema:
         type: string
         enum: [no-store]
@@ -430,10 +430,10 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/User'
-    CreateAccountRequest:
+    CreateWalletRequest:
       type: object
       additionalProperties: false
-      required: [name, account_type]
+      required: [name, wallet_type]
       properties:
         name:
           type: string
@@ -441,15 +441,15 @@ components:
             Surrounding whitespace is trimmed before validation. The result
             must contain 3 to 32 ASCII letters or spaces and must not be empty.
           example: Travel
-        account_type:
+        wallet_type:
           type: string
           description: |
             Surrounding whitespace is trimmed before validation. The result
-            must be sub_account or savings (case-sensitive); main is rejected.
+            must be sub_wallet or savings (case-sensitive); main is rejected.
           example: savings
-    Account:
+    Wallet:
       type: object
-      required: [id, user_id, name, account_type, sort_order, balance, created_at]
+      required: [id, user_id, name, wallet_type, sort_order, balance, created_at]
       properties:
         id:
           type: string
@@ -459,9 +459,9 @@ components:
           format: uuid
         name:
           type: string
-        account_type:
+        wallet_type:
           type: string
-          enum: [main, sub_account, savings]
+          enum: [main, sub_wallet, savings]
         sort_order:
           type: integer
           minimum: 0
@@ -472,27 +472,27 @@ components:
         created_at:
           type: string
           format: date-time
-    AccountResponse:
+    WalletResponse:
       type: object
       required: [data]
       properties:
         data:
-          $ref: '#/components/schemas/Account'
+          $ref: '#/components/schemas/Wallet'
         message:
           type: string
           description: Optional success message; omitted when empty.
-    AccountsResponse:
+    WalletsResponse:
       type: object
       required: [data]
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Account'
+            $ref: '#/components/schemas/Wallet'
         message:
           type: string
           description: Optional success message; omitted when empty.
-    AccountProblem:
+    WalletProblem:
       type: object
       required: [type, title, status, detail, instance]
       properties:
@@ -519,26 +519,26 @@ components:
               type: string
     ErrorResponse:
       allOf:
-        - $ref: '#/components/schemas/AccountProblem'
+        - $ref: '#/components/schemas/WalletProblem'
   responses:
-    AccountBadRequest:
-      description: Invalid JSON object, unknown field, invalid field value, or invalid account/user ID. Only validation failures include errors.
+    WalletBadRequest:
+      description: Invalid JSON object, unknown field, invalid field value, or invalid wallet/user ID. Only validation failures include errors.
       headers:
         Cache-Control:
           $ref: '#/components/headers/NoStore'
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/AccountProblem'
+            $ref: '#/components/schemas/WalletProblem'
           example:
             type: about:blank
             title: Bad Request
             status: 400
             detail: One or more fields are invalid. Check the field errors for details.
-            instance: /accounts
+            instance: /wallets
             errors:
               name: [This field is required]
-    AccountUnauthenticated:
+    WalletUnauthenticated:
       description: Session is expired or invalid.
       headers:
         Cache-Control:
@@ -546,23 +546,23 @@ components:
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/AccountProblem'
+            $ref: '#/components/schemas/WalletProblem'
           example:
             type: about:blank
             title: Unauthorized
             status: 401
             detail: Session is expired or invalid
-            instance: /accounts
-    AccountNotFound:
-      description: Account or owner was not found, or the account belongs to another user.
+            instance: /wallets
+    WalletNotFound:
+      description: Wallet or owner was not found, or the wallet belongs to another user.
       headers:
         Cache-Control:
           $ref: '#/components/headers/NoStore'
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/AccountProblem'
-    AccountPayloadTooLarge:
+            $ref: '#/components/schemas/WalletProblem'
+    WalletPayloadTooLarge:
       description: Request body exceeds 1 MiB, including trailing data.
       headers:
         Cache-Control:
@@ -570,16 +570,16 @@ components:
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/AccountProblem'
-    AccountInternalError:
-      description: Unexpected server error. Account handler errors include no-store; shared middleware may omit it.
+            $ref: '#/components/schemas/WalletProblem'
+    WalletInternalError:
+      description: Unexpected server error. Wallet handler errors include no-store; shared middleware may omit it.
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/AccountProblem'
+            $ref: '#/components/schemas/WalletProblem'
     PayloadTooLarge:
       description: |
-        Request body exceeds 1 MiB. Login and account handler responses
+        Request body exceeds 1 MiB. Login and wallet handler responses
         include Cache-Control: no-store.
       content:
         application/problem+json:
@@ -647,7 +647,7 @@ components:
     InternalError:
       description: |
         Unexpected server error. Responses from the login, current-user,
-        logout and account handlers include Cache-Control: no-store.
+        logout and wallet handlers include Cache-Control: no-store.
         Shared middleware may omit this header and uses the generic detail
         "Unexpected error has occurred" instead of "internal error".
       content:

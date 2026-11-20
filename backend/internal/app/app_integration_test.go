@@ -5,8 +5,8 @@ package app_test
 import (
 	"backend/internal/app"
 	"backend/internal/config"
-	"backend/internal/modules/account"
 	"backend/internal/modules/user"
+	"backend/internal/modules/wallet"
 	"backend/internal/testutil"
 	"encoding/json"
 	"io"
@@ -43,65 +43,65 @@ func TestApp_AuthLifecycle(t *testing.T) {
 	if got := publicUser(t, me); got != u {
 		t.Fatalf("current user = %+v, want %+v", got, u)
 	}
-	accounts := authRequest(t, h, "GET", "/api/accounts", "", cookie, http.StatusOK)
-	var accountBody struct {
+	wallets := authRequest(t, h, "GET", "/api/wallets", "", cookie, http.StatusOK)
+	var walletBody struct {
 		Data []struct {
-			ID          string `json:"id"`
-			UserID      string `json:"user_id"`
-			AccountType string `json:"account_type"`
+			ID         string `json:"id"`
+			UserID     string `json:"user_id"`
+			WalletType string `json:"wallet_type"`
 		}
 	}
-	if err := json.Unmarshal(accounts.Body.Bytes(), &accountBody); err != nil || len(accountBody.Data) != 1 {
-		t.Fatalf("accounts response = %s (%v), want one account", accounts.Body.String(), err)
+	if err := json.Unmarshal(wallets.Body.Bytes(), &walletBody); err != nil || len(walletBody.Data) != 1 {
+		t.Fatalf("wallets response = %s (%v), want one wallet", wallets.Body.String(), err)
 	}
-	if accountBody.Data[0].ID == "" || accountBody.Data[0].AccountType != "main" {
-		t.Errorf("accounts response = %s, want main account with an ID", accounts.Body.String())
+	if walletBody.Data[0].ID == "" || walletBody.Data[0].WalletType != "main" {
+		t.Errorf("wallets response = %s, want main wallet with an ID", wallets.Body.String())
 	}
-	if accounts.Header().Get("Cache-Control") != "no-store" {
-		t.Error("accounts response must not be cached")
+	if wallets.Header().Get("Cache-Control") != "no-store" {
+		t.Error("wallets response must not be cached")
 	}
-	mainID := accountBody.Data[0].ID
-	created := authRequest(t, h, "POST", "/api/accounts", `{"name":" Savings ","account_type":" savings "}`, cookie, http.StatusCreated)
+	mainID := walletBody.Data[0].ID
+	created := authRequest(t, h, "POST", "/api/wallets", `{"name":" Savings ","wallet_type":" savings "}`, cookie, http.StatusCreated)
 	var createdBody struct {
-		Data account.Account `json:"data"`
+		Data wallet.Wallet `json:"data"`
 	}
 	if err := json.Unmarshal(created.Body.Bytes(), &createdBody); err != nil {
 		t.Fatal(err)
 	}
 	savings := createdBody.Data
-	if savings.ID == "" || savings.UserID != u.ID || savings.Name != "Savings" || savings.Type != account.Savings || savings.SortOrder != 1 || savings.Balance != 0 || savings.CreatedAt.IsZero() {
-		t.Errorf("created account = %+v, unexpected fields", savings)
+	if savings.ID == "" || savings.UserID != u.ID || savings.Name != "Savings" || savings.Type != wallet.Savings || savings.SortOrder != 1 || savings.Balance != 0 || savings.CreatedAt.IsZero() {
+		t.Errorf("created wallet = %+v, unexpected fields", savings)
 	}
 	if created.Header().Get("Cache-Control") != "no-store" {
-		t.Error("created account response must not be cached")
+		t.Error("created wallet response must not be cached")
 	}
 	savingsID := savings.ID
 	for _, tt := range []struct {
 		name string
 		path string
 	}{
-		{name: "ascending accounts", path: "/api/accounts"},
-		{name: "ignore descending order", path: "/api/accounts?order=%20DESC%20"},
-		{name: "ignore invalid order", path: "/api/accounts?order=invalid"},
+		{name: "ascending wallets", path: "/api/wallets"},
+		{name: "ignore descending order", path: "/api/wallets?order=%20DESC%20"},
+		{name: "ignore invalid order", path: "/api/wallets?order=invalid"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			response := authRequest(t, h, "GET", tt.path, "", cookie, http.StatusOK)
-			if err := json.Unmarshal(response.Body.Bytes(), &accountBody); err != nil || len(accountBody.Data) != 2 {
-				t.Fatalf("accounts response = %s (%v), want two accounts", response.Body.String(), err)
+			if err := json.Unmarshal(response.Body.Bytes(), &walletBody); err != nil || len(walletBody.Data) != 2 {
+				t.Fatalf("wallets response = %s (%v), want two wallets", response.Body.String(), err)
 			}
-			if accountBody.Data[0].ID != mainID || accountBody.Data[1].ID != savingsID {
-				t.Errorf("accounts response = %s, want main then savings", response.Body.String())
+			if walletBody.Data[0].ID != mainID || walletBody.Data[1].ID != savingsID {
+				t.Errorf("wallets response = %s, want main then savings", response.Body.String())
 			}
-			for _, a := range accountBody.Data {
+			for _, a := range walletBody.Data {
 				if a.UserID != u.ID {
-					t.Errorf("account user_id = %q, want %q", a.UserID, u.ID)
+					t.Errorf("wallet user_id = %q, want %q", a.UserID, u.ID)
 				}
 			}
 		})
 	}
 	authRequest(t, h, "POST", "/api/auth/logout", "", cookie, http.StatusNoContent)
 	authRequest(t, h, "GET", "/api/auth/me", "", cookie, http.StatusUnauthorized)
-	authRequest(t, h, "GET", "/api/accounts", "", cookie, http.StatusUnauthorized)
+	authRequest(t, h, "GET", "/api/wallets", "", cookie, http.StatusUnauthorized)
 }
 
 func TestApp_SessionLookupFailure(t *testing.T) {

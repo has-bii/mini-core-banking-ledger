@@ -36,16 +36,16 @@ func TestResponses(t *testing.T) {
 		},
 		{
 			name: "error without fields", status: http.StatusBadRequest, contentType: "application/problem+json",
-			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/accounts"}`,
+			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/wallets"}`,
 			send: func(w http.ResponseWriter) error {
-				return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "invalid input", "/accounts", &validator.ErrorValidation{}))
+				return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "invalid input", "/wallets", &validator.ErrorValidation{}))
 			},
 		},
 		{
 			name: "error with fields", status: http.StatusUnprocessableEntity, contentType: "application/problem+json",
-			body: `{"type":"about:blank","title":"Invalid","status":422,"detail":"invalid input","instance":"/accounts","errors":{"name":["required"]}}`,
+			body: `{"type":"about:blank","title":"Invalid","status":422,"detail":"invalid input","instance":"/wallets","errors":{"name":["required"]}}`,
 			send: func(w http.ResponseWriter) error {
-				return httpx.SendError(w, httpx.NewErrorResponse("Invalid", http.StatusUnprocessableEntity, "invalid input", "/accounts", &validator.ErrorValidation{Errors: &fields}))
+				return httpx.SendError(w, httpx.NewErrorResponse("Invalid", http.StatusUnprocessableEntity, "invalid input", "/wallets", &validator.ErrorValidation{Errors: &fields}))
 			},
 		},
 	} {
@@ -78,7 +78,7 @@ func TestResponses(t *testing.T) {
 func TestErrorResponseWithoutValidationErrors(t *testing.T) {
 	t.Parallel()
 	w := httptest.NewRecorder()
-	response := httpx.NewErrorResponse("Unauthorized", http.StatusUnauthorized, "Session is expired or invalid", "/accounts", nil)
+	response := httpx.NewErrorResponse("Unauthorized", http.StatusUnauthorized, "Session is expired or invalid", "/wallets", nil)
 	if err := httpx.SendError(w, response); err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +92,7 @@ func TestErrorResponseWithoutValidationErrors(t *testing.T) {
 	if _, ok := body["errors"]; ok {
 		t.Fatalf("unexpected validation errors: %s", w.Body.String())
 	}
-	if body["detail"] != "Session is expired or invalid" || body["instance"] != "/accounts" {
+	if body["detail"] != "Session is expired or invalid" || body["instance"] != "/wallets" {
 		t.Fatalf("unexpected problem details: %s", w.Body.String())
 	}
 }

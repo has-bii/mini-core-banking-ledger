@@ -1,7 +1,7 @@
-package account_test
+package wallet_test
 
 import (
-	"backend/internal/modules/account"
+	"backend/internal/modules/wallet"
 	"backend/internal/platform/validator"
 	"errors"
 	"reflect"
@@ -9,29 +9,29 @@ import (
 	"testing"
 )
 
-func TestCreateAccountDTO_Validate(t *testing.T) {
+func TestCreateWalletDTO_Validate(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {
 		name    string
-		payload account.CreateAccountDTO
+		payload wallet.CreateWalletDTO
 		want    validator.ErrorField
 	}{
-		{name: "valid and trimmed", payload: account.CreateAccountDTO{Name: " Savings Account ", AccountType: " savings "}},
-		{name: "missing fields", want: validator.ErrorField{"name": {"This field is required"}, "account_type": {"This field is required"}}},
-		{name: "first rule per field", payload: account.CreateAccountDTO{Name: "12", AccountType: "other"}, want: validator.ErrorField{"name": {"Must contain at least 3 characters"}, "account_type": {"Must be one of: sub_account savings"}}},
+		{name: "valid and trimmed", payload: wallet.CreateWalletDTO{Name: " Savings Wallet ", WalletType: " savings "}},
+		{name: "missing fields", want: validator.ErrorField{"name": {"This field is required"}, "wallet_type": {"This field is required"}}},
+		{name: "first rule per field", payload: wallet.CreateWalletDTO{Name: "12", WalletType: "other"}, want: validator.ErrorField{"name": {"Must contain at least 3 characters"}, "wallet_type": {"Must be one of: sub_wallet savings"}}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			payload := tt.payload
-			assertAccountValidation(t, payload.Validate(), tt.want)
-			if payload.Name != strings.TrimSpace(tt.payload.Name) || payload.AccountType != strings.TrimSpace(tt.payload.AccountType) {
+			assertWalletValidation(t, payload.Validate(), tt.want)
+			if payload.Name != strings.TrimSpace(tt.payload.Name) || payload.WalletType != strings.TrimSpace(tt.payload.WalletType) {
 				t.Fatalf("fields not normalized: %+v", payload)
 			}
 		})
 	}
 }
 
-func TestCreateAccountDTO_NameValidation(t *testing.T) {
+func TestCreateWalletDTO_NameValidation(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct{ name, value, message string }{
 		{name: "blank", value: " \t", message: "This field is required"},
@@ -48,40 +48,40 @@ func TestCreateAccountDTO_NameValidation(t *testing.T) {
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			payload := account.CreateAccountDTO{Name: tt.value, AccountType: "savings"}
+			payload := wallet.CreateWalletDTO{Name: tt.value, WalletType: "savings"}
 			var want validator.ErrorField
 			if tt.message != "" {
 				want = validator.ErrorField{"name": {tt.message}}
 			}
-			assertAccountValidation(t, payload.Validate(), want)
+			assertWalletValidation(t, payload.Validate(), want)
 		})
 	}
 }
 
-func TestCreateAccountDTO_TypeValidation(t *testing.T) {
+func TestCreateWalletDTO_TypeValidation(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct{ name, value, message string }{
-		{name: "sub account", value: "sub_account"},
+		{name: "sub wallet", value: "sub_wallet"},
 		{name: "savings", value: "savings"},
-		{name: "main", value: "main", message: "Must be one of: sub_account savings"},
+		{name: "main", value: "main", message: "Must be one of: sub_wallet savings"},
 		{name: "missing", message: "This field is required"},
 		{name: "whitespace", value: " \t", message: "This field is required"},
-		{name: "unknown", value: "other", message: "Must be one of: sub_account savings"},
-		{name: "uppercase", value: "SAVINGS", message: "Must be one of: sub_account savings"},
+		{name: "unknown", value: "other", message: "Must be one of: sub_wallet savings"},
+		{name: "uppercase", value: "SAVINGS", message: "Must be one of: sub_wallet savings"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			payload := account.CreateAccountDTO{Name: "Travel", AccountType: tt.value}
+			payload := wallet.CreateWalletDTO{Name: "Travel", WalletType: tt.value}
 			var want validator.ErrorField
 			if tt.message != "" {
-				want = validator.ErrorField{"account_type": {tt.message}}
+				want = validator.ErrorField{"wallet_type": {tt.message}}
 			}
-			assertAccountValidation(t, payload.Validate(), want)
+			assertWalletValidation(t, payload.Validate(), want)
 		})
 	}
 }
 
-func assertAccountValidation(t *testing.T, err error, want validator.ErrorField) {
+func assertWalletValidation(t *testing.T, err error, want validator.ErrorField) {
 	t.Helper()
 	if want == nil {
 		if err != nil {

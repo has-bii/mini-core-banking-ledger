@@ -1,7 +1,7 @@
-package account_test
+package wallet_test
 
 import (
-	"backend/internal/modules/account"
+	"backend/internal/modules/wallet"
 	"backend/internal/platform/httpx"
 	"backend/internal/platform/middleware"
 	"backend/internal/platform/validator"
@@ -18,18 +18,18 @@ import (
 	"testing"
 )
 
-const accountTestUserID = "01a1c6de-805e-7b0c-a1b1-b851a9c38ccd"
+const walletTestUserID = "01a1c6de-805e-7b0c-a1b1-b851a9c38ccd"
 
-func accountTestHandler(t *testing.T, store *accountStoreStub) http.Handler {
+func walletTestHandler(t *testing.T, store *walletStoreStub) http.Handler {
 	t.Helper()
 	mux := http.NewServeMux()
-	account.NewHandler(account.NewService(store), slog.New(slog.NewTextHandler(io.Discard, nil))).Register(mux)
+	wallet.NewHandler(wallet.NewService(store), slog.New(slog.NewTextHandler(io.Discard, nil))).Register(mux)
 	return middleware.GetUserFromSession(func(context.Context, string) (string, error) {
-		return accountTestUserID, nil
+		return walletTestUserID, nil
 	})(mux)
 }
 
-func assertAccountProblem(t *testing.T, w *httptest.ResponseRecorder, status int, detail, instance string, fields validator.ErrorField) {
+func assertWalletProblem(t *testing.T, w *httptest.ResponseRecorder, status int, detail, instance string, fields validator.ErrorField) {
 	t.Helper()
 	if w.Code != status || w.Header().Get("Content-Type") != "application/problem+json" || w.Header().Get("Cache-Control") != "no-store" {
 		t.Fatalf("response = %d %v %s", w.Code, w.Header(), w.Body.String())
@@ -50,20 +50,20 @@ func assertAccountProblem(t *testing.T, w *httptest.ResponseRecorder, status int
 func TestHandler_PreservesV2Session(t *testing.T) {
 	t.Parallel()
 	// Force a storage failure to observe identity forwarding without SQL.
-	store := &accountStoreStub{err: errors.New("database unavailable")}
+	store := &walletStoreStub{err: errors.New("database unavailable")}
 	type requestKey struct{}
 	ctx := context.WithValue(t.Context(), requestKey{}, "request-value")
 	ctx = middleware.WithUserID(ctx, "native-user")
-	r := httptest.NewRequest(http.MethodGet, "/accounts", nil).WithContext(ctx)
+	r := httptest.NewRequest(http.MethodGet, "/wallets", nil).WithContext(ctx)
 	w := httptest.NewRecorder()
-	accountTestHandler(t, store).ServeHTTP(w, r)
-	assertAccountProblem(t, w, http.StatusInternalServerError, "internal error", "/accounts", nil)
+	walletTestHandler(t, store).ServeHTTP(w, r)
+	assertWalletProblem(t, w, http.StatusInternalServerError, "internal error", "/wallets", nil)
 	if store.userID != "native-user" || store.ctx == nil || store.ctx.Value(requestKey{}) != "request-value" {
 		t.Fatalf("identity or request context lost: %+v", store)
 	}
 }
 
-func TestHandler_CreateAccountRejectsInvalidPayload(t *testing.T) {
+func TestHandler_CreateWalletRejectsInvalidPayload(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {
 		name, body, detail string
@@ -71,26 +71,26 @@ func TestHandler_CreateAccountRejectsInvalidPayload(t *testing.T) {
 		fields             validator.ErrorField
 	}{
 		{name: "malformed JSON", body: `{`, status: 400, detail: "body contains badly-formed JSON"},
-		{name: "wrong field type", body: `{"name":123,"account_type":"savings"}`, status: 400, detail: `body contains an invalid value for field "name" (expected string)`},
-		{name: "client supplied owner", body: `{"name":"Travel","account_type":"savings","user_id":"another-user"}`, status: 400, detail: `body contains unknown field "user_id"`},
-		{name: "client supplied balance", body: `{"name":"Travel","account_type":"savings","balance":100}`, status: 400, detail: `body contains unknown field "balance"`},
-		{name: "oversized body", body: `{"name":"` + strings.Repeat("A", 1<<20) + `","account_type":"savings"}`, status: 413, detail: "body must not be larger than 1048576 bytes"},
+		{name: "wrong field type", body: `{"name":123,"wallet_type":"savings"}`, status: 400, detail: `body contains an invalid value for field "name" (expected string)`},
+		{name: "client supplied owner", body: `{"name":"Travel","wallet_type":"savings","user_id":"another-user"}`, status: 400, detail: `body contains unknown field "user_id"`},
+		{name: "client supplied balance", body: `{"name":"Travel","wallet_type":"savings","balance":100}`, status: 400, detail: `body contains unknown field "balance"`},
+		{name: "oversized body", body: `{"name":"` + strings.Repeat("A", 1<<20) + `","wallet_type":"savings"}`, status: 413, detail: "body must not be larger than 1048576 bytes"},
 		{name: "missing fields", body: `{}`, status: 400, detail: "One or more fields are invalid. Check the field errors for details.", fields: validator.ErrorField{
-			"name": {"This field is required"}, "account_type": {"This field is required"},
+			"name": {"This field is required"}, "wallet_type": {"This field is required"},
 		}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			r := httptest.NewRequest(http.MethodPost, "/accounts", strings.NewReader(tt.body)).WithContext(t.Context())
+			r := httptest.NewRequest(http.MethodPost, "/wallets", strings.NewReader(tt.body)).WithContext(t.Context())
 			r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			w := httptest.NewRecorder()
-			accountTestHandler(t, nil).ServeHTTP(w, r)
-			assertAccountProblem(t, w, tt.status, tt.detail, "/accounts", tt.fields)
+			walletTestHandler(t, nil).ServeHTTP(w, r)
+			assertWalletProblem(t, w, tt.status, tt.detail, "/wallets", tt.fields)
 		})
 	}
 }
 
-func TestHandler_CreateAccountErrors(t *testing.T) {
+func TestHandler_CreateWalletErrors(t *testing.T) {
 	t.Parallel()
 	fields := validator.ErrorField{"name": {"This field is required"}}
 	for _, tt := range []struct {
@@ -102,21 +102,21 @@ func TestHandler_CreateAccountErrors(t *testing.T) {
 		fields          validator.ErrorField
 	}{
 		{name: "unauthenticated", unauthenticated: true, status: 401, detail: "Session is expired or invalid"},
-		{name: "missing owner", storeErr: fmt.Errorf("create: %w", account.ErrNotFound), status: 404, detail: "account not found"},
-		{name: "invalid user ID", storeErr: fmt.Errorf("create: %w", account.ErrInvalidUserID), status: 400, detail: "invalid user ID"},
+		{name: "missing owner", storeErr: fmt.Errorf("create: %w", wallet.ErrNotFound), status: 404, detail: "wallet not found"},
+		{name: "invalid user ID", storeErr: fmt.Errorf("create: %w", wallet.ErrInvalidUserID), status: 400, detail: "invalid user ID"},
 		{name: "defensive validation", storeErr: fmt.Errorf("create: %w", &validator.ErrorValidation{Errors: &fields}), status: 400, detail: "One or more fields are invalid. Check the field errors for details.", fields: fields},
 		{name: "store error", storeErr: errors.New("database password must not leak"), status: 500, detail: "internal error"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			store := &accountStoreStub{err: tt.storeErr}
-			r := httptest.NewRequest(http.MethodPost, "/accounts", strings.NewReader(`{"name":"Travel","account_type":"savings"}`)).WithContext(t.Context())
+			store := &walletStoreStub{err: tt.storeErr}
+			r := httptest.NewRequest(http.MethodPost, "/wallets", strings.NewReader(`{"name":"Travel","wallet_type":"savings"}`)).WithContext(t.Context())
 			if !tt.unauthenticated {
 				r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			}
 			w := httptest.NewRecorder()
-			accountTestHandler(t, store).ServeHTTP(w, r)
-			assertAccountProblem(t, w, tt.status, tt.detail, "/accounts", tt.fields)
+			walletTestHandler(t, store).ServeHTTP(w, r)
+			assertWalletProblem(t, w, tt.status, tt.detail, "/wallets", tt.fields)
 			if tt.unauthenticated && store.ctx != nil {
 				t.Error("unauthenticated request reached store")
 			}
@@ -124,45 +124,45 @@ func TestHandler_CreateAccountErrors(t *testing.T) {
 	}
 }
 
-func TestHandler_GetAccount(t *testing.T) {
+func TestHandler_GetWallet(t *testing.T) {
 	t.Parallel()
 	const id = "01a1c6de-805e-7b0c-a1b1-b851a9c38cce"
-	want := account.Account{ID: id, UserID: accountTestUserID, Name: "Main Account", Type: account.Main, Balance: 12345}
+	want := wallet.Wallet{ID: id, UserID: walletTestUserID, Name: "Main Wallet", Type: wallet.Main, Balance: 12345}
 	for _, tt := range []struct {
 		name, id, detail string
 		unauthenticated  bool
 		storeErr         error
 		status           int
 	}{
-		{name: "returns account", id: id, status: 200},
-		{name: "invalid account ID", id: "invalid", storeErr: fmt.Errorf("lookup: %w", account.ErrInvalidAccountID), status: 400, detail: "invalid account ID"},
-		{name: "invalid user ID", id: id, storeErr: fmt.Errorf("lookup: %w", account.ErrInvalidUserID), status: 400, detail: "invalid user ID"},
-		{name: "missing or unowned account", id: id, storeErr: fmt.Errorf("lookup: %w", account.ErrNotFound), status: 404, detail: "account not found"},
+		{name: "returns wallet", id: id, status: 200},
+		{name: "invalid wallet ID", id: "invalid", storeErr: fmt.Errorf("lookup: %w", wallet.ErrInvalidWalletID), status: 400, detail: "invalid wallet ID"},
+		{name: "invalid user ID", id: id, storeErr: fmt.Errorf("lookup: %w", wallet.ErrInvalidUserID), status: 400, detail: "invalid user ID"},
+		{name: "missing or unowned wallet", id: id, storeErr: fmt.Errorf("lookup: %w", wallet.ErrNotFound), status: 404, detail: "wallet not found"},
 		{name: "store error", id: id, storeErr: errors.New("database connection timeout"), status: 500, detail: "internal error"},
 		{name: "unauthenticated", id: id, unauthenticated: true, status: 401, detail: "Session is expired or invalid"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			store := &accountStoreStub{account: want, err: tt.storeErr}
-			r := httptest.NewRequest(http.MethodGet, "/accounts/"+tt.id, nil).WithContext(t.Context())
+			store := &walletStoreStub{wallet: want, err: tt.storeErr}
+			r := httptest.NewRequest(http.MethodGet, "/wallets/"+tt.id, nil).WithContext(t.Context())
 			if !tt.unauthenticated {
 				r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			}
 			w := httptest.NewRecorder()
-			accountTestHandler(t, store).ServeHTTP(w, r)
+			walletTestHandler(t, store).ServeHTTP(w, r)
 			if tt.unauthenticated {
 				if store.ctx != nil {
 					t.Error("unauthenticated request reached store")
 				}
-			} else if store.id != tt.id || store.userID != accountTestUserID {
-				t.Error("store did not receive requested account ID and authenticated user ID")
+			} else if store.id != tt.id || store.userID != walletTestUserID {
+				t.Error("store did not receive requested wallet ID and authenticated user ID")
 			}
 			if tt.status != http.StatusOK {
-				assertAccountProblem(t, w, tt.status, tt.detail, r.URL.Path, nil)
+				assertWalletProblem(t, w, tt.status, tt.detail, r.URL.Path, nil)
 				return
 			}
 			var got struct {
-				Data account.Account `json:"data"`
+				Data wallet.Wallet `json:"data"`
 			}
 			if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil {
 				t.Fatal(err)
@@ -174,42 +174,42 @@ func TestHandler_GetAccount(t *testing.T) {
 	}
 }
 
-func TestHandler_GetAccounts(t *testing.T) {
+func TestHandler_GetWallets(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {
 		name     string
-		accounts []account.Account
+		wallets  []wallet.Wallet
 		storeErr error
 		status   int
 		detail   string
 	}{
-		{name: "returns accounts", accounts: []account.Account{{ID: "01a1c6de-805e-7b0c-a1b1-b851a9c38cce", UserID: accountTestUserID, Name: "Main Account", Type: account.Main, Balance: 12345}}, status: 200},
-		{name: "empty list", accounts: []account.Account{}, status: 200},
-		{name: "invalid user ID", storeErr: account.ErrInvalidUserID, status: 400, detail: "invalid user ID"},
+		{name: "returns wallets", wallets: []wallet.Wallet{{ID: "01a1c6de-805e-7b0c-a1b1-b851a9c38cce", UserID: walletTestUserID, Name: "Main Wallet", Type: wallet.Main, Balance: 12345}}, status: 200},
+		{name: "empty list", wallets: []wallet.Wallet{}, status: 200},
+		{name: "invalid user ID", storeErr: wallet.ErrInvalidUserID, status: 400, detail: "invalid user ID"},
 		{name: "store error", storeErr: errors.New("database connection timeout"), status: 500, detail: "internal error"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			store := &accountStoreStub{accounts: tt.accounts, err: tt.storeErr}
-			r := httptest.NewRequest(http.MethodGet, "/accounts", nil).WithContext(t.Context())
+			store := &walletStoreStub{wallets: tt.wallets, err: tt.storeErr}
+			r := httptest.NewRequest(http.MethodGet, "/wallets", nil).WithContext(t.Context())
 			r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			w := httptest.NewRecorder()
-			accountTestHandler(t, store).ServeHTTP(w, r)
-			if store.userID != accountTestUserID {
+			walletTestHandler(t, store).ServeHTTP(w, r)
+			if store.userID != walletTestUserID {
 				t.Error("store did not receive authenticated user ID")
 			}
 			if tt.status != http.StatusOK {
-				assertAccountProblem(t, w, tt.status, tt.detail, "/accounts", nil)
+				assertWalletProblem(t, w, tt.status, tt.detail, "/wallets", nil)
 				return
 			}
 			var got struct {
-				Data []account.Account `json:"data"`
+				Data []wallet.Wallet `json:"data"`
 			}
 			if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil {
 				t.Fatal(err)
 			}
-			if w.Code != 200 || w.Header().Get("Content-Type") != "application/json" || w.Header().Get("Cache-Control") != "no-store" || !reflect.DeepEqual(got.Data, tt.accounts) {
-				t.Fatalf("response = %d %s, want %+v", w.Code, w.Body.String(), tt.accounts)
+			if w.Code != 200 || w.Header().Get("Content-Type") != "application/json" || w.Header().Get("Cache-Control") != "no-store" || !reflect.DeepEqual(got.Data, tt.wallets) {
+				t.Fatalf("response = %d %s, want %+v", w.Code, w.Body.String(), tt.wallets)
 			}
 		})
 	}

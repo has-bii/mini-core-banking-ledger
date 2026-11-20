@@ -8,10 +8,10 @@ import (
 	"net/http"
 
 	"backend/internal/config"
-	"backend/internal/modules/account"
 	"backend/internal/modules/auth"
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
+	"backend/internal/modules/wallet"
 	"backend/internal/platform/middleware"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -32,7 +32,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 
 	sessionSvc := session.NewService(session.NewStore(pool))
 	authSvc := auth.NewService(user.NewStore(pool), sessionSvc)
-	accountService := account.NewService(account.NewStore(pool))
+	walletService := wallet.NewService(wallet.NewStore(pool))
 
 	lookupUserID := func(ctx context.Context, token string) (string, error) {
 		current, err := sessionSvc.FindByToken(ctx, token)
@@ -46,7 +46,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (http.Handler,
 	api := http.NewServeMux()
 
 	auth.NewHandler(authSvc, log, cfg.Env != "dev" && cfg.Env != "test").Register(api)
-	account.NewHandler(accountService, log).Register(api)
+	wallet.NewHandler(walletService, log).Register(api)
 
 	mux.Handle("/api/", http.StripPrefix("/api", api))
 

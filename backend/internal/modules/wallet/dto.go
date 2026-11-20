@@ -1,4 +1,4 @@
-package account
+package wallet
 
 import (
 	"errors"
@@ -16,14 +16,14 @@ var validate = func() *validator.Validate {
 	return v
 }()
 
-type CreateAccountDTO struct {
-	Name        string `json:"name" validate:"required,min=3,max=32,alphaspace"`
-	AccountType string `json:"account_type" validate:"required,oneof=sub_account savings"`
+type CreateWalletDTO struct {
+	Name       string `json:"name" validate:"required,min=3,max=32,alphaspace"`
+	WalletType string `json:"wallet_type" validate:"required,oneof=sub_wallet savings"`
 }
 
-func (p *CreateAccountDTO) Validate() error {
+func (p *CreateWalletDTO) Validate() error {
 	p.Name = strings.TrimSpace(p.Name)
-	p.AccountType = strings.TrimSpace(p.AccountType)
+	p.WalletType = strings.TrimSpace(p.WalletType)
 
 	err := validate.Struct(p)
 	if err == nil {
@@ -31,7 +31,7 @@ func (p *CreateAccountDTO) Validate() error {
 	}
 
 	if _, ok := errors.AsType[*validator.InvalidValidationError](err); ok {
-		return fmt.Errorf("validate account: %w", err)
+		return fmt.Errorf("validate wallet: %w", err)
 	}
 
 	mapped := pValidator.FormatErrors(err)
