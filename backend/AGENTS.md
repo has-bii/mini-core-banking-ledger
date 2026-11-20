@@ -4,7 +4,7 @@
 
 - **Layer boundaries:** Validate input at the HTTP boundary, keep workflows in services and persistence in stores, and wire concrete dependencies in `internal/app`.
 - **API contract:** When public HTTP behavior changes, update [OpenAPI](api/openapi.yaml) and the affected tests in the same change.
-- **Verification:** Test at the lowest layer that proves the behavior. Use the [README checks](README.md#tests-and-checks) for commands and setup. Run the relevant checks and report any you couldn't run.
+- **Verification:** Test at the lowest layer that proves the behavior. For Go changes, run `golangci-lint run` from the backend root. Use the [README checks](README.md#tests-and-checks) for other commands and setup. Run the relevant checks and report any you couldn't run.
 
 ## Backend structure
 
