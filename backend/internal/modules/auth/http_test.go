@@ -15,24 +15,36 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 type authServiceStub struct {
 	registerInput auth.RegisterDTO
 	loginInput    auth.LoginDTO
+	meUserID      string
+	logoutTokens  []string
+	account       user.User
+	expiresAt     time.Time
+	token         string
 	err           error
 }
 
 func (s *authServiceStub) Register(_ context.Context, input auth.RegisterDTO) (user.User, error) {
 	s.registerInput = input
-	return user.User{}, s.err
+	return s.account, s.err
 }
 func (s *authServiceStub) Login(_ context.Context, input auth.LoginDTO) (user.User, session.Session, string, error) {
 	s.loginInput = input
-	return user.User{}, session.Session{}, "", s.err
+	return s.account, session.Session{ExpiresAt: s.expiresAt}, s.token, s.err
 }
-func (s *authServiceStub) Me(context.Context, string) (user.User, error) { return user.User{}, s.err }
-func (s *authServiceStub) Logout(context.Context, string) error          { return s.err }
+func (s *authServiceStub) Me(_ context.Context, userID string) (user.User, error) {
+	s.meUserID = userID
+	return s.account, s.err
+}
+func (s *authServiceStub) Logout(_ context.Context, token string) error {
+	s.logoutTokens = append(s.logoutTokens, token)
+	return s.err
+}
 
 func TestHandler_ForwardsNormalizedDTOs(t *testing.T) {
 	t.Parallel()
@@ -197,6 +209,144 @@ func TestHandler_DeletedUserAfterResolution(t *testing.T) {
 	assertHTTPError(t, w, http.StatusUnauthorized, "Unauthorized", "authentication required")
 	if w.Header().Get("Cache-Control") != "no-store" || len(w.Result().Cookies()) != 0 {
 		t.Error("unauthorized response must not be cached or change cookies")
+	}
+}
+
+func TestHandler_DomainErrorResponses(t *testing.T) {
+	t.Parallel()
+	for _, tt := range []struct {
+		name, method, path, payload, detail string
+		err                                 error
+		status                              int
+	}{
+		{"duplicate email", http.MethodPost, "/auth/register", `{"name":"Alice","email":"alice@example.com","password":"password123"}`, "email already taken", user.ErrEmailTaken, http.StatusConflict},
+		{"invalid credentials", http.MethodPost, "/auth/login", `{"email":"alice@example.com","password":"incorrect"}`, "invalid email or password", auth.ErrInvalidCredentials, http.StatusUnauthorized},
+		{"invalid resolved identity", http.MethodGet, "/auth/me", "", "internal error", user.ErrInvalidUserID, http.StatusInternalServerError},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			mux := http.NewServeMux()
+			auth.NewHandler(&authServiceStub{err: tt.err}, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+			ctx := t.Context()
+			if tt.path == "/auth/me" {
+				ctx = middleware.WithUserID(ctx, "not-a-uuid")
+			}
+			w := httptest.NewRecorder()
+			mux.ServeHTTP(w, httptest.NewRequestWithContext(ctx, tt.method, tt.path, strings.NewReader(tt.payload)))
+			assertHTTPError(t, w, tt.status, http.StatusText(tt.status), tt.detail)
+			if tt.path != "/auth/register" && w.Header().Get("Cache-Control") != "no-store" {
+				t.Error("failed authentication response must not be cached")
+			}
+			if len(w.Result().Cookies()) != 0 {
+				t.Error("failed request changed the session cookie")
+			}
+		})
+	}
+}
+
+func TestHandler_UserResponses(t *testing.T) {
+	t.Parallel()
+	want := user.User{ID: "user-id", Name: "Alice", Email: "alice@example.com"}
+	account := want
+	account.Password = "private-password-hash"
+	const token = "raw-session-token"
+	expires := time.Date(2030, time.January, 2, 12, 0, 0, 0, time.UTC)
+	for _, tt := range []struct {
+		name, method, path, payload string
+		status                      int
+		secure                      bool
+	}{
+		{"register", http.MethodPost, "/auth/register", `{"name":"Alice","email":"alice@example.com","password":"password123"}`, http.StatusCreated, false},
+		{"development login", http.MethodPost, "/auth/login", `{"email":"alice@example.com","password":"password123"}`, http.StatusOK, false},
+		{"production login", http.MethodPost, "/auth/login", `{"email":"alice@example.com","password":"password123"}`, http.StatusOK, true},
+		{"current user", http.MethodGet, "/auth/me", "", http.StatusOK, false},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			svc := &authServiceStub{account: account, token: token, expiresAt: expires}
+			mux := http.NewServeMux()
+			auth.NewHandler(svc, nil, tt.secure).Register(mux)
+			ctx := t.Context()
+			if tt.path == "/auth/me" {
+				ctx = middleware.WithUserID(ctx, want.ID)
+			}
+			w := httptest.NewRecorder()
+			mux.ServeHTTP(w, httptest.NewRequestWithContext(ctx, tt.method, tt.path, strings.NewReader(tt.payload)))
+			if w.Code != tt.status || w.Header().Get("Content-Type") != "application/json" {
+				t.Fatalf("response = %d %v, want %d and JSON", w.Code, w.Header(), tt.status)
+			}
+			if tt.path == "/auth/me" && svc.meUserID != want.ID {
+				t.Errorf("current user lookup used %q, want %q", svc.meUserID, want.ID)
+			}
+			var body struct{ Data user.User }
+			if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil || body.Data != want {
+				t.Fatalf("unexpected public user response (decode error: %v)", err)
+			}
+			for _, secret := range []string{`"password"`, account.Password, `"token"`, `"session"`, token} {
+				if strings.Contains(w.Body.String(), secret) {
+					t.Error("public user response exposes a password or session field")
+				}
+			}
+			if tt.path != "/auth/register" && w.Header().Get("Cache-Control") != "no-store" {
+				t.Error("authentication response must not be cached")
+			}
+			cookies := w.Result().Cookies()
+			if tt.path != "/auth/login" {
+				if len(cookies) != 0 {
+					t.Error("only login should issue a session cookie")
+				}
+				return
+			}
+			if len(cookies) != 1 {
+				t.Fatalf("login sent %d cookies, want one", len(cookies))
+			}
+			c := cookies[0]
+			if c.Name != "session" || c.Value != token || c.Path != "/" || !c.HttpOnly || c.Secure != tt.secure || c.SameSite != http.SameSiteLaxMode || c.MaxAge != 86400 || !c.Expires.Equal(expires) {
+				t.Error("login sent an incorrect session cookie")
+			}
+		})
+	}
+}
+
+func TestHandler_LogoutClearsSessionCookie(t *testing.T) {
+	t.Parallel()
+	const token = "raw-session-token"
+	for _, tt := range []struct {
+		name               string
+		secure, withCookie bool
+	}{
+		{"development", false, true},
+		{"production", true, true},
+		{"without a session", true, false},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			svc := &authServiceStub{}
+			mux := http.NewServeMux()
+			auth.NewHandler(svc, nil, tt.secure).Register(mux)
+			r := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/auth/logout", nil)
+			var wantTokens []string
+			if tt.withCookie {
+				r.AddCookie(&http.Cookie{Name: "session", Value: token})
+				wantTokens = []string{token}
+			}
+			w := httptest.NewRecorder()
+			mux.ServeHTTP(w, r)
+			if w.Code != http.StatusNoContent || w.Body.Len() != 0 || w.Header().Get("Cache-Control") != "no-store" {
+				t.Errorf("logout response = %d %v %q, want empty 204 and no-store", w.Code, w.Header(), w.Body.String())
+			}
+			if !reflect.DeepEqual(svc.logoutTokens, wantTokens) {
+				t.Error("logout must revoke exactly the presented session, if any")
+			}
+			cookies := w.Result().Cookies()
+			if len(cookies) != 1 {
+				t.Fatalf("logout sent %d cookies, want one", len(cookies))
+			}
+			c := cookies[0]
+			if c.Name != "session" || c.Value != "" || c.MaxAge != -1 || c.Expires.IsZero() || !c.Expires.Before(time.Now()) || c.Path != "/" || !c.HttpOnly || c.Secure != tt.secure || c.SameSite != http.SameSiteLaxMode {
+				t.Error("logout did not securely clear the session cookie")
+			}
+		})
 	}
 }
 

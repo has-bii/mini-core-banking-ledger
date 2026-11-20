@@ -3,22 +3,28 @@ package wallet
 import (
 	"backend/internal/platform/httpx"
 	"backend/internal/platform/middleware"
-	"backend/internal/platform/validator"
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
 )
 
-type Handler struct {
-	walletService *Service
-	log           *slog.Logger
+type walletService interface {
+	CreateUserWallet(ctx context.Context, userID string, data *CreateWalletDTO) (Wallet, error)
+	GetUserWallet(ctx context.Context, walletID, userID string) (Wallet, error)
+	GetUserWallets(ctx context.Context, userID string) ([]Wallet, error)
 }
 
-func NewHandler(walletService *Service, log *slog.Logger) *Handler {
+type Handler struct {
+	svc walletService
+	log *slog.Logger
+}
+
+func NewHandler(svc walletService, log *slog.Logger) *Handler {
 	if log == nil {
 		log = slog.Default()
 	}
-	return &Handler{walletService: walletService, log: log}
+	return &Handler{svc: svc, log: log}
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
@@ -38,8 +44,9 @@ func (h *Handler) createWallet(w http.ResponseWriter, r *http.Request) {
 		h.sendError(w, r, err)
 		return
 	}
-	userID, _ := middleware.UserIDFromContext(r.Context())
-	data, err := h.walletService.CreateUserWallet(r.Context(), userID, &payload)
+	ctx := r.Context()
+	userID, _ := middleware.UserIDFromContext(ctx)
+	data, err := h.svc.CreateUserWallet(ctx, userID, &payload)
 	if err != nil {
 		h.sendError(w, r, err)
 		return
@@ -49,8 +56,9 @@ func (h *Handler) createWallet(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) getWallet(w http.ResponseWriter, r *http.Request) {
 	httpx.NoStoreHeader(w)
-	userID, _ := middleware.UserIDFromContext(r.Context())
-	data, err := h.walletService.GetUserWallet(r.Context(), r.PathValue("id"), userID)
+	ctx := r.Context()
+	userID, _ := middleware.UserIDFromContext(ctx)
+	data, err := h.svc.GetUserWallet(ctx, r.PathValue("id"), userID)
 	if err != nil {
 		h.sendError(w, r, err)
 		return
@@ -60,8 +68,9 @@ func (h *Handler) getWallet(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) getWallets(w http.ResponseWriter, r *http.Request) {
 	httpx.NoStoreHeader(w)
-	userID, _ := middleware.UserIDFromContext(r.Context())
-	data, err := h.walletService.GetUserWallets(r.Context(), userID)
+	ctx := r.Context()
+	userID, _ := middleware.UserIDFromContext(ctx)
+	data, err := h.svc.GetUserWallets(ctx, userID)
 	if err != nil {
 		h.sendError(w, r, err)
 		return
@@ -76,25 +85,18 @@ func (h *Handler) sendSuccess(w http.ResponseWriter, r *http.Request, status int
 }
 
 func (h *Handler) sendError(w http.ResponseWriter, r *http.Request, err error) {
-	status, detail := http.StatusInternalServerError, "internal error"
-	var httpErr *httpx.HTTPError
-	var fields *validator.ErrorValidation
+	httpx.SendRequestError(w, r, h.log, "wallet", err, domainProblem)
+}
+
+func domainProblem(err error) (int, string) {
 	switch {
-	case errors.As(err, &httpErr):
-		status, detail = httpErr.Status, httpErr.Message
-	case errors.As(err, &fields):
-		status, detail = http.StatusBadRequest, fields.Error()
 	case errors.Is(err, ErrNotFound):
-		status, detail = http.StatusNotFound, ErrNotFound.Error()
+		return http.StatusNotFound, ErrNotFound.Error()
 	case errors.Is(err, ErrInvalidWalletID):
-		status, detail = http.StatusBadRequest, ErrInvalidWalletID.Error()
+		return http.StatusBadRequest, ErrInvalidWalletID.Error()
 	case errors.Is(err, ErrInvalidUserID):
-		status, detail = http.StatusBadRequest, ErrInvalidUserID.Error()
-	}
-	if status == http.StatusInternalServerError {
-		h.log.ErrorContext(r.Context(), "wallet request failed", "err", err, "method", r.Method, "path", r.URL.Path)
-	}
-	if err := httpx.SendError(w, httpx.NewErrorResponse(http.StatusText(status), status, detail, r.URL.Path, fields)); err != nil {
-		h.log.ErrorContext(r.Context(), "write wallet error response", "err", err)
+		return http.StatusBadRequest, ErrInvalidUserID.Error()
+	default:
+		return 0, ""
 	}
 }

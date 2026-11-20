@@ -5,7 +5,7 @@ import (
 	"backend/internal/modules/user"
 	"backend/internal/platform/httpx"
 	"backend/internal/platform/middleware"
-	"backend/internal/platform/validator"
+
 	"context"
 	"errors"
 	"log/slog"
@@ -42,8 +42,9 @@ func (h *Handler) Register(mux *http.ServeMux) {
 
 func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 	httpx.NoStoreHeader(w)
-	userID, _ := middleware.UserIDFromContext(r.Context())
-	u, err := h.svc.Me(r.Context(), userID)
+	ctx := r.Context()
+	userID, _ := middleware.UserIDFromContext(ctx)
+	u, err := h.svc.Me(ctx, userID)
 	if err != nil {
 		h.sendError(w, r, err)
 		return
@@ -116,25 +117,18 @@ func (h *Handler) sendSuccess(w http.ResponseWriter, r *http.Request, status int
 }
 
 func (h *Handler) sendError(w http.ResponseWriter, r *http.Request, err error) {
-	status, detail := http.StatusInternalServerError, "internal error"
-	var httpErr *httpx.HTTPError
-	var fields *validator.ErrorValidation
+	httpx.SendRequestError(w, r, h.log, "auth", err, domainProblem)
+}
+
+func domainProblem(err error) (int, string) {
 	switch {
-	case errors.As(err, &httpErr):
-		status, detail = httpErr.Status, httpErr.Message
-	case errors.As(err, &fields):
-		status, detail = http.StatusBadRequest, fields.Error()
 	case errors.Is(err, user.ErrEmailTaken):
-		status, detail = http.StatusConflict, user.ErrEmailTaken.Error()
+		return http.StatusConflict, user.ErrEmailTaken.Error()
 	case errors.Is(err, ErrInvalidCredentials):
-		status, detail = http.StatusUnauthorized, ErrInvalidCredentials.Error()
+		return http.StatusUnauthorized, ErrInvalidCredentials.Error()
 	case errors.Is(err, ErrUnauthenticated):
-		status, detail = http.StatusUnauthorized, ErrUnauthenticated.Error()
-	}
-	if status == http.StatusInternalServerError {
-		h.log.ErrorContext(r.Context(), "auth request failed", "err", err, "method", r.Method, "path", r.URL.Path)
-	}
-	if err := httpx.SendError(w, httpx.NewErrorResponse(http.StatusText(status), status, detail, r.URL.Path, fields)); err != nil {
-		h.log.ErrorContext(r.Context(), "write auth error response", "err", err)
+		return http.StatusUnauthorized, ErrUnauthenticated.Error()
+	default:
+		return 0, ""
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"backend/internal/platform/validator"
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"net/http"
 )
 
@@ -64,4 +65,27 @@ func SendError(w http.ResponseWriter, v *ErrorResponse) error {
 		return errors.New("error response must not be nil")
 	}
 	return writeJSON(w, v.Status, "application/problem+json", v)
+}
+
+// SendRequestError handles transport errors before consulting mapDomain, which returns status 0 for unrecognized errors.
+func SendRequestError(w http.ResponseWriter, r *http.Request, log *slog.Logger, scope string, err error, mapDomain func(error) (int, string)) {
+	status, detail := http.StatusInternalServerError, "internal error"
+	var httpErr *HTTPError
+	var fields *validator.ErrorValidation
+	switch {
+	case errors.As(err, &httpErr):
+		status, detail = httpErr.Status, httpErr.Message
+	case errors.As(err, &fields):
+		status, detail = http.StatusBadRequest, fields.Error()
+	default:
+		if mappedStatus, mappedDetail := mapDomain(err); mappedStatus != 0 {
+			status, detail = mappedStatus, mappedDetail
+		}
+	}
+	if status == http.StatusInternalServerError {
+		log.ErrorContext(r.Context(), scope+" request failed", "err", err, "method", r.Method, "path", r.URL.Path)
+	}
+	if err := SendError(w, NewErrorResponse(http.StatusText(status), status, detail, r.URL.Path, fields)); err != nil {
+		log.ErrorContext(r.Context(), "write "+scope+" error response", "err", err)
+	}
 }

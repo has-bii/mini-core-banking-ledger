@@ -20,10 +20,34 @@ import (
 
 const walletTestUserID = "01a1c6de-805e-7b0c-a1b1-b851a9c38ccd"
 
-func walletTestHandler(t *testing.T, store *walletStoreStub) http.Handler {
+type walletServiceStub struct {
+	ctx        context.Context
+	id, userID string
+	data       *wallet.CreateWalletDTO
+	wallet     wallet.Wallet
+	wallets    []wallet.Wallet
+	err        error
+}
+
+func (s *walletServiceStub) CreateUserWallet(ctx context.Context, userID string, data *wallet.CreateWalletDTO) (wallet.Wallet, error) {
+	s.ctx, s.userID, s.data = ctx, userID, data
+	return s.wallet, s.err
+}
+
+func (s *walletServiceStub) GetUserWallet(ctx context.Context, id, userID string) (wallet.Wallet, error) {
+	s.ctx, s.id, s.userID = ctx, id, userID
+	return s.wallet, s.err
+}
+
+func (s *walletServiceStub) GetUserWallets(ctx context.Context, userID string) ([]wallet.Wallet, error) {
+	s.ctx, s.userID = ctx, userID
+	return s.wallets, s.err
+}
+
+func walletTestHandler(t *testing.T, svc *walletServiceStub) http.Handler {
 	t.Helper()
 	mux := http.NewServeMux()
-	wallet.NewHandler(wallet.NewService(store), slog.New(slog.NewTextHandler(io.Discard, nil))).Register(mux)
+	wallet.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil))).Register(mux)
 	return middleware.GetUserFromSession(func(context.Context, string) (string, error) {
 		return walletTestUserID, nil
 	})(mux)
@@ -47,37 +71,38 @@ func assertWalletProblem(t *testing.T, w *httptest.ResponseRecorder, status int,
 	}
 }
 
-func TestHandler_PreservesV2Session(t *testing.T) {
+func TestHandler_PreservesVerifiedIdentityAndContext(t *testing.T) {
 	t.Parallel()
-	// Force a storage failure to observe identity forwarding without SQL.
-	store := &walletStoreStub{err: errors.New("database unavailable")}
+	svc := &walletServiceStub{wallets: []wallet.Wallet{}}
 	type requestKey struct{}
 	ctx := context.WithValue(t.Context(), requestKey{}, "request-value")
 	ctx = middleware.WithUserID(ctx, "native-user")
 	r := httptest.NewRequest(http.MethodGet, "/wallets", nil).WithContext(ctx)
 	w := httptest.NewRecorder()
-	walletTestHandler(t, store).ServeHTTP(w, r)
-	assertWalletProblem(t, w, http.StatusInternalServerError, "internal error", "/wallets", nil)
-	if store.userID != "native-user" || store.ctx == nil || store.ctx.Value(requestKey{}) != "request-value" {
-		t.Fatalf("identity or request context lost: %+v", store)
+	walletTestHandler(t, svc).ServeHTTP(w, r)
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d: %s", w.Code, http.StatusOK, w.Body.String())
+	}
+	if svc.userID != "native-user" || svc.ctx == nil || svc.ctx.Value(requestKey{}) != "request-value" {
+		t.Fatalf("identity or request context lost: %+v", svc)
 	}
 }
 
 func TestHandler_CreateWallet(t *testing.T) {
 	t.Parallel()
 	want := wallet.Wallet{ID: "01a1c6de-805e-7b0c-a1b1-b851a9c38cce", UserID: walletTestUserID, Name: "Travel", Type: wallet.Savings}
-	store := &walletStoreStub{wallet: want}
+	svc := &walletServiceStub{wallet: want}
 	r := httptest.NewRequest(http.MethodPost, "/wallets", strings.NewReader(`{"name":" Travel ","wallet_type":" savings "}`)).WithContext(t.Context())
 	r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 	w := httptest.NewRecorder()
-	walletTestHandler(t, store).ServeHTTP(w, r)
+	walletTestHandler(t, svc).ServeHTTP(w, r)
 
 	if w.Code != http.StatusCreated {
 		t.Fatalf("status = %d, want %d: %s", w.Code, http.StatusCreated, w.Body.String())
 	}
 	wantInput := wallet.CreateWalletDTO{Name: "Travel", WalletType: "savings"}
-	if store.data == nil || *store.data != wantInput || store.userID != walletTestUserID {
-		t.Errorf("store received input %+v for user %q, want %+v for %q", store.data, store.userID, wantInput, walletTestUserID)
+	if svc.data == nil || *svc.data != wantInput || svc.userID != walletTestUserID {
+		t.Errorf("service received input %+v for user %q, want %+v for %q", svc.data, svc.userID, wantInput, walletTestUserID)
 	}
 	var got struct {
 		Data wallet.Wallet `json:"data"`
@@ -111,8 +136,12 @@ func TestHandler_CreateWalletRejectsInvalidPayload(t *testing.T) {
 			r := httptest.NewRequest(http.MethodPost, "/wallets", strings.NewReader(tt.body)).WithContext(t.Context())
 			r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			w := httptest.NewRecorder()
-			walletTestHandler(t, nil).ServeHTTP(w, r)
+			svc := &walletServiceStub{}
+			walletTestHandler(t, svc).ServeHTTP(w, r)
 			assertWalletProblem(t, w, tt.status, tt.detail, "/wallets", tt.fields)
+			if svc.ctx != nil {
+				t.Error("invalid payload reached service")
+			}
 		})
 	}
 }
@@ -123,29 +152,29 @@ func TestHandler_CreateWalletErrors(t *testing.T) {
 	for _, tt := range []struct {
 		name            string
 		unauthenticated bool
-		storeErr        error
+		serviceErr      error
 		status          int
 		detail          string
 		fields          validator.ErrorField
 	}{
 		{name: "unauthenticated", unauthenticated: true, status: 401, detail: "Session is expired or invalid"},
-		{name: "missing owner", storeErr: fmt.Errorf("create: %w", wallet.ErrNotFound), status: 404, detail: "wallet not found"},
-		{name: "invalid user ID", storeErr: fmt.Errorf("create: %w", wallet.ErrInvalidUserID), status: 400, detail: "invalid user ID"},
-		{name: "defensive validation", storeErr: fmt.Errorf("create: %w", &validator.ErrorValidation{Errors: &fields}), status: 400, detail: "One or more fields are invalid. Check the field errors for details.", fields: fields},
-		{name: "store error", storeErr: errors.New("database password must not leak"), status: 500, detail: "internal error"},
+		{name: "missing owner", serviceErr: fmt.Errorf("create: %w", wallet.ErrNotFound), status: 404, detail: "wallet not found"},
+		{name: "invalid user ID", serviceErr: fmt.Errorf("create: %w", wallet.ErrInvalidUserID), status: 400, detail: "invalid user ID"},
+		{name: "wrapped validation error", serviceErr: fmt.Errorf("create: %w", &validator.ErrorValidation{Errors: &fields}), status: 400, detail: "One or more fields are invalid. Check the field errors for details.", fields: fields},
+		{name: "unexpected error", serviceErr: errors.New("database password must not leak"), status: 500, detail: "internal error"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			store := &walletStoreStub{err: tt.storeErr}
+			svc := &walletServiceStub{err: tt.serviceErr}
 			r := httptest.NewRequest(http.MethodPost, "/wallets", strings.NewReader(`{"name":"Travel","wallet_type":"savings"}`)).WithContext(t.Context())
 			if !tt.unauthenticated {
 				r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			}
 			w := httptest.NewRecorder()
-			walletTestHandler(t, store).ServeHTTP(w, r)
+			walletTestHandler(t, svc).ServeHTTP(w, r)
 			assertWalletProblem(t, w, tt.status, tt.detail, "/wallets", tt.fields)
-			if tt.unauthenticated && store.ctx != nil {
-				t.Error("unauthenticated request reached store")
+			if tt.unauthenticated && svc.ctx != nil {
+				t.Error("unauthenticated request reached service")
 			}
 		})
 	}
@@ -158,31 +187,31 @@ func TestHandler_GetWallet(t *testing.T) {
 	for _, tt := range []struct {
 		name, id, detail string
 		unauthenticated  bool
-		storeErr         error
+		serviceErr       error
 		status           int
 	}{
 		{name: "returns wallet", id: id, status: 200},
-		{name: "invalid wallet ID", id: "invalid", storeErr: fmt.Errorf("lookup: %w", wallet.ErrInvalidWalletID), status: 400, detail: "invalid wallet ID"},
-		{name: "invalid user ID", id: id, storeErr: fmt.Errorf("lookup: %w", wallet.ErrInvalidUserID), status: 400, detail: "invalid user ID"},
-		{name: "missing or unowned wallet", id: id, storeErr: fmt.Errorf("lookup: %w", wallet.ErrNotFound), status: 404, detail: "wallet not found"},
-		{name: "store error", id: id, storeErr: errors.New("database connection timeout"), status: 500, detail: "internal error"},
+		{name: "invalid wallet ID", id: "invalid", serviceErr: fmt.Errorf("lookup: %w", wallet.ErrInvalidWalletID), status: 400, detail: "invalid wallet ID"},
+		{name: "invalid user ID", id: id, serviceErr: fmt.Errorf("lookup: %w", wallet.ErrInvalidUserID), status: 400, detail: "invalid user ID"},
+		{name: "missing or unowned wallet", id: id, serviceErr: fmt.Errorf("lookup: %w", wallet.ErrNotFound), status: 404, detail: "wallet not found"},
+		{name: "unexpected error", id: id, serviceErr: errors.New("database connection timeout"), status: 500, detail: "internal error"},
 		{name: "unauthenticated", id: id, unauthenticated: true, status: 401, detail: "Session is expired or invalid"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			store := &walletStoreStub{wallet: want, err: tt.storeErr}
+			svc := &walletServiceStub{wallet: want, err: tt.serviceErr}
 			r := httptest.NewRequest(http.MethodGet, "/wallets/"+tt.id, nil).WithContext(t.Context())
 			if !tt.unauthenticated {
 				r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			}
 			w := httptest.NewRecorder()
-			walletTestHandler(t, store).ServeHTTP(w, r)
+			walletTestHandler(t, svc).ServeHTTP(w, r)
 			if tt.unauthenticated {
-				if store.ctx != nil {
-					t.Error("unauthenticated request reached store")
+				if svc.ctx != nil {
+					t.Error("unauthenticated request reached service")
 				}
-			} else if store.id != tt.id || store.userID != walletTestUserID {
-				t.Error("store did not receive requested wallet ID and authenticated user ID")
+			} else if svc.id != tt.id || svc.userID != walletTestUserID {
+				t.Error("service did not receive requested wallet ID and authenticated user ID")
 			}
 			if tt.status != http.StatusOK {
 				assertWalletProblem(t, w, tt.status, tt.detail, r.URL.Path, nil)
@@ -204,26 +233,26 @@ func TestHandler_GetWallet(t *testing.T) {
 func TestHandler_GetWallets(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {
-		name     string
-		wallets  []wallet.Wallet
-		storeErr error
-		status   int
-		detail   string
+		name       string
+		wallets    []wallet.Wallet
+		serviceErr error
+		status     int
+		detail     string
 	}{
 		{name: "returns wallets", wallets: []wallet.Wallet{{ID: "01a1c6de-805e-7b0c-a1b1-b851a9c38cce", UserID: walletTestUserID, Name: "Main Wallet", Type: wallet.Main, Balance: 12345}}, status: 200},
 		{name: "empty list", wallets: []wallet.Wallet{}, status: 200},
-		{name: "invalid user ID", storeErr: wallet.ErrInvalidUserID, status: 400, detail: "invalid user ID"},
-		{name: "store error", storeErr: errors.New("database connection timeout"), status: 500, detail: "internal error"},
+		{name: "invalid user ID", serviceErr: wallet.ErrInvalidUserID, status: 400, detail: "invalid user ID"},
+		{name: "unexpected error", serviceErr: errors.New("database connection timeout"), status: 500, detail: "internal error"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			store := &walletStoreStub{wallets: tt.wallets, err: tt.storeErr}
+			svc := &walletServiceStub{wallets: tt.wallets, err: tt.serviceErr}
 			r := httptest.NewRequest(http.MethodGet, "/wallets", nil).WithContext(t.Context())
 			r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			w := httptest.NewRecorder()
-			walletTestHandler(t, store).ServeHTTP(w, r)
-			if store.userID != walletTestUserID {
-				t.Error("store did not receive authenticated user ID")
+			walletTestHandler(t, svc).ServeHTTP(w, r)
+			if svc.userID != walletTestUserID {
+				t.Error("service did not receive authenticated user ID")
 			}
 			if tt.status != http.StatusOK {
 				assertWalletProblem(t, w, tt.status, tt.detail, "/wallets", nil)

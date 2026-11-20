@@ -5,6 +5,8 @@ import (
 	"backend/internal/platform/validator"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -141,6 +143,56 @@ func TestResponsesReturnWriterError(t *testing.T) {
 			w := &responseWriter{ResponseRecorder: httptest.NewRecorder(), err: want}
 			if err := tt.send(w); !errors.Is(err, want) {
 				t.Fatalf("error = %v, want %v", err, want)
+			}
+		})
+	}
+}
+
+func TestSendRequestError(t *testing.T) {
+	t.Parallel()
+	fields := validator.ErrorField{"name": {"required"}}
+	validation := &validator.ErrorValidation{Errors: &fields}
+	conflict := errors.New("private conflict cause")
+	unexpected := errors.New("backend unavailable")
+	for _, tt := range []struct {
+		name, detail string
+		err          error
+		status       int
+		fields       *validator.ErrorField
+	}{
+		{"decode takes precedence", "body too large", errors.Join(httpx.NewHTTPError(413, "body too large"), validation, conflict), 413, nil},
+		{"validation takes precedence", "One or more fields are invalid. Check the field errors for details.", errors.Join(validation, conflict), 400, &fields},
+		{"wrapped domain error", "resource already exists", fmt.Errorf("save: %w", conflict), 409, nil},
+		{"unexpected error", "internal error", unexpected, 500, nil},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			var logs strings.Builder
+			log := slog.New(slog.NewTextHandler(&logs, nil))
+			r := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/resources?debug=true", nil)
+			w := httptest.NewRecorder()
+			httpx.SendRequestError(w, r, log, "test", tt.err, func(err error) (int, string) {
+				if errors.Is(err, conflict) {
+					return http.StatusConflict, "resource already exists"
+				}
+				return 0, ""
+			})
+			if w.Code != tt.status || w.Header().Get("Content-Type") != "application/problem+json" {
+				t.Fatalf("response = %d %v, want status %d and problem JSON", w.Code, w.Header(), tt.status)
+			}
+			var got httpx.ErrorResponse
+			if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil {
+				t.Fatal(err)
+			}
+			if got.Status != tt.status || got.Detail != tt.detail || got.Instance != "/resources" || !reflect.DeepEqual(got.Errors, tt.fields) {
+				t.Errorf("unexpected problem details: %s", w.Body.String())
+			}
+			if tt.status == 500 {
+				if !strings.Contains(logs.String(), unexpected.Error()) {
+					t.Errorf("internal error cause missing from log: %s", logs.String())
+				}
+			} else if logs.Len() != 0 {
+				t.Errorf("client error was logged: %s", logs.String())
 			}
 		})
 	}

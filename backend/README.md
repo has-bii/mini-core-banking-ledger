@@ -53,7 +53,7 @@ Run commands from `backend/`.
 go test -race ./...
 ```
 
-Unit tests cover validation, HTTP behavior, middleware contracts, and service workflows. Service tests use small handwritten dependency stubs and do not require a database, Redis, or an environment file. See [service conventions](docs/service_conventions.md#testing).
+Unit tests cover validation, HTTP behavior, middleware contracts, and service workflows. Handler and service tests are unit tests only: they use small handwritten dependency stubs and do not require a database, Redis, or an environment file. See [HTTP conventions](docs/http_conventions.md#testing) and [service conventions](docs/service_conventions.md#testing).
 
 ### Integration tests
 
@@ -76,7 +76,7 @@ Compose creates the `test` database when initializing a fresh volume. For an exi
 go test -race -count=1 -tags=integration ./...
 ```
 
-This runs both unit and integration tests. Store integration tests cover persistence, expiry, and transaction rollback. HTTP integration tests cover response and cookie contracts, and the app test owns the wired register → login → me → logout flow. There is no separate service integration suite. See [store conventions](docs/store_conventions.md#integration-testing) for store test contracts and fixture safety. PostgreSQL and Redis are required, but a running API server is not.
+This runs both unit and integration tests. Store integration tests cover persistence, expiry, and transaction rollback. App integration tests cover cross-layer wiring, including the register → login → me → logout flow. See [store conventions](docs/store_conventions.md#integration-testing) for store test contracts and fixture safety. PostgreSQL and Redis are required, but a running API server is not.
 
 The shared helpers read `DATABASE_URL` and `REDIS_URL` directly from `.env.test`, without falling back to `.env` or shell variables. It creates a unique schema per integration test, uses only that schema in each pool connection's `search_path`, and applies actual migrations using Goose. Cleanup closes the pool and drops only the schema it created; no shared tables are truncated. The database user needs schema creation privileges. Redis fixtures prefix commands with a random per-test namespace and clean up only their own keys, never flushing a shared database. Missing configuration, Goose, PostgreSQL, or Redis fails the tests rather than skipping them.
 
@@ -100,4 +100,4 @@ Registration, login, and wallet creation use `go-playground/validator/v10` built
 
 Auth, wallet, and shared middleware use `application/problem+json` errors (`type`, `title`, `status`, `detail`, `instance`, and optional validation `errors` keyed by JSON field name). Success responses contain `data` and an optional `message`; logout remains an empty `204`. CSRF rejections from Go's cross-origin protection return `403` problem details using the same error format. Consumers must support this error contract; legacy error codes and detail arrays are not returned.
 
-See [store conventions](docs/store_conventions.md) for persistence responsibilities, naming, transactions, validation boundaries, and integration testing.
+See [HTTP conventions](docs/http_conventions.md) for handler design, routing, responses, and tests, and [store conventions](docs/store_conventions.md) for persistence responsibilities, transactions, and integration testing.
