@@ -1,5 +1,10 @@
 {
   "lsp": {
+    "gopls": {
+      "initialization_options": {
+        "buildFlags": ["-tags=integration"],
+      },
+    },
     "golangci-lint": {
       "initialization_options": {
         "command": [
@@ -8,14 +13,14 @@
           "--output.json.path",
           "stdout",
           "--show-stats=false",
-          "--output.text.path="
-        ]
-      }
-    }
+          "--output.text.path=",
+        ],
+      },
+    },
   },
   "languages": {
     "Go": {
-      "language_servers": ["gopls", "golangci-lint"]
-    }
-  }
+      "language_servers": ["gopls", "golangci-lint"],
+    },
+  },
 }
