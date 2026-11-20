@@ -79,7 +79,7 @@ func TestStore_GetByID(t *testing.T) {
 	})
 }
 
-func TestStore_ListWallets(t *testing.T) {
+func TestStore_ListByUserID(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
 
@@ -135,6 +135,23 @@ func TestStore_ListWallets(t *testing.T) {
 	}
 	if got.CreatedAt.IsZero() {
 		t.Errorf("Mapping failed! Expected CreatedAt to be populated, got '%v'", got.CreatedAt)
+	}
+
+	for _, tt := range []struct {
+		name   string
+		userID string
+		err    error
+	}{
+		{name: "invalid user ID", userID: "invalid", err: wallet.ErrInvalidUserID},
+		{name: "empty user ID", err: wallet.ErrInvalidUserID},
+		{name: "no matching wallets", userID: "00000000-0000-0000-0000-000000000000"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := store.ListByUserID(t.Context(), tt.userID)
+			if !errors.Is(err, tt.err) || len(got) != 0 {
+				t.Errorf("ListByUserID() = %+v, %v; want zero items, %v", got, err, tt.err)
+			}
+		})
 	}
 }
 
@@ -197,6 +214,7 @@ func TestStore_Create(t *testing.T) {
 	}{
 		{name: "missing user", userID: "00000000-0000-0000-0000-000000000000", err: wallet.ErrNotFound},
 		{name: "invalid user ID", userID: "invalid", err: wallet.ErrInvalidUserID},
+		{name: "empty user ID", err: wallet.ErrInvalidUserID},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := store.Create(t.Context(), tt.userID, &wallet.CreateWalletDTO{Name: "Savings", WalletType: string(wallet.Savings)})

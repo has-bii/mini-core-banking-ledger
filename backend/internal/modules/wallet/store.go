@@ -61,13 +61,10 @@ func (s *Store) GetByID(ctx context.Context, ID, userID string) (Wallet, error) 
 	return a, nil
 }
 
+// Create requires a non-nil DTO already normalized and validated by the caller.
 func (s *Store) Create(ctx context.Context, userID string, data *CreateWalletDTO) (Wallet, error) {
 	if err := uuid.Validate(userID); err != nil {
 		return Wallet{}, fmt.Errorf("create wallet: %w", ErrInvalidUserID)
-	}
-
-	if errs := data.Validate(); errs != nil {
-		return Wallet{}, fmt.Errorf("create wallet: %w", errs)
 	}
 
 	var a Wallet
