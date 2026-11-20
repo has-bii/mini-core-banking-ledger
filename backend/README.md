@@ -53,7 +53,7 @@ Run commands from `backend/`.
 go test -race ./...
 ```
 
-Unit tests cover validation, HTTP parsing, distinct middleware contracts, and difficult-to-trigger failure handling. They use standard Go testing and `httptest`; small handwritten stubs are reserved for failure injection (middleware lookup callbacks are also permitted). No database, Redis, or environment file is required.
+Unit tests cover validation, HTTP behavior, middleware contracts, and service workflows. Service tests use small handwritten dependency stubs and do not require a database, Redis, or an environment file. See [service conventions](docs/service_conventions.md#testing).
 
 ### Integration tests
 
@@ -76,7 +76,7 @@ Compose creates the `test` database when initializing a fresh volume. For an exi
 go test -race -count=1 -tags=integration ./...
 ```
 
-This runs both unit and integration tests. Integration tests use real services/stores for auth/session business outcomes, password/token hashing, persistence, expiry, atomic registration, transaction rollback, and HTTP response/cookie contracts. The app test owns the wired register → login → me → logout flow without repeating lower-level input matrices or detailed storage checks. See [store conventions](docs/store_conventions.md#integration-testing) for store test contracts and fixture safety; stores have integration tests only. A running API server is not required; PostgreSQL and Redis are required.
+This runs both unit and integration tests. Store integration tests cover persistence, expiry, and transaction rollback. HTTP integration tests cover response and cookie contracts, and the app test owns the wired register → login → me → logout flow. There is no separate service integration suite. See [store conventions](docs/store_conventions.md#integration-testing) for store test contracts and fixture safety. PostgreSQL and Redis are required, but a running API server is not.
 
 The shared helpers read `DATABASE_URL` and `REDIS_URL` directly from `.env.test`, without falling back to `.env` or shell variables. It creates a unique schema per integration test, uses only that schema in each pool connection's `search_path`, and applies actual migrations using Goose. Cleanup closes the pool and drops only the schema it created; no shared tables are truncated. The database user needs schema creation privileges. Redis fixtures prefix commands with a random per-test namespace and clean up only their own keys, never flushing a shared database. Missing configuration, Goose, PostgreSQL, or Redis fails the tests rather than skipping them.
 

@@ -11,14 +11,14 @@ import (
 )
 
 type userStore interface {
-	Create(context.Context, string, string, string) (user.User, error)
-	GetByID(context.Context, string) (user.User, error)
-	GetByEmail(context.Context, string) (user.User, error)
+	Create(ctx context.Context, name, email, passwordHash string) (user.User, error)
+	GetByID(ctx context.Context, userID string) (user.User, error)
+	GetByEmail(ctx context.Context, email string) (user.User, error)
 }
 
 type sessionService interface {
-	Create(context.Context, string) (session.Session, string, error)
-	Revoke(context.Context, string) error
+	Create(ctx context.Context, userID string) (session.Session, string, error)
+	Revoke(ctx context.Context, token string) error
 }
 
 type Service struct {
@@ -46,6 +46,9 @@ func (s *Service) Register(ctx context.Context, payload RegisterDTO) (user.User,
 	}
 
 	u, err := s.users.Create(ctx, payload.Name, payload.Email, hashedPassword)
+	if errors.Is(err, user.ErrEmailTaken) {
+		return user.User{}, err
+	}
 	if err != nil {
 		return user.User{}, fmt.Errorf("register user: %w", err)
 	}
@@ -78,6 +81,7 @@ func (s *Service) Login(ctx context.Context, payload LoginDTO) (user.User, sessi
 	return u, created, token, nil
 }
 
+// Logout succeeds even if the token no longer identifies a session.
 func (s *Service) Logout(ctx context.Context, token string) error {
 	if err := s.sessions.Revoke(ctx, token); err != nil && !errors.Is(err, session.ErrNotFound) {
 		return fmt.Errorf("revoke logout session: %w", err)
@@ -101,7 +105,7 @@ func comparePassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
-func hashPassword(v string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(v), bcrypt.DefaultCost)
+func hashPassword(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(hash), err
 }

@@ -11,9 +11,9 @@ import (
 )
 
 type sessionStore interface {
-	Create(context.Context, string, string, time.Time) (Session, error)
-	GetByTokenHash(context.Context, string) (Session, error)
-	DeleteByTokenHash(context.Context, string) error
+	Create(ctx context.Context, userID, tokenHash string, expiresAt time.Time) (Session, error)
+	GetByTokenHash(ctx context.Context, tokenHash string) (Session, error)
+	DeleteByTokenHash(ctx context.Context, tokenHash string) error
 }
 
 type Service struct{ store sessionStore }
@@ -29,7 +29,7 @@ func (s *Service) Create(ctx context.Context, userID string) (Session, string, e
 	token := base64.RawURLEncoding.EncodeToString(random[:])
 	session, err := s.store.Create(ctx, userID, hashToken(token), time.Now().UTC().Add(Lifetime))
 	if err != nil {
-		return Session{}, "", fmt.Errorf("create session: %w", err)
+		return Session{}, "", err
 	}
 	return session, token, nil
 }
