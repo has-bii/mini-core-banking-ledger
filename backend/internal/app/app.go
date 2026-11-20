@@ -31,7 +31,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, redisClient *redis.Client, log *
 
 	tb := middleware.NewRateLimiter(cfg.RatelimitCapacity, cfg.RatelimitRefillRate)
 
-	sessionSvc := session.NewService(session.NewStore(redisClient))
+	sessionSvc := session.NewService(session.NewStore(redisClient), cfg.SessionLifetime)
 	authSvc := auth.NewService(user.NewStore(pool), sessionSvc)
 	walletService := wallet.NewService(wallet.NewStore(pool))
 
@@ -46,7 +46,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, redisClient *redis.Client, log *
 	mux := http.NewServeMux()
 	api := http.NewServeMux()
 
-	auth.NewHandler(authSvc, log, cfg.Env != "dev" && cfg.Env != "test").Register(api)
+	auth.NewHandler(authSvc, log, cfg.Env != "dev" && cfg.Env != "test", cfg.SessionLifetime).Register(api)
 	wallet.NewHandler(walletService, log).Register(api)
 
 	mux.Handle("/api/", http.StripPrefix("/api", api))

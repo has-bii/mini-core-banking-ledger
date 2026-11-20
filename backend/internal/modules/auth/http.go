@@ -10,6 +10,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -21,16 +22,18 @@ type authService interface {
 }
 
 type Handler struct {
-	svc          authService
-	log          *slog.Logger
-	secureCookie bool
+	svc             authService
+	log             *slog.Logger
+	secureCookie    bool
+	sessionLifetime time.Duration
 }
 
-func NewHandler(svc authService, log *slog.Logger, secureCookie bool) *Handler {
+// NewHandler requires a positive, whole-second session lifetime for login cookies.
+func NewHandler(svc authService, log *slog.Logger, secureCookie bool, sessionLifetime time.Duration) *Handler {
 	if log == nil {
 		log = slog.Default()
 	}
-	return &Handler{svc: svc, log: log, secureCookie: secureCookie}
+	return &Handler{svc: svc, log: log, secureCookie: secureCookie, sessionLifetime: sessionLifetime}
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
@@ -84,11 +87,14 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 		h.sendError(w, r, err)
 		return
 	}
-	http.SetCookie(w, &http.Cookie{
+	cookie := http.Cookie{
 		Name: "session", Value: token, Path: "/",
 		HttpOnly: true, Secure: h.secureCookie, SameSite: http.SameSiteLaxMode,
-		Expires: created.ExpiresAt, MaxAge: int(session.Lifetime.Seconds()),
-	})
+		Expires: created.ExpiresAt,
+	}
+	// http.Cookie.MaxAge is an int and can overflow for valid lifetimes on 32-bit builds.
+	maxAge := strconv.FormatInt(int64(h.sessionLifetime/time.Second), 10)
+	w.Header().Add("Set-Cookie", cookie.String()+"; Max-Age="+maxAge)
 	h.sendSuccess(w, r, http.StatusOK, u)
 }
 

@@ -15,14 +15,17 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestApp_AuthLifecycle(t *testing.T) {
 	t.Parallel()
 	pool := testutil.Postgres(t)
 	redisClient := testutil.Redis(t)
+	const lifetime = 45 * time.Minute
 	h, err := app.New(config.Config{
 		Env: "test", CORSOrigin: "http://localhost:3000", RatelimitCapacity: 50, RatelimitRefillRate: 10,
+		SessionLifetime: lifetime,
 	}, pool, redisClient,
 		slog.New(slog.NewTextHandler(io.Discard, nil)))
 	if err != nil {
@@ -31,6 +34,7 @@ func TestApp_AuthLifecycle(t *testing.T) {
 	// This test owns wiring and workflow, not validation, storage, or cookie matrices.
 	registered := authRequest(t, h, "POST", "/api/auth/register", `{"name":"Alice","email":"alice@example.com","password":"password123"}`, nil, http.StatusCreated)
 	u := publicUser(t, registered)
+	beforeLogin := time.Now().Truncate(time.Second)
 	login := authRequest(t, h, "POST", "/api/auth/login", `{"email":"alice@example.com","password":"password123"}`, nil, http.StatusOK)
 	if got := publicUser(t, login); got != u {
 		t.Fatalf("login user = %+v, want %+v", got, u)
@@ -40,6 +44,9 @@ func TestApp_AuthLifecycle(t *testing.T) {
 		t.Fatalf("login cookies = %v, want session token", cookies)
 	}
 	cookie := cookies[0]
+	if cookie.MaxAge != 2700 || cookie.Expires.Before(beforeLogin.Add(lifetime)) || cookie.Expires.After(time.Now().Truncate(time.Second).Add(lifetime)) {
+		t.Errorf("login cookie has Max-Age=%d and Expires=%v, want a lifetime of %v", cookie.MaxAge, cookie.Expires, lifetime)
+	}
 	me := authRequest(t, h, "GET", "/api/auth/me", "", cookie, http.StatusOK)
 	if got := publicUser(t, me); got != u {
 		t.Fatalf("current user = %+v, want %+v", got, u)

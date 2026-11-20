@@ -38,6 +38,7 @@ const (
 func TestService_Create(t *testing.T) {
 	t.Parallel()
 	const userID = "019a3de4-8750-7000-8000-000000000001"
+	const lifetime = 7 * time.Minute
 	for _, tt := range []struct {
 		name, userID string
 		cause        error
@@ -56,15 +57,15 @@ func TestService_Create(t *testing.T) {
 				if gotCtx != ctx || gotUserID != tt.userID {
 					t.Error("Create() did not receive the caller context and user ID")
 				}
-				if expiresAt.Before(before.Add(session.Lifetime)) || expiresAt.After(time.Now().Add(session.Lifetime)) {
-					t.Errorf("Create() received expiration %v; want now plus %v", expiresAt, session.Lifetime)
+				if expiresAt.Before(before.Add(lifetime)) || expiresAt.After(time.Now().Add(lifetime)) {
+					t.Errorf("Create() received expiration %v; want now plus %v", expiresAt, lifetime)
 				}
 				storedHash = tokenHash
 				created = session.Session{ID: "session-id", UserID: gotUserID, ExpiresAt: expiresAt}
 				return created, tt.cause
 			}}
 
-			got, token, err := session.NewService(store).Create(ctx, tt.userID)
+			got, token, err := session.NewService(store, lifetime).Create(ctx, tt.userID)
 			if !errors.Is(err, tt.cause) {
 				t.Fatalf("Create() error = %v; want %v", err, tt.cause)
 			}
@@ -95,7 +96,7 @@ func TestService_GetByToken(t *testing.T) {
 		want  session.Session
 		cause error
 	}{
-		{name: "found", want: session.Session{ID: "session-id", UserID: "user-id"}},
+		{name: "preserves stored expiry", want: session.Session{ID: "session-id", UserID: "user-id", ExpiresAt: time.Now().Add(2 * time.Hour)}},
 		{name: "not found", cause: session.ErrNotFound},
 		{name: "store failure", cause: errors.New("session store unavailable")},
 	} {
@@ -108,7 +109,7 @@ func TestService_GetByToken(t *testing.T) {
 				}
 				return tt.want, tt.cause
 			}}
-			got, err := session.NewService(store).GetByToken(ctx, knownToken)
+			got, err := session.NewService(store, time.Hour).GetByToken(ctx, knownToken)
 			if got != tt.want || !errors.Is(err, tt.cause) {
 				t.Errorf("GetByToken() = %+v, %v; want %+v, %v", got, err, tt.want, tt.cause)
 			}
@@ -136,7 +137,7 @@ func TestService_Revoke(t *testing.T) {
 				}
 				return tt.cause
 			}}
-			if err := session.NewService(store).Revoke(ctx, knownToken); !errors.Is(err, tt.cause) || !called {
+			if err := session.NewService(store, time.Hour).Revoke(ctx, knownToken); !errors.Is(err, tt.cause) || !called {
 				t.Errorf("Revoke() error = %v, called DeleteByTokenHash() = %t; want %v and a deletion attempt", err, called, tt.cause)
 			}
 		})
@@ -157,7 +158,7 @@ func TestService_RejectsMalformedTokens(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			// A nil store proves malformed input is rejected before persistence.
-			svc := session.NewService(nil)
+			svc := session.NewService(nil, time.Hour)
 			got, err := svc.GetByToken(t.Context(), tt.token)
 			if !errors.Is(err, session.ErrNotFound) || got != (session.Session{}) {
 				t.Fatalf("GetByToken() = %+v, %v; want not found", got, err)

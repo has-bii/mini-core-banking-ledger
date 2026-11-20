@@ -20,9 +20,10 @@ info:
     Decoding stops at the first error and omits validation errors.
     Clients should use HTTP statuses and field keys, not parse messages.
 
-    Sessions last 24 hours. Session tokens are stored as SHA-256 hashes and
-    never returned in JSON. Login-specific brute-force protection and automatic
-    expired-session cleanup are not implemented.
+    Sessions last 30 minutes by default. The server's SESSION_LIFETIME setting
+    applies to new sessions only. Redis expires sessions automatically. Session
+    tokens are stored as SHA-256 hashes and never returned in JSON.
+    Login-specific brute-force protection is not implemented.
 
     A shared in-memory token bucket limits requests across all clients per API
     process. RATE_LIMIT_CAPACITY defaults to 50 tokens (burst size) and
@@ -119,18 +120,19 @@ paths:
               password: password123
       responses:
         '200':
-          description: Authenticated; session cookie set for 24 hours.
+          description: Authenticated; session cookie set for the configured lifetime (30 minutes by default).
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
             Set-Cookie:
               description: |
-                session=<token>; Path=/; Max-Age=86400; Expires=<expiry>;
-                HttpOnly; SameSite=Lax. Secure is also set when APP_ENV is
-                staging or prod; those environments require HTTPS.
+                session=<token>; Path=/; Max-Age=<lifetime in seconds>; Expires=<session expiry>;
+                HttpOnly; SameSite=Lax. The default Max-Age is 1800 seconds.
+                Secure is also set when APP_ENV is staging or prod; those
+                environments require HTTPS.
               schema:
                 type: string
-              example: session=opaque-token; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax
+              example: session=opaque-token; Path=/; Expires=Wed, 21 Oct 2026 07:28:00 GMT; Max-Age=1800; HttpOnly; SameSite=Lax
           content:
             application/json:
               schema:
@@ -358,7 +360,7 @@ components:
       type: apiKey
       in: cookie
       name: session
-      description: Opaque session token set by login; expires after 24 hours.
+      description: Opaque session token set by login; expires after the configured lifetime (30 minutes by default).
   headers:
     NoStore:
       description: Prevents caching of session-related and wallet responses.

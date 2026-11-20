@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestLoad_CORSOrigin(t *testing.T) {
@@ -159,6 +160,48 @@ func TestLoad_InvalidRateLimit(t *testing.T) {
 	}
 }
 
+func TestLoad_SessionLifetime(t *testing.T) {
+	setupEnv(t)
+	for _, tc := range []struct {
+		name, value string
+		want        time.Duration
+		unset       bool
+	}{
+		{name: "unset defaults", want: 30 * time.Minute, unset: true},
+		{name: "empty defaults", want: 30 * time.Minute},
+		{name: "custom", value: "8h", want: 8 * time.Hour},
+		{name: "one second", value: "1s", want: time.Second},
+		{name: "large duration", value: "2147483648s", want: 1 << 31 * time.Second},
+		{name: "malformed", value: "invalid"},
+		{name: "zero", value: "0s"},
+		{name: "negative", value: "-1s"},
+		{name: "sub-second", value: "500ms"},
+		{name: "fractional seconds", value: "1.5s"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("SESSION_LIFETIME", tc.value)
+			if tc.unset {
+				if err := os.Unsetenv("SESSION_LIFETIME"); err != nil {
+					t.Fatal(err)
+				}
+			}
+			cfg, err := config.Load()
+			if tc.want == 0 {
+				if err == nil || !strings.Contains(err.Error(), "SESSION_LIFETIME") {
+					t.Fatalf("Load() error = %v, want error naming SESSION_LIFETIME", err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if cfg.SessionLifetime != tc.want {
+				t.Errorf("SessionLifetime = %v, want %v", cfg.SessionLifetime, tc.want)
+			}
+		})
+	}
+}
+
 func setupEnv(t *testing.T) {
 	t.Helper()
 	t.Chdir(t.TempDir())
@@ -172,6 +215,7 @@ func setupEnv(t *testing.T) {
 		"SHUTDOWN_TIMEOUT":       "10s",
 		"RATE_LIMIT_CAPACITY":    "",
 		"RATE_LIMIT_REFILL_RATE": "",
+		"SESSION_LIFETIME":       "",
 	} {
 		t.Setenv(key, value)
 	}

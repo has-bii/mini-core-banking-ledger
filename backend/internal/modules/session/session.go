@@ -12,8 +12,6 @@ var (
 	ErrTokenHashTaken    = errors.New("session token hash already exists")
 )
 
-const Lifetime = 24 * time.Hour
-
 type Session struct {
 	ID        string    `json:"id"`
 	UserID    string    `json:"user_id"`

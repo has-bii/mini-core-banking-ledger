@@ -18,6 +18,8 @@ import (
 	"time"
 )
 
+const testSessionLifetime = 7 * time.Minute
+
 type authServiceStub struct {
 	registerInput auth.RegisterDTO
 	loginInput    auth.LoginDTO
@@ -69,7 +71,7 @@ func TestHandler_ForwardsNormalizedDTOs(t *testing.T) {
 			t.Parallel()
 			svc := &authServiceStub{}
 			mux := http.NewServeMux()
-			auth.NewHandler(svc, nil, false).Register(mux)
+			auth.NewHandler(svc, nil, false, testSessionLifetime).Register(mux)
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(http.MethodPost, tt.path, strings.NewReader(tt.body)).WithContext(t.Context())
 			mux.ServeHTTP(w, r)
@@ -106,7 +108,7 @@ func TestHandler_RejectsInvalidPayload(t *testing.T) {
 					t.Parallel()
 					mux := http.NewServeMux()
 					// Nil dependencies prove parsing/validation stops before business logic.
-					auth.NewHandler(nil, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+					auth.NewHandler(nil, slog.New(slog.NewTextHandler(io.Discard, nil)), false, testSessionLifetime).Register(mux)
 					w := httptest.NewRecorder()
 					mux.ServeHTTP(w, httptest.NewRequest(http.MethodPost, path, strings.NewReader(tt.body)))
 					assertHTTPError(t, w, tt.status, tt.title, tt.message)
@@ -127,7 +129,7 @@ func TestHandler_ValidationDetails(t *testing.T) {
 		t.Run(path, func(t *testing.T) {
 			t.Parallel()
 			mux := http.NewServeMux()
-			auth.NewHandler(nil, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+			auth.NewHandler(nil, slog.New(slog.NewTextHandler(io.Discard, nil)), false, testSessionLifetime).Register(mux)
 			w := httptest.NewRecorder()
 			mux.ServeHTTP(w, httptest.NewRequest(http.MethodPost, path, strings.NewReader(`{}`)))
 			assertHTTPError(t, w, http.StatusBadRequest, "Bad Request", "One or more fields are invalid. Check the field errors for details.")
@@ -157,7 +159,7 @@ func TestHandler_UnexpectedErrors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			mux := http.NewServeMux()
-			auth.NewHandler(&authServiceStub{err: errors.New("secret database credentials")}, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+			auth.NewHandler(&authServiceStub{err: errors.New("secret database credentials")}, slog.New(slog.NewTextHandler(io.Discard, nil)), false, testSessionLifetime).Register(mux)
 			// Resolve identity only to reach the handler's injected failure.
 			h := middleware.GetUserFromSession(func(context.Context, string) (string, error) { return "user-id", nil })(mux)
 			r := httptest.NewRequest(tt.method, tt.path, strings.NewReader(tt.payload))
@@ -178,7 +180,7 @@ func TestHandler_UnexpectedErrors(t *testing.T) {
 func TestHandler_MeRequiresResolvedIdentity(t *testing.T) {
 	t.Parallel()
 	mux := http.NewServeMux()
-	auth.NewHandler(nil, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+	auth.NewHandler(nil, slog.New(slog.NewTextHandler(io.Discard, nil)), false, testSessionLifetime).Register(mux)
 	for _, name := range []string{"missing cookie", "unverified cookie"} {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
@@ -200,7 +202,7 @@ func TestHandler_MeRequiresResolvedIdentity(t *testing.T) {
 func TestHandler_DeletedUserAfterResolution(t *testing.T) {
 	t.Parallel()
 	mux := http.NewServeMux()
-	auth.NewHandler(&authServiceStub{err: auth.ErrUnauthenticated}, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+	auth.NewHandler(&authServiceStub{err: auth.ErrUnauthenticated}, slog.New(slog.NewTextHandler(io.Discard, nil)), false, testSessionLifetime).Register(mux)
 	h := middleware.GetUserFromSession(func(context.Context, string) (string, error) { return "deleted-user", nil })(mux)
 	r := httptest.NewRequest("GET", "/auth/me", nil)
 	r.AddCookie(&http.Cookie{Name: "session", Value: "raw-token"})
@@ -226,7 +228,7 @@ func TestHandler_DomainErrorResponses(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			mux := http.NewServeMux()
-			auth.NewHandler(&authServiceStub{err: tt.err}, slog.New(slog.NewTextHandler(io.Discard, nil)), false).Register(mux)
+			auth.NewHandler(&authServiceStub{err: tt.err}, slog.New(slog.NewTextHandler(io.Discard, nil)), false, testSessionLifetime).Register(mux)
 			ctx := t.Context()
 			if tt.path == "/auth/me" {
 				ctx = middleware.WithUserID(ctx, "not-a-uuid")
@@ -255,17 +257,19 @@ func TestHandler_UserResponses(t *testing.T) {
 		name, method, path, payload string
 		status                      int
 		secure                      bool
+		lifetime                    time.Duration
+		maxAge                      string
 	}{
-		{"register", http.MethodPost, "/auth/register", `{"name":"Alice","email":"alice@example.com","password":"password123"}`, http.StatusCreated, false},
-		{"development login", http.MethodPost, "/auth/login", `{"email":"alice@example.com","password":"password123"}`, http.StatusOK, false},
-		{"production login", http.MethodPost, "/auth/login", `{"email":"alice@example.com","password":"password123"}`, http.StatusOK, true},
-		{"current user", http.MethodGet, "/auth/me", "", http.StatusOK, false},
+		{"register", http.MethodPost, "/auth/register", `{"name":"Alice","email":"alice@example.com","password":"password123"}`, http.StatusCreated, false, testSessionLifetime, ""},
+		{"development login", http.MethodPost, "/auth/login", `{"email":"alice@example.com","password":"password123"}`, http.StatusOK, false, testSessionLifetime, "420"},
+		{"production login with large Max-Age", http.MethodPost, "/auth/login", `{"email":"alice@example.com","password":"password123"}`, http.StatusOK, true, 1 << 31 * time.Second, "2147483648"},
+		{"current user", http.MethodGet, "/auth/me", "", http.StatusOK, false, testSessionLifetime, ""},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			svc := &authServiceStub{account: account, token: token, expiresAt: expires}
 			mux := http.NewServeMux()
-			auth.NewHandler(svc, nil, tt.secure).Register(mux)
+			auth.NewHandler(svc, nil, tt.secure, tt.lifetime).Register(mux)
 			ctx := t.Context()
 			if tt.path == "/auth/me" {
 				ctx = middleware.WithUserID(ctx, want.ID)
@@ -301,8 +305,11 @@ func TestHandler_UserResponses(t *testing.T) {
 				t.Fatalf("login sent %d cookies, want one", len(cookies))
 			}
 			c := cookies[0]
-			if c.Name != "session" || c.Value != token || c.Path != "/" || !c.HttpOnly || c.Secure != tt.secure || c.SameSite != http.SameSiteLaxMode || c.MaxAge != 86400 || !c.Expires.Equal(expires) {
+			if c.Name != "session" || c.Value != token || c.Path != "/" || !c.HttpOnly || c.Secure != tt.secure || c.SameSite != http.SameSiteLaxMode || !c.Expires.Equal(expires) {
 				t.Error("login sent an incorrect session cookie")
+			}
+			if !strings.Contains(w.Header().Get("Set-Cookie")+";", "; Max-Age="+tt.maxAge+";") {
+				t.Errorf("login cookie must have Max-Age=%s", tt.maxAge)
 			}
 		})
 	}
@@ -323,7 +330,7 @@ func TestHandler_LogoutClearsSessionCookie(t *testing.T) {
 			t.Parallel()
 			svc := &authServiceStub{}
 			mux := http.NewServeMux()
-			auth.NewHandler(svc, nil, tt.secure).Register(mux)
+			auth.NewHandler(svc, nil, tt.secure, testSessionLifetime).Register(mux)
 			r := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/auth/logout", nil)
 			var wantTokens []string
 			if tt.withCookie {

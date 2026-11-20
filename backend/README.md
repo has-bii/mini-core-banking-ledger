@@ -26,7 +26,7 @@ The API listens at `http://localhost:8080` by default; API routes are under `/ap
 
 ### Local behavior
 
-- **Sessions:** Sessions expire after 24 hours. Local Compose Redis is nonpersistent, so restarting it signs everyone out.
+- **Sessions:** `SESSION_LIFETIME` defaults to `30m` when unset or empty. Use a positive Go duration in whole seconds (for example, `8h`); invalid values prevent startup. Changes take effect for new logins after restarting the API and don’t change existing sessions. Local Compose Redis is nonpersistent, so restarting Redis signs everyone out.
 - **Browser origin:** `CORS_ORIGIN` accepts one exact origin and defaults to `http://localhost:3000`.
 - **Rate limiting:** Each API process shares one rate limit across clients. `RATE_LIMIT_CAPACITY` defaults to a burst of 50 requests, and `RATE_LIMIT_REFILL_RATE` defaults to 10 tokens per second. Requests that reach an empty bucket receive HTTP `429`.
 

@@ -19,10 +19,10 @@ var (
 )
 
 type Config struct {
-	Env, Addr, DatabaseURL, RedisURL, LogLevel string
-	CORSOrigin                                 string
-	ReadTimeout, ShutdownTimeout               time.Duration
-	RatelimitCapacity, RatelimitRefillRate     float64
+	Env, Addr, DatabaseURL, RedisURL, LogLevel    string
+	CORSOrigin                                    string
+	ReadTimeout, ShutdownTimeout, SessionLifetime time.Duration
+	RatelimitCapacity, RatelimitRefillRate        float64
 }
 
 func Load() (Config, error) {
@@ -40,6 +40,7 @@ func Load() (Config, error) {
 		CORSOrigin:          getString("CORS_ORIGIN", "http://localhost:3000"),
 		ReadTimeout:         getDuration("HTTP_READ_TIMEOUT", 5*time.Second, &errs),
 		ShutdownTimeout:     getDuration("SHUTDOWN_TIMEOUT", 10*time.Second, &errs),
+		SessionLifetime:     getDuration("SESSION_LIFETIME", 30*time.Minute, &errs),
 		RatelimitCapacity:   getFloat("RATE_LIMIT_CAPACITY", 50, &errs),
 		RatelimitRefillRate: getFloat("RATE_LIMIT_REFILL_RATE", 10, &errs),
 	}
@@ -48,6 +49,10 @@ func Load() (Config, error) {
 		errs = append(errs, errors.New("CORS_ORIGIN must be a single exact origin without wildcards"))
 	} else if err := http.NewCrossOriginProtection().AddTrustedOrigin(cfg.CORSOrigin); err != nil {
 		errs = append(errs, fmt.Errorf("CORS_ORIGIN: %w", err))
+	}
+
+	if cfg.SessionLifetime%time.Second != 0 {
+		errs = append(errs, errors.New("SESSION_LIFETIME must be a whole number of seconds"))
 	}
 
 	if cfg.RatelimitCapacity < 1 {

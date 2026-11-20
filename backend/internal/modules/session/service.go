@@ -16,9 +16,15 @@ type sessionStore interface {
 	DeleteByTokenHash(ctx context.Context, tokenHash string) error
 }
 
-type Service struct{ store sessionStore }
+type Service struct {
+	store    sessionStore
+	lifetime time.Duration
+}
 
-func NewService(store sessionStore) *Service { return &Service{store: store} }
+// NewService configures the lifetime for new sessions. The lifetime must be positive.
+func NewService(store sessionStore, lifetime time.Duration) *Service {
+	return &Service{store: store, lifetime: lifetime}
+}
 
 // Create returns the raw token only to the caller; persistence receives its hash.
 func (s *Service) Create(ctx context.Context, userID string) (Session, string, error) {
@@ -27,7 +33,7 @@ func (s *Service) Create(ctx context.Context, userID string) (Session, string, e
 		return Session{}, "", fmt.Errorf("generate session token: %w", err)
 	}
 	token := base64.RawURLEncoding.EncodeToString(random[:])
-	session, err := s.store.Create(ctx, userID, hashToken(token), time.Now().UTC().Add(Lifetime))
+	session, err := s.store.Create(ctx, userID, hashToken(token), time.Now().UTC().Add(s.lifetime))
 	if err != nil {
 		return Session{}, "", err
 	}
