@@ -1,51 +1,36 @@
-# Backend
+# Mini Core Banking Ledger — Backend
 
-Go HTTP API backed by PostgreSQL for persistent business data and Redis for sessions, using pgx and Goose SQL migrations.
+A Go HTTP API for user registration, cookie-based sessions, and wallet management. Registration creates a main wallet. Signed-in users can create savings wallets and sub-wallets, and list or retrieve their own wallets. Transfers and ledger entries are not implemented.
 
-Run all commands from `backend/`.
+PostgreSQL stores users and wallets; Redis stores sessions. See the [OpenAPI specification](api/openapi.yaml) for routes, request and response schemas, and errors.
 
-## Local setup
+## Run locally
 
-Requires Go matching `go.mod`, Docker Compose, and the [Goose CLI](https://github.com/pressly/goose) on `PATH`. PostgreSQL 18 is required for `uuidv7()`.
+Run commands from `backend/`. You'll need Go (version in [`go.mod`](go.mod)), Docker with Compose, and the [Goose CLI](https://github.com/pressly/goose) on your `PATH`. Compose provides PostgreSQL 18 (required for `uuidv7()`) and Redis.
+
+If you don't already have a `.env`, copy the example:
+
+```sh
+cp .env.example .env
+```
+
+Check that `DATABASE_URL`, `REDIS_URL`, and `GOOSE_DBSTRING` match your local services. Set `GOOSE_DRIVER=postgres` and point `GOOSE_DBSTRING` at the same database as `DATABASE_URL`.
 
 ```sh
 docker compose up -d --wait
-cp .env.example .env
-goose -env .env up
+goose -env .env -dir migrations up
 go run ./cmd/api
 ```
 
-The API loads `.env`; existing environment variables take precedence. `REDIS_URL` is required. Session tokens are hashed before storage, and Redis expires sessions after 24 hours. The local Compose Redis is intentionally nonpersistent: restarting it logs everyone out.
+The API listens at `http://localhost:8080` by default; API routes are under `/api`. The API loads `.env` without overriding existing environment variables. It does not run migrations on startup.
 
-### Rate limiting
+### Local behavior
 
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `RATE_LIMIT_CAPACITY` | `50` | Maximum tokens (burst size); must be at least `1` |
-| `RATE_LIMIT_REFILL_RATE` | `10` | Tokens replenished per second; must be greater than `0` |
-
-Both accept finite decimal values; invalid settings prevent startup. The default burst size was previously hard-coded to `20` and is now `50`; set `RATE_LIMIT_CAPACITY=20` to retain the previous limit.
-
-Each API process has one in-memory token bucket shared by all clients and routes. It starts full, consumes one token per request, and returns HTTP `429` problem details when exhausted. CORS preflight requests bypass the bucket. Restarting resets it; separate instances do not share limits. This is not per-user or per-IP throttling.
-
-## Migrations
-
-Keep `DATABASE_URL` and `GOOSE_DBSTRING` pointed at the same database. See `.env.example` for the required settings.
-
-```sh
-goose -env .env status
-goose -env .env up
-goose -env .env down # Rolls back the latest migration; may delete data.
-goose -env .env create add_user_field sql
-```
-
-Edit generated files in `migrations/` under `-- +goose Up` and `-- +goose Down`.
-
-The wallet migration replaces the original account migration in development history. Existing development databases created with the account schema must be reset before applying migrations; `goose up` will not rename an already-applied schema. Resetting deletes existing data. The API now uses `/api/wallets`, `wallet_type`, and `sub_wallet`; legacy account routes and fields are not supported.
+- **Sessions:** Sessions expire after 24 hours. Local Compose Redis is nonpersistent, so restarting it signs everyone out.
+- **Browser origin:** `CORS_ORIGIN` accepts one exact origin and defaults to `http://localhost:3000`.
+- **Rate limiting:** Each API process shares one rate limit across clients. `RATE_LIMIT_CAPACITY` defaults to a burst of 50 requests, and `RATE_LIMIT_REFILL_RATE` defaults to 10 tokens per second. Requests that reach an empty bucket receive HTTP `429`.
 
 ## Tests and checks
-
-Run commands from `backend/`.
 
 ### Unit tests
 
@@ -53,51 +38,35 @@ Run commands from `backend/`.
 go test -race ./...
 ```
 
-Unit tests cover validation, HTTP behavior, middleware contracts, and service workflows. Handler and service tests are unit tests only: they use small handwritten dependency stubs and do not require a database, Redis, or an environment file. See [HTTP conventions](docs/http_conventions.md#testing) and [service conventions](docs/service_conventions.md#testing).
+Unit tests don't need PostgreSQL, Redis, or an environment file.
 
 ### Integration tests
 
-Requires PostgreSQL 18, Redis, and the Goose CLI. Start the existing Compose services:
+Start the Compose services and make sure Goose is on your `PATH`. A running API server is not required.
 
 ```sh
 docker compose up -d --wait postgres redis
 ```
 
-Create a local `.env.test` containing dedicated test service URLs:
+Create `.env.test` in `backend/` with URLs for dedicated test backends. With the default Compose credentials:
 
 ```dotenv
-DATABASE_URL="postgresql://user:password@localhost:5432/test"
-REDIS_URL="redis://:password@localhost:6379/1"
+DATABASE_URL="postgresql://user:password@127.0.0.1:5432/test"
+REDIS_URL="redis://:password@127.0.0.1:6379/1"
 ```
 
-Compose creates the `test` database when initializing a fresh volume. For an existing volume, ensure that database exists. Redis database `1` separates local tests from application sessions in database `0`; each test additionally uses a unique key namespace. `.env.test` is ignored by Git; do not use production or development data as test targets.
+Compose creates the `test` database when it initializes a fresh PostgreSQL volume. If you're using an existing volume, make sure `test` exists and the test role can create schemas in it. Redis database `1` keeps local test keys separate from app sessions in database `0`. The test helpers read these URLs from `.env.test` directly; they don't fall back to `.env` or shell variables.
 
 ```sh
 go test -race -count=1 -tags=integration ./...
 ```
 
-This runs both unit and integration tests. Store integration tests cover persistence, expiry, and transaction rollback. App integration tests cover cross-layer wiring, including the register → login → me → logout flow. See [store conventions](docs/store_conventions.md#integration-testing) for store test contracts and fixture safety. PostgreSQL and Redis are required, but a running API server is not.
+This runs both unit and integration tests.
 
-The shared helpers read `DATABASE_URL` and `REDIS_URL` directly from `.env.test`, without falling back to `.env` or shell variables. It creates a unique schema per integration test, uses only that schema in each pool connection's `search_path`, and applies actual migrations using Goose. Cleanup closes the pool and drops only the schema it created; no shared tables are truncated. The database user needs schema creation privileges. Redis fixtures prefix commands with a random per-test namespace and clean up only their own keys, never flushing a shared database. Missing configuration, Goose, PostgreSQL, or Redis fails the tests rather than skipping them.
-
-If a test process is forcibly killed, cleanup cannot run and a `test_…` schema may remain in the test database. Remove leftover schemas only after confirming no tests are using them.
-
-### Compilation and static analysis
+### Build and vet
 
 ```sh
 go build ./...
 go vet ./...
 go vet -tags=integration ./...
 ```
-
-No coverage threshold is enforced.
-
-## API specification
-
-See [api/openapi.yaml](api/openapi.yaml) (OpenAPI 3.0.3) for implemented endpoints, request and response schemas, validation, errors, and session cookies.
-
-Registration, login, and wallet creation use `go-playground/validator/v10` built-in rules. Invalid JSON or fields return `400`; bodies exceeding 1 MiB return `413`. Validation reports all invalid fields, first failed rule per field.
-
-Auth, wallet, and shared middleware use `application/problem+json` errors (`type`, `title`, `status`, `detail`, `instance`, and optional validation `errors` keyed by JSON field name). Success responses contain `data` and an optional `message`; logout remains an empty `204`. CSRF rejections from Go's cross-origin protection return `403` problem details using the same error format. Consumers must support this error contract; legacy error codes and detail arrays are not returned.
-
-See [HTTP conventions](docs/http_conventions.md) for handler design, routing, responses, and tests, and [store conventions](docs/store_conventions.md) for persistence responsibilities, transactions, and integration testing.
