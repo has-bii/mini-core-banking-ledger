@@ -8,7 +8,7 @@ import (
 	"backend/internal/modules/user"
 	"backend/internal/modules/wallet"
 	"backend/internal/testutil"
-	"encoding/json"
+	"encoding/json/v2"
 	"io"
 	"log/slog"
 	"net/http"
@@ -57,7 +57,7 @@ func TestApp_AuthLifecycle(t *testing.T) {
 			ID         string `json:"id"`
 			UserID     string `json:"user_id"`
 			WalletType string `json:"wallet_type"`
-		}
+		} `json:"data"`
 	}
 	if err := json.Unmarshal(wallets.Body.Bytes(), &walletBody); err != nil || len(walletBody.Data) != 1 {
 		t.Fatalf("wallets response = %s (%v), want one wallet", wallets.Body.String(), err)
@@ -129,10 +129,7 @@ func TestApp_SessionLookupFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 	w := authRequest(t, h, "GET", "/api/auth/me", "", cookie, http.StatusInternalServerError)
-	var body struct {
-		Type, Title, Detail, Instance string
-		Status                        int
-	}
+	var body testutil.ProblemDetails
 	if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
 		t.Fatal(err)
 	}
@@ -158,7 +155,9 @@ func authRequest(t *testing.T, h http.Handler, method, path, body string, cookie
 
 func publicUser(t *testing.T, w *httptest.ResponseRecorder) user.User {
 	t.Helper()
-	var body struct{ Data user.User }
+	var body struct {
+		Data user.User `json:"data"`
+	}
 	if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil || body.Data.ID == "" {
 		t.Fatalf("invalid user response: %s (%v)", w.Body.String(), err)
 	}

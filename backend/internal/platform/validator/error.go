@@ -3,7 +3,7 @@ package validator
 type ErrorField = map[string][]string
 
 type ErrorValidation struct {
-	Errors *ErrorField `json:"errors,omitempty"`
+	Errors *ErrorField `json:"errors,omitzero"`
 }
 
 func (ev *ErrorValidation) Error() string {

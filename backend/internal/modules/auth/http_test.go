@@ -5,8 +5,9 @@ import (
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
 	"backend/internal/platform/middleware"
+	"backend/internal/testutil"
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"errors"
 	"io"
 	"log/slog"
@@ -133,7 +134,9 @@ func TestHandler_ValidationDetails(t *testing.T) {
 			w := httptest.NewRecorder()
 			mux.ServeHTTP(w, httptest.NewRequest(http.MethodPost, path, strings.NewReader(`{}`)))
 			assertHTTPError(t, w, http.StatusBadRequest, "Bad Request", "One or more fields are invalid. Check the field errors for details.")
-			var body struct{ Errors map[string][]string }
+			var body struct {
+				Errors map[string][]string `json:"errors"`
+			}
 			if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
 				t.Fatal(err)
 			}
@@ -282,7 +285,9 @@ func TestHandler_UserResponses(t *testing.T) {
 			if tt.path == "/auth/me" && svc.meUserID != want.ID {
 				t.Errorf("current user lookup used %q, want %q", svc.meUserID, want.ID)
 			}
-			var body struct{ Data user.User }
+			var body struct {
+				Data user.User `json:"data"`
+			}
 			if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil || body.Data != want {
 				t.Fatalf("unexpected public user response (decode error: %v)", err)
 			}
@@ -359,10 +364,7 @@ func TestHandler_LogoutClearsSessionCookie(t *testing.T) {
 
 func assertHTTPError(t *testing.T, w *httptest.ResponseRecorder, status int, title, message string) {
 	t.Helper()
-	var body struct {
-		Type, Title, Detail, Instance string
-		Status                        int
-	}
+	var body testutil.ProblemDetails
 	if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
 		t.Fatalf("invalid error JSON: %v", err)
 	}

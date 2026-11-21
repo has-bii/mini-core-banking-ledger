@@ -2,10 +2,12 @@ package httpx
 
 import (
 	"backend/internal/platform/validator"
-	"encoding/json"
+
+	"encoding/json/v2"
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 )
 
 type SuccessResponse struct {
@@ -41,7 +43,7 @@ func NewSuccessResponse(message string, data any) *SuccessResponse {
 }
 
 func writeJSON(w http.ResponseWriter, status int, contentType string, v any) error {
-	body, err := json.Marshal(v)
+	body, err := json.Marshal(v, json.FormatNilMapAsNull(true), json.FormatNilSliceAsNull(true))
 	if err != nil {
 		return err
 	}
@@ -64,7 +66,10 @@ func SendError(w http.ResponseWriter, v *ErrorResponse) error {
 	if v == nil {
 		return errors.New("error response must not be nil")
 	}
-	return writeJSON(w, v.Status, "application/problem+json", v)
+	// A decoded request path can contain invalid UTF-8.
+	response := *v
+	response.Instance = strings.ToValidUTF8(response.Instance, "\uFFFD")
+	return writeJSON(w, response.Status, "application/problem+json", &response)
 }
 
 // SendRequestError handles transport errors before consulting mapDomain, which returns status 0 for unrecognized errors.

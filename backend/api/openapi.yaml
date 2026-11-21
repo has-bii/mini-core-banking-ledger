@@ -4,10 +4,12 @@ info:
   version: 0.1.0
   description: |
     Contract for the implemented authentication and wallet APIs.
-    JSON request bodies must contain exactly one JSON object, must not exceed
-    1 MiB, and must not contain unknown fields. Empty, malformed, non-object,
-    and otherwise invalid bodies return 400. Oversized bodies return 413,
-    including oversized trailing whitespace.
+    JSON request bodies must contain exactly one UTF-8 JSON object and must not
+    exceed 1 MiB. Field names are case-sensitive; unknown fields and duplicate
+    object member names are rejected. JSON strings must not contain unpaired
+    UTF-16 surrogate escapes. Empty, malformed, non-object, and otherwise invalid
+    bodies return 400. Oversized bodies return 413, including oversized trailing
+    whitespace.
 
     Auth, wallet, and shared middleware use problem details
     (application/problem+json): type, title, status, detail, instance, and

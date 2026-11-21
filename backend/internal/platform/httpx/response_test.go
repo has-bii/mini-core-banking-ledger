@@ -3,7 +3,7 @@ package httpx_test
 import (
 	"backend/internal/platform/httpx"
 	"backend/internal/platform/validator"
-	"encoding/json"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -33,7 +33,7 @@ func TestResponses(t *testing.T) {
 			name: "success without message", status: http.StatusOK, contentType: "application/json",
 			body: `{"data":null}`,
 			send: func(w http.ResponseWriter) error {
-				return httpx.SendSuccess(w, http.StatusOK, httpx.NewSuccessResponse("", nil))
+				return httpx.SendSuccess(w, http.StatusOK, httpx.NewSuccessResponse("", []int(nil)))
 			},
 		},
 		{
@@ -41,6 +41,21 @@ func TestResponses(t *testing.T) {
 			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/wallets"}`,
 			send: func(w http.ResponseWriter) error {
 				return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "invalid input", "/wallets", &validator.ErrorValidation{}))
+			},
+		},
+		{
+			name: "error with invalid UTF-8 in instance", status: http.StatusUnauthorized, contentType: "application/problem+json",
+			body: `{"type":"about:blank","title":"Unauthorized","status":401,"detail":"invalid session","instance":"/wallets/\ufffd"}`,
+			send: func(w http.ResponseWriter) error {
+				return httpx.SendError(w, httpx.NewErrorResponse("Unauthorized", http.StatusUnauthorized, "invalid session", "/wallets/\xff", nil))
+			},
+		},
+		{
+			name: "error with empty fields map", status: http.StatusBadRequest, contentType: "application/problem+json",
+			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/wallets","errors":{}}`,
+			send: func(w http.ResponseWriter) error {
+				empty := validator.ErrorField{}
+				return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "invalid input", "/wallets", &validator.ErrorValidation{Errors: &empty}))
 			},
 		},
 		{

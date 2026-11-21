@@ -5,8 +5,10 @@ package session_test
 import (
 	"backend/internal/modules/session"
 	"backend/internal/testutil"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -139,10 +141,11 @@ func TestStore_GetByTokenHash(t *testing.T) {
 		wantError            bool
 		wantNotFound         bool
 	}{
-		{name: "valid", payload: encode(valid), want: valid},
+		{name: "existing session format", payload: fmt.Sprintf(`{"id":%q,"user_id":%q,"expires_at":%q}`,
+			valid.ID, valid.UserID, valid.ExpiresAt.Format(time.RFC3339Nano)), want: valid},
 		{name: "missing", missing: true, wantError: true, wantNotFound: true},
 		{name: "expired payload without TTL", payload: encode(expired), wantError: true, wantNotFound: true},
-		{name: "invalid JSON", payload: "{", wantError: true, cause: "syntax"},
+		{name: "invalid JSON", payload: `{"user_id":]}`, wantError: true, cause: "syntax"},
 		{name: "null", payload: "null", wantError: true},
 		{name: "missing fields", payload: "{}", wantError: true},
 		{name: "missing id", payload: encode(session.Session{UserID: valid.UserID, ExpiresAt: valid.ExpiresAt}), wantError: true},
@@ -166,12 +169,12 @@ func TestStore_GetByTokenHash(t *testing.T) {
 			}
 			switch tt.cause {
 			case "syntax":
-				var cause *json.SyntaxError
+				var cause *jsontext.SyntacticError
 				if !errors.As(err, &cause) || !errors.Is(err, cause) {
 					t.Fatalf("error = %v, want preserved JSON syntax cause", err)
 				}
 			case "type":
-				var cause *json.UnmarshalTypeError
+				var cause *json.SemanticError
 				if !errors.As(err, &cause) || !errors.Is(err, cause) {
 					t.Fatalf("error = %v, want preserved JSON type cause", err)
 				}

@@ -2,7 +2,7 @@ package middleware_test
 
 import (
 	"backend/internal/platform/middleware"
-	"encoding/json"
+	"encoding/json/v2"
 	"net/http"
 	"net/http/httptest"
 	"reflect"

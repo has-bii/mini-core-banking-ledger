@@ -6,7 +6,7 @@ import (
 	"backend/internal/platform/middleware"
 	"backend/internal/platform/validator"
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"io"

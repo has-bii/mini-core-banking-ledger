@@ -2,12 +2,12 @@ package httpx
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 )
 
 func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
@@ -30,49 +30,34 @@ func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 		return NewHTTPError(http.StatusBadRequest, "body must be a JSON object")
 	}
 
-	dec := json.NewDecoder(bytes.NewReader(body))
-	dec.DisallowUnknownFields()
-
-	if err := dec.Decode(dst); err != nil {
-		var (
-			syntaxErr        *json.SyntaxError
-			unmarshalTypeErr *json.UnmarshalTypeError
-			invalidErr       *json.InvalidUnmarshalError
-		)
-
-		switch {
-		case errors.As(err, &syntaxErr):
-			return NewHTTPError(http.StatusBadRequest,
-				fmt.Sprintf("body contains badly-formed JSON (at character %d)", syntaxErr.Offset))
-
-		case errors.Is(err, io.ErrUnexpectedEOF):
-			return NewHTTPError(http.StatusBadRequest,
-				"body contains badly-formed JSON")
-
-		case errors.As(err, &unmarshalTypeErr):
-			if unmarshalTypeErr.Field != "" {
-				return NewHTTPError(http.StatusBadRequest,
-					fmt.Sprintf("body contains an invalid value for field %q (expected %s)",
-						unmarshalTypeErr.Field, unmarshalTypeErr.Type))
-			}
-			return NewHTTPError(http.StatusBadRequest,
-				fmt.Sprintf("body contains an invalid JSON type (at character %d)",
-					unmarshalTypeErr.Offset))
-
-		case strings.HasPrefix(err.Error(), "json: unknown field "):
-			field := strings.TrimPrefix(err.Error(), "json: unknown field ")
-			return NewHTTPError(http.StatusBadRequest,
-				fmt.Sprintf("body contains unknown field %s", field))
-
-		case errors.As(err, &invalidErr):
-			panic(err)
-
-		default:
-			return err
+	dec := jsontext.NewDecoder(bytes.NewReader(body))
+	if err := json.UnmarshalDecode(dec, dst, json.RejectUnknownMembers(true)); err != nil {
+		if errors.Is(err, io.ErrUnexpectedEOF) {
+			return NewHTTPError(http.StatusBadRequest, "body contains badly-formed JSON")
 		}
+		if syntaxErr, ok := errors.AsType[*jsontext.SyntacticError](err); ok {
+			return NewHTTPError(http.StatusBadRequest,
+				fmt.Sprintf("body contains badly-formed JSON (at byte offset %d)", syntaxErr.ByteOffset))
+		}
+		if semanticErr, ok := errors.AsType[*json.SemanticError](err); ok {
+			if errors.Is(semanticErr, json.ErrUnknownName) {
+				return NewHTTPError(http.StatusBadRequest,
+					fmt.Sprintf("body contains unknown field %q", semanticErr.JSONPointer.LastToken()))
+			}
+			if semanticErr.JSONKind != jsontext.KindInvalid && semanticErr.GoType != nil {
+				if semanticErr.JSONPointer != "" {
+					return NewHTTPError(http.StatusBadRequest,
+						fmt.Sprintf("body contains an invalid value for field %q (expected %s)",
+							semanticErr.JSONPointer.LastToken(), semanticErr.GoType))
+				}
+				return NewHTTPError(http.StatusBadRequest,
+					fmt.Sprintf("body contains an invalid JSON type (at byte offset %d)", semanticErr.ByteOffset))
+			}
+		}
+		return err
 	}
 
-	if err := dec.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
+	if dec.InputOffset() != int64(len(body)) {
 		return NewHTTPError(http.StatusBadRequest,
 			"body must contain only one JSON object")
 	}
