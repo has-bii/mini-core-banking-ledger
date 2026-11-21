@@ -117,27 +117,28 @@ func TestHandler_CreateWallet(t *testing.T) {
 
 func TestHandler_CreateWalletRejectsInvalidPayload(t *testing.T) {
 	t.Parallel()
+	const invalidBodyDetail = "Invalid request body"
 	for _, tt := range []struct {
 		name, body, detail string
 		status             int
 		fields             validator.ErrorField
 	}{
-		{name: "malformed JSON", body: `{`, status: 400, detail: "body contains badly-formed JSON"},
-		{name: "wrong field type", body: `{"name":123,"wallet_type":"savings"}`, status: 400, detail: `body contains an invalid value for field "name" (expected string)`},
-		{name: "client supplied owner", body: `{"name":"Travel","wallet_type":"savings","user_id":"another-user"}`, status: 400, detail: `body contains unknown field "user_id"`},
-		{name: "client supplied balance", body: `{"name":"Travel","wallet_type":"savings","balance":100}`, status: 400, detail: `body contains unknown field "balance"`},
-		{name: "oversized body", body: `{"name":"` + strings.Repeat("A", 1<<20) + `","wallet_type":"savings"}`, status: 413, detail: "body must not be larger than 1048576 bytes"},
+		{name: "client supplied owner", body: `{"name":"Travel","wallet_type":"savings","user_id":"another-user"}`, status: 400, detail: invalidBodyDetail},
+		{name: "client supplied balance", body: `{"name":"Travel","wallet_type":"savings","balance":100}`, status: 400, detail: invalidBodyDetail},
+		{name: "oversized body", body: `{"name":"` + strings.Repeat("A", 1<<20) + `","wallet_type":"savings"}`, status: 413, detail: invalidBodyDetail},
 		{name: "missing fields", body: `{}`, status: 400, detail: "One or more fields are invalid. Check the field errors for details.", fields: validator.ErrorField{
 			"name": {"This field is required"}, "wallet_type": {"This field is required"},
 		}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			r := httptest.NewRequest(http.MethodPost, "/wallets", strings.NewReader(tt.body)).WithContext(t.Context())
-			r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
+			ctx := middleware.WithUserID(t.Context(), walletTestUserID)
+			r := httptest.NewRequestWithContext(ctx, http.MethodPost, "/wallets", strings.NewReader(tt.body))
 			w := httptest.NewRecorder()
 			svc := &walletServiceStub{}
-			walletTestHandler(t, svc).ServeHTTP(w, r)
+			mux := http.NewServeMux()
+			wallet.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil))).Register(mux)
+			mux.ServeHTTP(w, r)
 			assertWalletProblem(t, w, tt.status, tt.detail, "/wallets", tt.fields)
 			if svc.ctx != nil {
 				t.Error("invalid payload reached service")

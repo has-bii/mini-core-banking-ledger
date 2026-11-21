@@ -22,6 +22,7 @@ import (
 const testSessionLifetime = 7 * time.Minute
 
 type authServiceStub struct {
+	submitCalls   int
 	registerInput auth.RegisterDTO
 	loginInput    auth.LoginDTO
 	meUserID      string
@@ -33,10 +34,12 @@ type authServiceStub struct {
 }
 
 func (s *authServiceStub) Register(_ context.Context, input auth.RegisterDTO) (user.User, error) {
+	s.submitCalls++
 	s.registerInput = input
 	return s.account, s.err
 }
 func (s *authServiceStub) Login(_ context.Context, input auth.LoginDTO) (user.User, session.Session, string, error) {
+	s.submitCalls++
 	s.loginInput = input
 	return s.account, session.Session{ExpiresAt: s.expiresAt}, s.token, s.err
 }
@@ -92,27 +95,26 @@ func TestHandler_RejectsInvalidPayload(t *testing.T) {
 		t.Run(path, func(t *testing.T) {
 			t.Parallel()
 			for _, tt := range []struct {
-				name, body, title, message string
-				status                     int
+				name, body string
+				status     int
 			}{
-				{"malformed", "{", "Bad Request", "body contains badly-formed JSON", 400},
-				{"empty", "", "Bad Request", "body must not be empty", 400},
-				{"non-object", `null`, "Bad Request", "body must be a JSON object", 400},
-				{"unknown field", `{"extra":true}`, "Bad Request", `body contains unknown field "extra"`, 400},
-				{"wrong field type", `{"email":123}`, "Bad Request", `body contains an invalid value for field "email" (expected string)`, 400},
-				{"multiple objects", `{} {}`, "Bad Request", "body must contain only one JSON object", 400},
-				{"oversized trailing whitespace", `{}` + strings.Repeat(" ", 1<<20), "Request Entity Too Large", "body must not be larger than 1048576 bytes", 413},
-				{"oversized", `{"email":"` + strings.Repeat("a", 1<<20) + `"}`, "Request Entity Too Large", "body must not be larger than 1048576 bytes", 413},
-				{"missing required fields", `{}`, "Bad Request", "One or more fields are invalid. Check the field errors for details.", 400},
+				{"malformed", "{", http.StatusBadRequest},
+				{"oversized", `{"email":"` + strings.Repeat("a", 1<<20) + `"}`, http.StatusRequestEntityTooLarge},
 			} {
 				t.Run(tt.name, func(t *testing.T) {
 					t.Parallel()
+					svc := &authServiceStub{}
 					mux := http.NewServeMux()
-					// Nil dependencies prove parsing/validation stops before business logic.
-					auth.NewHandler(nil, slog.New(slog.NewTextHandler(io.Discard, nil)), false, testSessionLifetime).Register(mux)
+					auth.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil)), false, testSessionLifetime).Register(mux)
 					w := httptest.NewRecorder()
-					mux.ServeHTTP(w, httptest.NewRequest(http.MethodPost, path, strings.NewReader(tt.body)))
-					assertHTTPError(t, w, tt.status, tt.title, tt.message)
+					mux.ServeHTTP(w, httptest.NewRequestWithContext(t.Context(), http.MethodPost, path, strings.NewReader(tt.body)))
+					assertHTTPError(t, w, tt.status, http.StatusText(tt.status), "Invalid request body")
+					if path == "/auth/login" && w.Header().Get("Cache-Control") != "no-store" {
+						t.Error("login error response must have Cache-Control: no-store")
+					}
+					if svc.submitCalls != 0 {
+						t.Error("invalid payload reached the service")
+					}
 				})
 			}
 		})

@@ -9,7 +9,7 @@ info:
     object member names are rejected. JSON strings must not contain unpaired
     UTF-16 surrogate escapes. Empty, malformed, non-object, and otherwise invalid
     bodies return 400. Oversized bodies return 413, including oversized trailing
-    whitespace.
+    whitespace. Both responses use `Invalid request body` as the problem detail.
 
     Auth, wallet, and shared middleware use problem details
     (application/problem+json): type, title, status, detail, instance, and
@@ -593,7 +593,7 @@ components:
             type: about:blank
             title: Request Entity Too Large
             status: 413
-            detail: body must not be larger than 1048576 bytes
+            detail: Invalid request body
             instance: /auth/register
     TooManyRequests:
       description: Shared per-process token bucket exhausted.
@@ -637,7 +637,7 @@ components:
                 type: about:blank
                 title: Bad Request
                 status: 400
-                detail: body must not be empty
+                detail: Invalid request body
                 instance: /auth/register
             validationError:
               value:
