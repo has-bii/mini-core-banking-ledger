@@ -26,28 +26,28 @@ func TestResponses(t *testing.T) {
 			name: "success", status: http.StatusCreated, contentType: "application/json",
 			body: `{"data":{"id":1},"message":"created"}`,
 			send: func(w http.ResponseWriter) error {
-				return httpx.SendSuccess(w, http.StatusCreated, httpx.NewSuccessResponse("created", map[string]int{"id": 1}))
+				return httpx.SendSuccess(w, http.StatusCreated, httpx.SuccessResponse{Data: map[string]int{"id": 1}, Message: "created"})
 			},
 		},
 		{
 			name: "success without message", status: http.StatusOK, contentType: "application/json",
 			body: `{"data":null}`,
 			send: func(w http.ResponseWriter) error {
-				return httpx.SendSuccess(w, http.StatusOK, httpx.NewSuccessResponse("", []int(nil)))
+				return httpx.SendSuccess(w, http.StatusOK, httpx.SuccessResponse{Data: []int(nil)})
 			},
 		},
 		{
 			name: "error without fields", status: http.StatusBadRequest, contentType: "application/problem+json",
 			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/wallets"}`,
 			send: func(w http.ResponseWriter) error {
-				return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "invalid input", "/wallets", &validator.ErrorValidation{}))
+				return httpx.SendError(w, http.StatusBadRequest, "invalid input", "/wallets", &validator.ErrorValidation{})
 			},
 		},
 		{
 			name: "error with invalid UTF-8 in instance", status: http.StatusUnauthorized, contentType: "application/problem+json",
 			body: `{"type":"about:blank","title":"Unauthorized","status":401,"detail":"invalid session","instance":"/wallets/\ufffd"}`,
 			send: func(w http.ResponseWriter) error {
-				return httpx.SendError(w, httpx.NewErrorResponse("Unauthorized", http.StatusUnauthorized, "invalid session", "/wallets/\xff", nil))
+				return httpx.SendError(w, http.StatusUnauthorized, "invalid session", "/wallets/\xff", nil)
 			},
 		},
 		{
@@ -55,14 +55,14 @@ func TestResponses(t *testing.T) {
 			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/wallets","errors":{}}`,
 			send: func(w http.ResponseWriter) error {
 				empty := validator.ErrorField{}
-				return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "invalid input", "/wallets", &validator.ErrorValidation{Errors: &empty}))
+				return httpx.SendError(w, http.StatusBadRequest, "invalid input", "/wallets", &validator.ErrorValidation{Errors: &empty})
 			},
 		},
 		{
 			name: "error with fields", status: http.StatusUnprocessableEntity, contentType: "application/problem+json",
-			body: `{"type":"about:blank","title":"Invalid","status":422,"detail":"invalid input","instance":"/wallets","errors":{"name":["required"]}}`,
+			body: `{"type":"about:blank","title":"Unprocessable Entity","status":422,"detail":"invalid input","instance":"/wallets","errors":{"name":["required"]}}`,
 			send: func(w http.ResponseWriter) error {
-				return httpx.SendError(w, httpx.NewErrorResponse("Invalid", http.StatusUnprocessableEntity, "invalid input", "/wallets", &validator.ErrorValidation{Errors: &fields}))
+				return httpx.SendError(w, http.StatusUnprocessableEntity, "invalid input", "/wallets", &validator.ErrorValidation{Errors: &fields})
 			},
 		},
 	} {
@@ -95,8 +95,7 @@ func TestResponses(t *testing.T) {
 func TestErrorResponseWithoutValidationErrors(t *testing.T) {
 	t.Parallel()
 	w := httptest.NewRecorder()
-	response := httpx.NewErrorResponse("Unauthorized", http.StatusUnauthorized, "Session is expired or invalid", "/wallets", nil)
-	if err := httpx.SendError(w, response); err != nil {
+	if err := httpx.SendError(w, http.StatusUnauthorized, "Session is expired or invalid", "/wallets", nil); err != nil {
 		t.Fatal(err)
 	}
 	if w.Code != http.StatusUnauthorized || w.Header().Get("Content-Type") != "application/problem+json" {
@@ -114,28 +113,14 @@ func TestErrorResponseWithoutValidationErrors(t *testing.T) {
 	}
 }
 
-func TestResponsesRejectBeforeWriting(t *testing.T) {
+func TestSendSuccessMarshalFailureDoesNotWrite(t *testing.T) {
 	t.Parallel()
-	for _, tt := range []struct {
-		name string
-		send func(http.ResponseWriter) error
-	}{
-		{"nil success", func(w http.ResponseWriter) error { return httpx.SendSuccess(w, http.StatusOK, nil) }},
-		{"nil error", func(w http.ResponseWriter) error { return httpx.SendError(w, nil) }},
-		{"marshal failure", func(w http.ResponseWriter) error {
-			return httpx.SendSuccess(w, http.StatusOK, httpx.NewSuccessResponse("", make(chan int)))
-		}},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			w := &responseWriter{ResponseRecorder: httptest.NewRecorder()}
-			if err := tt.send(w); err == nil {
-				t.Fatal("expected an error")
-			}
-			if w.wrote || len(w.Header()) != 0 || w.Body.Len() != 0 {
-				t.Fatal("response was modified before returning an error")
-			}
-		})
+	w := &responseWriter{ResponseRecorder: httptest.NewRecorder()}
+	if err := httpx.SendSuccess(w, http.StatusOK, httpx.SuccessResponse{Data: make(chan int)}); err == nil {
+		t.Fatal("expected an error")
+	}
+	if w.wrote || len(w.Header()) != 0 || w.Body.Len() != 0 {
+		t.Fatal("response was modified before returning an error")
 	}
 }
 
@@ -146,10 +131,10 @@ func TestResponsesReturnWriterError(t *testing.T) {
 		send func(http.ResponseWriter) error
 	}{
 		{"success", func(w http.ResponseWriter) error {
-			return httpx.SendSuccess(w, http.StatusOK, httpx.NewSuccessResponse("", nil))
+			return httpx.SendSuccess(w, http.StatusOK, httpx.SuccessResponse{})
 		}},
 		{"error", func(w http.ResponseWriter) error {
-			return httpx.SendError(w, httpx.NewErrorResponse("Bad Request", http.StatusBadRequest, "", "", &validator.ErrorValidation{}))
+			return httpx.SendError(w, http.StatusBadRequest, "", "", &validator.ErrorValidation{})
 		}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {

@@ -29,13 +29,7 @@ func GetUserFromSession(lookupUserID func(context.Context, string) (string, erro
 
 			userID, err := lookupUserID(r.Context(), cookie.Value)
 			if err != nil {
-				_ = httpx.SendError(w, httpx.NewErrorResponse(
-					http.StatusText(http.StatusInternalServerError),
-					http.StatusInternalServerError,
-					"Unexpected error has occurred",
-					r.URL.Path,
-					nil,
-				))
+				_ = httpx.SendError(w, http.StatusInternalServerError, "Unexpected error has occurred", r.URL.Path, nil)
 				return
 			}
 			if userID == "" {
@@ -52,13 +46,7 @@ func AuthGuard(h func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if id, ok := UserIDFromContext(r.Context()); !ok || id == "" {
 			httpx.NoStoreHeader(w)
-			_ = httpx.SendError(w, httpx.NewErrorResponse(
-				http.StatusText(http.StatusUnauthorized),
-				http.StatusUnauthorized,
-				"Session is expired or invalid",
-				r.URL.Path,
-				nil,
-			))
+			_ = httpx.SendError(w, http.StatusUnauthorized, "Session is expired or invalid", r.URL.Path, nil)
 			return
 		}
 		h(w, r)

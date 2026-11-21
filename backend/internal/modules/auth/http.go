@@ -117,7 +117,7 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) sendSuccess(w http.ResponseWriter, r *http.Request, status int, data any) {
-	if err := httpx.SendSuccess(w, status, httpx.NewSuccessResponse("", data)); err != nil {
+	if err := httpx.SendSuccess(w, status, httpx.SuccessResponse{Data: data}); err != nil {
 		h.log.ErrorContext(r.Context(), "write auth response", "err", err)
 	}
 }

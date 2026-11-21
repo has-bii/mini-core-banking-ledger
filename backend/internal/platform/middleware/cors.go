@@ -59,13 +59,7 @@ func CORS(opts *CORSOptions) (Middleware, error) {
 	cop := http.NewCrossOriginProtection()
 	cop.SetDenyHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// A write failure cannot be replaced with another response.
-		_ = httpx.SendError(w, httpx.NewErrorResponse(
-			http.StatusText(http.StatusForbidden),
-			http.StatusForbidden,
-			"Cross-origin request denied.",
-			r.URL.Path,
-			nil,
-		))
+		_ = httpx.SendError(w, http.StatusForbidden, "Cross-origin request denied.", r.URL.Path, nil)
 	}))
 	if strings.ContainsAny(opts.Origin, ",*") {
 		return nil, fmt.Errorf("invalid CORS origin %q: must be a single exact origin without wildcards", opts.Origin)
