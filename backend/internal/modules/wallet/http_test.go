@@ -23,13 +23,13 @@ const walletTestUserID = "01a1c6de-805e-7b0c-a1b1-b851a9c38ccd"
 type walletServiceStub struct {
 	ctx        context.Context
 	id, userID string
-	data       *wallet.CreateWalletDTO
+	data       wallet.CreateWalletDTO
 	wallet     wallet.Wallet
 	wallets    []wallet.Wallet
 	err        error
 }
 
-func (s *walletServiceStub) CreateUserWallet(ctx context.Context, userID string, data *wallet.CreateWalletDTO) (wallet.Wallet, error) {
+func (s *walletServiceStub) CreateUserWallet(ctx context.Context, userID string, data wallet.CreateWalletDTO) (wallet.Wallet, error) {
 	s.ctx, s.userID, s.data = ctx, userID, data
 	return s.wallet, s.err
 }
@@ -101,7 +101,7 @@ func TestHandler_CreateWallet(t *testing.T) {
 		t.Fatalf("status = %d, want %d: %s", w.Code, http.StatusCreated, w.Body.String())
 	}
 	wantInput := wallet.CreateWalletDTO{Name: "Travel", WalletType: "savings"}
-	if svc.data == nil || *svc.data != wantInput || svc.userID != walletTestUserID {
+	if svc.data != wantInput || svc.userID != walletTestUserID {
 		t.Errorf("service received input %+v for user %q, want %+v for %q", svc.data, svc.userID, wantInput, walletTestUserID)
 	}
 	var got struct {

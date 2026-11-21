@@ -2,7 +2,7 @@
 
 ## Roles
 
-- **Input.** Group structured caller-settable fields; keep scalar arguments when clear. Limit normalization and validation to rules that need no application or storage state. The handler validates the DTO and passes verified identity and server-owned values separately. Reuse the validated DTO when downstream calls need the same fields.
+- **Input.** Group structured caller-settable fields; keep scalar arguments when clear. Limit normalization and validation to rules that need no application or storage state. The handler validates the DTO and passes verified identity and server-owned values separately. Reuse the validated DTO when downstream calls need the same fields. Pass small, read-only DTOs by value after validation.
 - **Output.** A response DTO defines the public shape separately from the model. Map to it in the handler, inline or with a private helper such as `toWalletResponse`.
 
 ## How to write

@@ -8,7 +8,7 @@
 ## How to write
 
 1. **Wire the store.** In `store.go`, define a concrete `Store` and `NewStore` returning `*Store`. Split into `store_<concern>.go` only for distinct concerns. Accept `postgres.DBTX` for query-only PostgreSQL stores, `postgres.Beginner` when starting transactions, or the Redis client for Redis stores.
-2. **Define the contract.** Name single lookups `GetBy<Field>` and collections `ListBy<Field>`. Use `Create`, `Update` (or `UpdateName`), and `Delete` (or `DeleteByTokenHash`) for writes. Put `ctx context.Context` first and pass it through. Use clear scalars or an already-validated DTO; document non-obvious preconditions, including non-nil pointer inputs. Document ordering and whether deletion is idempotent. Return zero items and nil error for an empty collection; its nilness isn't part of the contract.
+2. **Define the contract.** Name single lookups `GetBy<Field>` and collections `ListBy<Field>`. Use `Create`, `Update` (or `UpdateName`), and `Delete` (or `DeleteByTokenHash`) for writes. Put `ctx context.Context` first and pass it through. Use clear scalars or an already-validated DTO. Pass small, read-only DTOs by value and document non-obvious preconditions. Document ordering and whether deletion is idempotent. Return zero items and nil error for an empty collection; its nilness isn't part of the contract.
 
 ### PostgreSQL
 

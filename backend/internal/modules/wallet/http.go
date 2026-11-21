@@ -10,7 +10,7 @@ import (
 )
 
 type walletService interface {
-	CreateUserWallet(ctx context.Context, userID string, data *CreateWalletDTO) (Wallet, error)
+	CreateUserWallet(ctx context.Context, userID string, data CreateWalletDTO) (Wallet, error)
 	GetUserWallet(ctx context.Context, walletID, userID string) (Wallet, error)
 	GetUserWallets(ctx context.Context, userID string) ([]Wallet, error)
 }
@@ -46,7 +46,7 @@ func (h *Handler) createWallet(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := r.Context()
 	userID, _ := middleware.UserIDFromContext(ctx)
-	data, err := h.svc.CreateUserWallet(ctx, userID, &payload)
+	data, err := h.svc.CreateUserWallet(ctx, userID, payload)
 	if err != nil {
 		h.sendError(w, r, err)
 		return

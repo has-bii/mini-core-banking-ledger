@@ -16,7 +16,7 @@ type walletStoreStub struct {
 	err     error
 	ctx     context.Context
 	userID  string
-	data    *wallet.CreateWalletDTO
+	data    wallet.CreateWalletDTO
 }
 
 func (s *walletStoreStub) ListByUserID(ctx context.Context, userID string) ([]wallet.Wallet, error) {
@@ -29,7 +29,7 @@ func (s *walletStoreStub) GetByID(ctx context.Context, id, userID string) (walle
 	return s.wallet, s.err
 }
 
-func (s *walletStoreStub) Create(ctx context.Context, userID string, data *wallet.CreateWalletDTO) (wallet.Wallet, error) {
+func (s *walletStoreStub) Create(ctx context.Context, userID string, data wallet.CreateWalletDTO) (wallet.Wallet, error) {
 	s.ctx, s.userID, s.data = ctx, userID, data
 	return s.wallet, s.err
 }
@@ -151,7 +151,8 @@ func TestService_CreateUserWalletPreservesErrors(t *testing.T) {
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			_, err := wallet.NewService(&walletStoreStub{err: tt.cause}).CreateUserWallet(t.Context(), "user", &wallet.CreateWalletDTO{})
+			data := wallet.CreateWalletDTO{Name: "Travel", WalletType: string(wallet.Savings)}
+			_, err := wallet.NewService(&walletStoreStub{err: tt.cause}).CreateUserWallet(t.Context(), "user", data)
 			if !errors.Is(err, tt.cause) {
 				t.Fatalf("CreateUserWallet() error = %v; want original cause %v", err, tt.cause)
 			}
@@ -171,7 +172,7 @@ func TestService_CreateUserWallet(t *testing.T) {
 	storeErr := errors.New("store unavailable")
 	store := &walletStoreStub{err: storeErr}
 	ctx := t.Context()
-	data := &wallet.CreateWalletDTO{Name: "Travel", WalletType: string(wallet.Savings)}
+	data := wallet.CreateWalletDTO{Name: "Travel", WalletType: string(wallet.Savings)}
 	got, err := wallet.NewService(store).CreateUserWallet(ctx, userID, data)
 	if !errors.Is(err, storeErr) || got != (wallet.Wallet{}) {
 		t.Errorf("CreateUserWallet() = %+v, %v; want zero wallet, %v", got, err, storeErr)

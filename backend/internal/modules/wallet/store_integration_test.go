@@ -175,7 +175,7 @@ func TestStore_Create(t *testing.T) {
 		for range count {
 			go func() {
 				<-start
-				a, err := store.Create(t.Context(), owner.ID, &wallet.CreateWalletDTO{Name: "Savings", WalletType: string(wallet.Savings)})
+				a, err := store.Create(t.Context(), owner.ID, wallet.CreateWalletDTO{Name: "Savings", WalletType: string(wallet.Savings)})
 				results <- result{a, err}
 			}()
 		}
@@ -217,7 +217,7 @@ func TestStore_Create(t *testing.T) {
 		{name: "empty user ID", err: wallet.ErrInvalidUserID},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.Create(t.Context(), tt.userID, &wallet.CreateWalletDTO{Name: "Savings", WalletType: string(wallet.Savings)})
+			got, err := store.Create(t.Context(), tt.userID, wallet.CreateWalletDTO{Name: "Savings", WalletType: string(wallet.Savings)})
 			if !errors.Is(err, tt.err) || !reflect.DeepEqual(got, wallet.Wallet{}) {
 				t.Errorf("Create() = %+v, %v; want zero wallet, %v", got, err, tt.err)
 			}
