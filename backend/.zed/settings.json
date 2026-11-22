@@ -1,4 +1,6 @@
 {
+  "format_on_save": "modifications_if_available",
+  "formatter": "language_server",
   "lsp": {
     "gopls": {
       "initialization_options": {
