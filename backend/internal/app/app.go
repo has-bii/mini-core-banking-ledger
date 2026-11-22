@@ -46,16 +46,15 @@ func New(cfg config.Config, pool *pgxpool.Pool, redisClient *redis.Client, log *
 	mux := http.NewServeMux()
 	api := http.NewServeMux()
 
-	auth.NewHandler(authSvc, log, cfg.Env != "dev" && cfg.Env != "test", cfg.SessionLifetime).Register(api)
-	wallet.NewHandler(walletService, log).Register(api)
+	auth.NewHandler(authSvc, cfg.Env != "dev" && cfg.Env != "test", cfg.SessionLifetime).Register(api)
+	wallet.NewHandler(walletService).Register(api)
 
 	mux.Handle("/api/", http.StripPrefix("/api", api))
 
 	return middleware.Chain(
 		mux,
-		middleware.Recoverer(log),
-		middleware.SetRequestID(),
 		middleware.Logging(log),
+		middleware.Recoverer(),
 		cors,
 		middleware.GetUserFromSession(lookupUserID),
 		rateLimiter.Middleware(),

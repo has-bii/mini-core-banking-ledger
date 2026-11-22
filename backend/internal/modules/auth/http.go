@@ -4,11 +4,11 @@ import (
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
 	"backend/internal/platform/httpx"
+	"backend/internal/platform/logger"
 	"backend/internal/platform/middleware"
 
 	"context"
 	"errors"
-	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,17 +23,13 @@ type authService interface {
 
 type Handler struct {
 	svc             authService
-	log             *slog.Logger
 	secureCookie    bool
 	sessionLifetime time.Duration
 }
 
 // NewHandler requires a positive, whole-second session lifetime for login cookies.
-func NewHandler(svc authService, log *slog.Logger, secureCookie bool, sessionLifetime time.Duration) *Handler {
-	if log == nil {
-		log = slog.Default()
-	}
-	return &Handler{svc: svc, log: log, secureCookie: secureCookie, sessionLifetime: sessionLifetime}
+func NewHandler(svc authService, secureCookie bool, sessionLifetime time.Duration) *Handler {
+	return &Handler{svc: svc, secureCookie: secureCookie, sessionLifetime: sessionLifetime}
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
@@ -118,12 +114,13 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) sendSuccess(w http.ResponseWriter, r *http.Request, status int, data any) {
 	if err := httpx.SendSuccess(w, status, httpx.SuccessResponse{Data: data}); err != nil {
-		h.log.ErrorContext(r.Context(), "write auth response", "err", err)
+		log := logger.FromContext(r.Context())
+		log.ErrorContext(r.Context(), "write auth response", "err", err)
 	}
 }
 
 func (h *Handler) sendError(w http.ResponseWriter, r *http.Request, err error) {
-	httpx.SendRequestError(w, r, h.log, "auth", err, domainProblem)
+	httpx.SendRequestError(w, r, "auth", err, domainProblem)
 }
 
 func domainProblem(err error) (int, string) {

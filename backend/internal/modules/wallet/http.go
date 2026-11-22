@@ -2,10 +2,10 @@ package wallet
 
 import (
 	"backend/internal/platform/httpx"
+	"backend/internal/platform/logger"
 	"backend/internal/platform/middleware"
 	"context"
 	"errors"
-	"log/slog"
 	"net/http"
 )
 
@@ -17,14 +17,10 @@ type walletService interface {
 
 type Handler struct {
 	svc walletService
-	log *slog.Logger
 }
 
-func NewHandler(svc walletService, log *slog.Logger) *Handler {
-	if log == nil {
-		log = slog.Default()
-	}
-	return &Handler{svc: svc, log: log}
+func NewHandler(svc walletService) *Handler {
+	return &Handler{svc: svc}
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
@@ -80,12 +76,13 @@ func (h *Handler) getWallets(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) sendSuccess(w http.ResponseWriter, r *http.Request, status int, data any) {
 	if err := httpx.SendSuccess(w, status, httpx.SuccessResponse{Data: data}); err != nil {
-		h.log.ErrorContext(r.Context(), "write wallet response", "err", err)
+		log := logger.FromContext(r.Context())
+		log.ErrorContext(r.Context(), "write wallet response", "err", err)
 	}
 }
 
 func (h *Handler) sendError(w http.ResponseWriter, r *http.Request, err error) {
-	httpx.SendRequestError(w, r, h.log, "wallet", err, domainProblem)
+	httpx.SendRequestError(w, r, "wallet", err, domainProblem)
 }
 
 func domainProblem(err error) (int, string) {

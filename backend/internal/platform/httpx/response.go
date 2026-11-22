@@ -1,11 +1,12 @@
 package httpx
 
 import (
+	"backend/internal/platform/logger"
 	"backend/internal/platform/validator"
 
 	"encoding/json/v2"
 	"errors"
-	"log/slog"
+
 	"net/http"
 	"strings"
 )
@@ -56,7 +57,7 @@ func SendError(w http.ResponseWriter, status int, detail, instance string, field
 }
 
 // SendRequestError handles transport errors before consulting mapDomain, which returns status 0 for unrecognized errors.
-func SendRequestError(w http.ResponseWriter, r *http.Request, log *slog.Logger, scope string, err error, mapDomain func(error) (int, string)) {
+func SendRequestError(w http.ResponseWriter, r *http.Request, scope string, err error, mapDomain func(error) (int, string)) {
 	status, detail := http.StatusInternalServerError, "internal error"
 	var httpErr *HTTPError
 	var fields *validator.ErrorValidation
@@ -70,10 +71,11 @@ func SendRequestError(w http.ResponseWriter, r *http.Request, log *slog.Logger, 
 			status, detail = mappedStatus, mappedDetail
 		}
 	}
+	ctx := r.Context()
 	if status == http.StatusInternalServerError {
-		log.ErrorContext(r.Context(), scope+" request failed", "err", err, "method", r.Method, "path", r.URL.Path)
+		logger.FromContext(ctx).ErrorContext(ctx, scope+" request failed", "err", err, "method", r.Method, "path", r.URL.Path)
 	}
 	if err := SendError(w, status, detail, r.URL.Path, fields); err != nil {
-		log.ErrorContext(r.Context(), "write "+scope+" error response", "err", err)
+		logger.FromContext(ctx).ErrorContext(ctx, "write "+scope+" error response", "err", err)
 	}
 }

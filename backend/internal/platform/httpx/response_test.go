@@ -2,6 +2,7 @@ package httpx_test
 
 import (
 	"backend/internal/platform/httpx"
+	"backend/internal/platform/logger"
 	"backend/internal/platform/validator"
 	"encoding/json/v2"
 	"errors"
@@ -169,9 +170,10 @@ func TestSendRequestError(t *testing.T) {
 			t.Parallel()
 			var logs strings.Builder
 			log := slog.New(slog.NewTextHandler(&logs, nil))
-			r := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/resources?debug=true", nil)
+			ctx := logger.WithContext(t.Context(), log)
+			r := httptest.NewRequestWithContext(ctx, http.MethodPost, "/resources?debug=true", nil)
 			w := httptest.NewRecorder()
-			httpx.SendRequestError(w, r, log, "test", tt.err, func(err error) (int, string) {
+			httpx.SendRequestError(w, r, "test", tt.err, func(err error) (int, string) {
 				if errors.Is(err, conflict) {
 					return http.StatusConflict, "resource already exists"
 				}

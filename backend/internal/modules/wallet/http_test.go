@@ -3,13 +3,14 @@ package wallet_test
 import (
 	"backend/internal/modules/wallet"
 	"backend/internal/platform/httpx"
+	"backend/internal/platform/logger"
 	"backend/internal/platform/middleware"
 	"backend/internal/platform/validator"
 	"context"
 	"encoding/json/v2"
 	"errors"
 	"fmt"
-	"io"
+
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -47,7 +48,7 @@ func (s *walletServiceStub) GetUserWallets(ctx context.Context, userID string) (
 func walletTestHandler(t *testing.T, svc *walletServiceStub) http.Handler {
 	t.Helper()
 	mux := http.NewServeMux()
-	wallet.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil))).Register(mux)
+	wallet.NewHandler(svc).Register(mux)
 	return middleware.GetUserFromSession(func(context.Context, string) (string, error) {
 		return walletTestUserID, nil
 	})(mux)
@@ -137,7 +138,7 @@ func TestHandler_CreateWalletRejectsInvalidPayload(t *testing.T) {
 			w := httptest.NewRecorder()
 			svc := &walletServiceStub{}
 			mux := http.NewServeMux()
-			wallet.NewHandler(svc, slog.New(slog.NewTextHandler(io.Discard, nil))).Register(mux)
+			wallet.NewHandler(svc).Register(mux)
 			mux.ServeHTTP(w, r)
 			assertWalletProblem(t, w, tt.status, tt.detail, "/wallets", tt.fields)
 			if svc.ctx != nil {
@@ -167,7 +168,8 @@ func TestHandler_CreateWalletErrors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			svc := &walletServiceStub{err: tt.serviceErr}
-			r := httptest.NewRequest(http.MethodPost, "/wallets", strings.NewReader(`{"name":"Travel","wallet_type":"savings"}`)).WithContext(t.Context())
+			ctx := logger.WithContext(t.Context(), slog.New(slog.DiscardHandler))
+			r := httptest.NewRequestWithContext(ctx, http.MethodPost, "/wallets", strings.NewReader(`{"name":"Travel","wallet_type":"savings"}`))
 			if !tt.unauthenticated {
 				r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			}
@@ -201,7 +203,8 @@ func TestHandler_GetWallet(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			svc := &walletServiceStub{wallet: want, err: tt.serviceErr}
-			r := httptest.NewRequest(http.MethodGet, "/wallets/"+tt.id, nil).WithContext(t.Context())
+			ctx := logger.WithContext(t.Context(), slog.New(slog.DiscardHandler))
+			r := httptest.NewRequestWithContext(ctx, http.MethodGet, "/wallets/"+tt.id, nil)
 			if !tt.unauthenticated {
 				r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			}
@@ -248,7 +251,8 @@ func TestHandler_GetWallets(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			svc := &walletServiceStub{wallets: tt.wallets, err: tt.serviceErr}
-			r := httptest.NewRequest(http.MethodGet, "/wallets", nil).WithContext(t.Context())
+			ctx := logger.WithContext(t.Context(), slog.New(slog.DiscardHandler))
+			r := httptest.NewRequestWithContext(ctx, http.MethodGet, "/wallets", nil)
 			r.AddCookie(&http.Cookie{Name: "session", Value: "test-session"})
 			w := httptest.NewRecorder()
 			walletTestHandler(t, svc).ServeHTTP(w, r)

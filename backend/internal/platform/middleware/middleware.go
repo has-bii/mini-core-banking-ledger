@@ -2,6 +2,9 @@ package middleware
 
 import (
 	"backend/internal/platform/httpx"
+	"backend/internal/platform/logger"
+	"crypto/rand"
+	"encoding/hex"
 	"log/slog"
 	"net/http"
 	"runtime/debug"
@@ -18,10 +21,12 @@ func Chain(h http.Handler, mws ...Middleware) http.Handler {
 	return h
 }
 
-func Recoverer(log *slog.Logger) Middleware {
+func Recoverer() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			rw := &responseWriter{ResponseWriter: w, status: http.StatusOK}
+
+			log := logger.FromContext(r.Context())
 
 			defer func() {
 				v := recover()
@@ -59,15 +64,18 @@ func Logging(log *slog.Logger) Middleware {
 				status:         http.StatusOK,
 			}
 
-			reqID, ok := ReqIDFromContext(r.Context())
-
-			if !ok || reqID == "" {
-				log.ErrorContext(r.Context(), "request ID missing from context")
+			reqID := r.Header.Get("X-Request-ID")
+			if reqID == "" || len(reqID) > 64 {
+				reqID = generateID()
 			}
+			rw.Header().Set("X-Request-ID", reqID)
+
+			loggerWithReqID := log.With("request_id", reqID)
+
+			ctx := logger.WithContext(r.Context(), loggerWithReqID)
 
 			defer func() {
-				log.InfoContext(r.Context(), "request",
-					"request_id", reqID,
+				loggerWithReqID.InfoContext(r.Context(), "request",
 					"method", r.Method,
 					"path", r.URL.Path,
 					"status", rw.status,
@@ -75,9 +83,15 @@ func Logging(log *slog.Logger) Middleware {
 				)
 			}()
 
-			next.ServeHTTP(rw, r)
+			next.ServeHTTP(rw, r.WithContext(ctx))
 		})
 	}
+}
+
+func generateID() string {
+	b := make([]byte, 8)
+	_, _ = rand.Read(b)
+	return hex.EncodeToString(b)
 }
 
 /* ----------------------------- Response Writer ---------------------------- */

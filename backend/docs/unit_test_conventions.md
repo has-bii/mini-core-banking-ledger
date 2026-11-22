@@ -27,7 +27,7 @@ Seed a verified identity when testing a protected route. Use a fake session look
 ```go
 svc := &walletServiceStub{}
 mux := http.NewServeMux()
-wallet.NewHandler(svc, slog.Default()).Register(mux)
+wallet.NewHandler(svc).Register(mux)
 ctx := middleware.WithUserID(t.Context(), walletTestUserID)
 req := httptest.NewRequestWithContext(ctx, http.MethodPost, "/wallets", strings.NewReader(`{}`))
 rec := httptest.NewRecorder()

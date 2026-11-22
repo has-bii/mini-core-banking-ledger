@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"backend/internal/platform/logger"
+
 	"bytes"
 	"encoding/json/v2"
 	"errors"
@@ -121,10 +123,11 @@ func TestRecoverer(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			var logs bytes.Buffer
-			logger := slog.New(slog.NewJSONHandler(&logs, nil))
+			log := slog.New(slog.NewJSONHandler(&logs, nil))
+			ctx := logger.WithContext(t.Context(), log)
 			rr := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodPost, "/payments?secret=hidden", nil)
-			gotPanic := capturePanic(func() { Recoverer(logger)(tt.handler).ServeHTTP(rr, r) })
+			r := httptest.NewRequestWithContext(ctx, http.MethodPost, "/payments?secret=hidden", nil)
+			gotPanic := capturePanic(func() { Recoverer()(tt.handler).ServeHTTP(rr, r) })
 			if gotPanic != tt.wantPanic {
 				t.Fatalf("panic = %v, want %v", gotPanic, tt.wantPanic)
 			}
@@ -161,7 +164,7 @@ func TestRecoverer(t *testing.T) {
 				}
 				return
 			}
-			record := decodeLog(t, &logs)
+			record := decodeLog(t, logs.Bytes())
 			for key, want := range map[string]any{
 				"level": "ERROR", "msg": "panic recovered", "value": "private panic detail",
 				"method": http.MethodPost, "path": "/payments",
@@ -207,19 +210,22 @@ func TestLogging(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			var logs bytes.Buffer
-			logger := slog.New(slog.NewJSONHandler(&logs, nil))
+			log := slog.New(slog.NewJSONHandler(&logs, nil))
 			rr := httptest.NewRecorder()
 			const reqID = "test-request-id"
-			ctx := WithReqID(t.Context(), reqID)
-			r := httptest.NewRequestWithContext(ctx, http.MethodPost, "/payments?secret=hidden", nil)
-			gotPanic := capturePanic(func() { Logging(logger)(tt.handler).ServeHTTP(rr, r) })
+			r := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/payments?secret=hidden", nil)
+			r.Header.Set("X-Request-ID", reqID)
+			gotPanic := capturePanic(func() { Logging(log)(tt.handler).ServeHTTP(rr, r) })
 			if gotPanic != tt.wantPanic {
 				t.Fatalf("panic = %v, want %v", gotPanic, tt.wantPanic)
 			}
 			if rr.Code != tt.wantStatus || rr.Body.String() != tt.wantBody {
 				t.Errorf("response = %d %q, want %d %q", rr.Code, rr.Body.String(), tt.wantStatus, tt.wantBody)
 			}
-			record := decodeLog(t, &logs)
+			if got := rr.Result().Header.Get("X-Request-ID"); got != reqID {
+				t.Errorf("response X-Request-ID = %q, want %q", got, reqID)
+			}
+			record := decodeLog(t, logs.Bytes())
 			for key, want := range map[string]any{
 				"level": "INFO", "msg": "request", "method": http.MethodPost, "request_id": reqID,
 				"path": "/payments", "status": float64(tt.wantStatus),
@@ -232,6 +238,39 @@ func TestLogging(t *testing.T) {
 				t.Errorf("duration = %v, want nonnegative duration", record["duration"])
 			}
 		})
+	}
+}
+
+func TestLoggingWithRecoverer(t *testing.T) {
+	t.Parallel()
+
+	var logs bytes.Buffer
+	log := slog.New(slog.NewJSONHandler(&logs, nil))
+	handler := Chain(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
+		panic("handler panic")
+	}), Logging(log), Recoverer())
+	w := httptest.NewRecorder()
+	r := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/payments", nil)
+	handler.ServeHTTP(w, r)
+
+	response := w.Result()
+	if response.StatusCode != http.StatusInternalServerError {
+		t.Fatalf("response status = %d, want 500", response.StatusCode)
+	}
+	reqID := response.Header.Get("X-Request-ID")
+	if reqID == "" {
+		t.Fatal("response has no X-Request-ID")
+	}
+	records := bytes.Split(bytes.TrimSpace(logs.Bytes()), []byte("\n"))
+	if len(records) != 2 {
+		t.Fatalf("want a panic log and an access log; got: %s", &logs)
+	}
+	panicLog, accessLog := decodeLog(t, records[0]), decodeLog(t, records[1])
+	if panicLog["msg"] != "panic recovered" || panicLog["request_id"] != reqID {
+		t.Errorf("panic log message = %v, request_id = %v; want panic recovered with request_id %q", panicLog["msg"], panicLog["request_id"], reqID)
+	}
+	if accessLog["msg"] != "request" || accessLog["request_id"] != reqID || accessLog["status"] != float64(http.StatusInternalServerError) {
+		t.Errorf("access log = %v; want request_id %q and status 500", accessLog, reqID)
 	}
 }
 
@@ -339,10 +378,10 @@ func capturePanic(fn func()) (value any) {
 	return nil
 }
 
-func decodeLog(t *testing.T, logs *bytes.Buffer) map[string]any {
+func decodeLog(t *testing.T, logs []byte) map[string]any {
 	t.Helper()
 	var record map[string]any
-	if err := json.Unmarshal(logs.Bytes(), &record); err != nil {
+	if err := json.Unmarshal(logs, &record); err != nil {
 		t.Fatalf("decode single log record: %v; log: %s", err, logs)
 	}
 	return record
