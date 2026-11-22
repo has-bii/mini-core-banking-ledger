@@ -29,7 +29,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, redisClient *redis.Client, log *
 		return nil, fmt.Errorf("CORS_ORIGIN: %w", err)
 	}
 
-	tb := middleware.NewRateLimiter(cfg.RatelimitCapacity, cfg.RatelimitRefillRate)
+	rateLimiter := middleware.NewRateLimiter(cfg.RatelimitCapacity, cfg.RatelimitRefillRate)
 
 	sessionSvc := session.NewService(session.NewStore(redisClient), cfg.SessionLifetime)
 	authSvc := auth.NewService(user.NewStore(pool), sessionSvc)
@@ -57,6 +57,6 @@ func New(cfg config.Config, pool *pgxpool.Pool, redisClient *redis.Client, log *
 		middleware.Logging(log),
 		cors,
 		middleware.GetUserFromSession(lookupUserID),
-		tb.Middleware(),
+		rateLimiter.Middleware(),
 	), nil
 }
