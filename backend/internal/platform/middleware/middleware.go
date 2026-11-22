@@ -75,7 +75,7 @@ func Logging(log *slog.Logger) Middleware {
 			ctx := logger.WithContext(r.Context(), loggerWithReqID)
 
 			defer func() {
-				loggerWithReqID.InfoContext(r.Context(), "request",
+				loggerWithReqID.InfoContext(ctx, "request",
 					"method", r.Method,
 					"path", r.URL.Path,
 					"status", rw.status,

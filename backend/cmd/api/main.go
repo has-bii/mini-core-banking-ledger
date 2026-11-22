@@ -17,19 +17,20 @@ import (
 )
 
 func main() {
-	if err := run(); err != nil {
+	cfg, err := config.Load()
+	if err != nil {
 		slog.Error("fatal", "err", err)
+		os.Exit(1)
+	}
+
+	log := logger.New(cfg.Env, cfg.LogLevel)
+	if err := run(cfg, log); err != nil {
+		log.Error("fatal", "err", err)
 		os.Exit(1)
 	}
 }
 
-func run() error {
-	cfg, err := config.Load()
-	if err != nil {
-		return err
-	}
-
-	log := logger.New(cfg.Env, cfg.LogLevel)
+func run(cfg config.Config, log *slog.Logger) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
