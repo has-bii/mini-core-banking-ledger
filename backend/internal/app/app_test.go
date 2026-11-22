@@ -4,12 +4,50 @@ import (
 	"backend/internal/app"
 	"backend/internal/config"
 
+	"bytes"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
+
+func TestNew_RequestID(t *testing.T) {
+	t.Parallel()
+
+	var logs bytes.Buffer
+	handler, err := app.New(config.Config{
+		Env: "test", CORSOrigin: "https://app.example.com", RatelimitCapacity: 50, RatelimitRefillRate: 10,
+	}, nil, nil, slog.New(slog.NewJSONHandler(&logs, nil)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/api/not-found", nil))
+	want := response.Header().Get("X-Request-ID")
+	if want == "" {
+		t.Fatal("response has no X-Request-ID")
+	}
+
+	decoder := json.NewDecoder(&logs)
+	for {
+		var record struct {
+			Message   string `json:"msg"`
+			RequestID string `json:"request_id"`
+		}
+		if err := decoder.Decode(&record); err != nil {
+			t.Fatalf("find access log: %v", err)
+		}
+		if record.Message == "request" {
+			if record.RequestID != want {
+				t.Errorf("logged request ID = %q, want response X-Request-ID %q", record.RequestID, want)
+			}
+			break
+		}
+	}
+}
 
 func TestNew_CORSOrigin(t *testing.T) {
 	t.Parallel()

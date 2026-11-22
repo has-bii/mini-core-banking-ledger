@@ -54,6 +54,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, redisClient *redis.Client, log *
 	return middleware.Chain(
 		mux,
 		middleware.Recoverer(log),
+		middleware.SetRequestID(),
 		middleware.Logging(log),
 		cors,
 		middleware.GetUserFromSession(lookupUserID),

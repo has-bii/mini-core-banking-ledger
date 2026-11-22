@@ -209,7 +209,9 @@ func TestLogging(t *testing.T) {
 			var logs bytes.Buffer
 			logger := slog.New(slog.NewJSONHandler(&logs, nil))
 			rr := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodPost, "/payments?secret=hidden", nil)
+			const reqID = "test-request-id"
+			ctx := WithReqID(t.Context(), reqID)
+			r := httptest.NewRequestWithContext(ctx, http.MethodPost, "/payments?secret=hidden", nil)
 			gotPanic := capturePanic(func() { Logging(logger)(tt.handler).ServeHTTP(rr, r) })
 			if gotPanic != tt.wantPanic {
 				t.Fatalf("panic = %v, want %v", gotPanic, tt.wantPanic)
@@ -219,7 +221,7 @@ func TestLogging(t *testing.T) {
 			}
 			record := decodeLog(t, &logs)
 			for key, want := range map[string]any{
-				"level": "INFO", "msg": "request", "method": http.MethodPost,
+				"level": "INFO", "msg": "request", "method": http.MethodPost, "request_id": reqID,
 				"path": "/payments", "status": float64(tt.wantStatus),
 			} {
 				if record[key] != want {

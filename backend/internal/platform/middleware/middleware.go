@@ -59,8 +59,15 @@ func Logging(log *slog.Logger) Middleware {
 				status:         http.StatusOK,
 			}
 
+			reqID, ok := ReqIDFromContext(r.Context())
+
+			if !ok || reqID == "" {
+				log.ErrorContext(r.Context(), "request ID missing from context")
+			}
+
 			defer func() {
 				log.InfoContext(r.Context(), "request",
+					"request_id", reqID,
 					"method", r.Method,
 					"path", r.URL.Path,
 					"status", rw.status,
