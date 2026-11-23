@@ -72,10 +72,11 @@ func SendRequestError(w http.ResponseWriter, r *http.Request, scope string, err 
 		}
 	}
 	ctx := r.Context()
+	log := logger.FromContext(ctx)
 	if status == http.StatusInternalServerError {
-		logger.FromContext(ctx).ErrorContext(ctx, scope+" request failed", "err", err, "method", r.Method, "path", r.URL.Path)
+		log.ErrorContext(ctx, scope+" request failed", "err", err, "method", r.Method, "path", r.URL.Path)
 	}
 	if err := SendError(w, status, detail, r.URL.Path, fields); err != nil {
-		logger.FromContext(ctx).ErrorContext(ctx, "write "+scope+" error response", "err", err)
+		log.ErrorContext(ctx, "write "+scope+" error response", "err", err)
 	}
 }
