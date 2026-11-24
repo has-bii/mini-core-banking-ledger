@@ -515,7 +515,7 @@ components:
           type: string
           description: |
             Request path without query parameters. Handler responses omit the /api prefix;
-            outer middleware responses retain it. Empty on the fallback 500 sent when response encoding fails.
+            outer middleware responses retain it. The fallback 500 sent when response encoding fails also includes the path.
         errors:
           type: object
           description: Optional validation messages keyed by JSON field name; first failed rule per field.

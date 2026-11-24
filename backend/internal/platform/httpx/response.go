@@ -4,6 +4,7 @@ import (
 	"backend/internal/platform/logger"
 	"backend/internal/platform/validator"
 
+	"encoding/json/jsontext"
 	"encoding/json/v2"
 	"errors"
 
@@ -33,11 +34,13 @@ func writeJSON(w http.ResponseWriter, r *http.Request, status int, contentType s
 	encoded, err := json.Marshal(body, json.FormatNilMapAsNull(true), json.FormatNilSliceAsNull(true))
 	if err != nil {
 		log.ErrorContext(ctx, "encode JSON response", "err", err, "status", status, "method", r.Method, "path", r.URL.Path)
-		// A replacement response must not send a staged success cookie or depend on encoding again.
+		// A replacement response must not send a staged success cookie.
 		w.Header().Del("Set-Cookie")
 		status = http.StatusInternalServerError
 		contentType = problemJSON
-		encoded = []byte(`{"type":"about:blank","title":"Internal Server Error","status":500,"detail":"internal error","instance":""}`)
+		// Quote only the path; AppendQuote cannot fail after UTF-8 normalization.
+		encoded, _ = jsontext.AppendQuote([]byte(`{"type":"about:blank","title":"Internal Server Error","status":500,"detail":"internal error","instance":`), strings.ToValidUTF8(r.URL.Path, "\uFFFD"))
+		encoded = append(encoded, '}')
 	}
 
 	w.Header().Set("Content-Type", contentType)

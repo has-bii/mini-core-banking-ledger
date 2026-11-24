@@ -121,13 +121,13 @@ func TestErrorResponseWithoutValidationErrors(t *testing.T) {
 func TestResponsesFallBackOnEncodingError(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {
-		name string
-		send func(http.ResponseWriter, *http.Request)
+		name, target, instance string
+		send                   func(http.ResponseWriter, *http.Request)
 	}{
-		{"success", func(w http.ResponseWriter, r *http.Request) {
+		{"success", "/resources?limit=10", "/resources", func(w http.ResponseWriter, r *http.Request) {
 			httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: make(chan int)})
 		}},
-		{"error", func(w http.ResponseWriter, r *http.Request) {
+		{"error", "/resources/%22%0B%FF%FE", "/resources/\"\v\uFFFD", func(w http.ResponseWriter, r *http.Request) {
 			httpx.SendError(w, r, http.StatusBadRequest, "invalid \xff detail", nil)
 		}},
 	} {
@@ -135,7 +135,7 @@ func TestResponsesFallBackOnEncodingError(t *testing.T) {
 			t.Parallel()
 			var logs strings.Builder
 			ctx := logger.WithContext(t.Context(), slog.New(slog.NewTextHandler(&logs, nil)))
-			r := httptest.NewRequestWithContext(ctx, http.MethodPost, "/resources", nil)
+			r := httptest.NewRequestWithContext(ctx, http.MethodPost, tt.target, nil)
 			w := httptest.NewRecorder()
 			w.Header().Set("Set-Cookie", "session=staged")
 			httpx.NoStoreHeader(w)
@@ -153,7 +153,7 @@ func TestResponsesFallBackOnEncodingError(t *testing.T) {
 				t.Fatal(err)
 			}
 			if got.Type != "about:blank" || got.Title != "Internal Server Error" || got.Status != 500 ||
-				got.Detail != "internal error" || got.Instance != "" || got.Errors != nil {
+				got.Detail != "internal error" || got.Instance != tt.instance || got.Errors != nil {
 				t.Errorf("unexpected fallback problem details: %s", w.Body.String())
 			}
 			if !strings.Contains(logs.String(), "encode JSON response") {
