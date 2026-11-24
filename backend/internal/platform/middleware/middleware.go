@@ -48,7 +48,7 @@ func Recoverer() Middleware {
 					panic(http.ErrAbortHandler)
 				}
 
-				_ = httpx.SendError(rw, http.StatusInternalServerError, "Unexpected error has occurred", r.URL.Path, nil)
+				httpx.SendError(rw, r, http.StatusInternalServerError, "Unexpected error has occurred", nil)
 			}()
 			next.ServeHTTP(rw, r)
 		})

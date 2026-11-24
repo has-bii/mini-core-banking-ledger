@@ -21,58 +21,63 @@ func TestResponses(t *testing.T) {
 	for _, tt := range []struct {
 		name, contentType, body string
 		status                  int
-		send                    func(http.ResponseWriter) error
+		path                    string
+		send                    func(http.ResponseWriter, *http.Request)
 	}{
 		{
 			name: "success", status: http.StatusCreated, contentType: "application/json",
 			body: `{"data":{"id":1},"message":"created"}`,
-			send: func(w http.ResponseWriter) error {
-				return httpx.SendSuccess(w, http.StatusCreated, httpx.SuccessResponse{Data: map[string]int{"id": 1}, Message: "created"})
+			send: func(w http.ResponseWriter, r *http.Request) {
+				httpx.SendSuccess(w, r, http.StatusCreated, httpx.SuccessResponse{Data: map[string]int{"id": 1}, Message: "created"})
 			},
 		},
 		{
 			name: "success without message", status: http.StatusOK, contentType: "application/json",
 			body: `{"data":null}`,
-			send: func(w http.ResponseWriter) error {
-				return httpx.SendSuccess(w, http.StatusOK, httpx.SuccessResponse{Data: []int(nil)})
+			send: func(w http.ResponseWriter, r *http.Request) {
+				httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: []int(nil)})
 			},
 		},
 		{
 			name: "error without fields", status: http.StatusBadRequest, contentType: "application/problem+json",
 			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/wallets"}`,
-			send: func(w http.ResponseWriter) error {
-				return httpx.SendError(w, http.StatusBadRequest, "invalid input", "/wallets", &validator.ErrorValidation{})
+			send: func(w http.ResponseWriter, r *http.Request) {
+				httpx.SendError(w, r, http.StatusBadRequest, "invalid input", &validator.ErrorValidation{})
 			},
 		},
 		{
 			name: "error with invalid UTF-8 in instance", status: http.StatusUnauthorized, contentType: "application/problem+json",
 			body: `{"type":"about:blank","title":"Unauthorized","status":401,"detail":"invalid session","instance":"/wallets/\ufffd"}`,
-			send: func(w http.ResponseWriter) error {
-				return httpx.SendError(w, http.StatusUnauthorized, "invalid session", "/wallets/\xff", nil)
+			path: "/wallets/%FF",
+			send: func(w http.ResponseWriter, r *http.Request) {
+				httpx.SendError(w, r, http.StatusUnauthorized, "invalid session", nil)
 			},
 		},
 		{
 			name: "error with empty fields map", status: http.StatusBadRequest, contentType: "application/problem+json",
 			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/wallets","errors":{}}`,
-			send: func(w http.ResponseWriter) error {
+			send: func(w http.ResponseWriter, r *http.Request) {
 				empty := validator.ErrorField{}
-				return httpx.SendError(w, http.StatusBadRequest, "invalid input", "/wallets", &validator.ErrorValidation{Errors: &empty})
+				httpx.SendError(w, r, http.StatusBadRequest, "invalid input", &validator.ErrorValidation{Errors: &empty})
 			},
 		},
 		{
 			name: "error with fields", status: http.StatusUnprocessableEntity, contentType: "application/problem+json",
 			body: `{"type":"about:blank","title":"Unprocessable Entity","status":422,"detail":"invalid input","instance":"/wallets","errors":{"name":["required"]}}`,
-			send: func(w http.ResponseWriter) error {
-				return httpx.SendError(w, http.StatusUnprocessableEntity, "invalid input", "/wallets", &validator.ErrorValidation{Errors: &fields})
+			send: func(w http.ResponseWriter, r *http.Request) {
+				httpx.SendError(w, r, http.StatusUnprocessableEntity, "invalid input", &validator.ErrorValidation{Errors: &fields})
 			},
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			w := httptest.NewRecorder()
-			if err := tt.send(w); err != nil {
-				t.Fatal(err)
+			path := tt.path
+			if path == "" {
+				path = "/wallets"
 			}
+			r := httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil)
+			tt.send(w, r)
 			if w.Code != tt.status || w.Header().Get("Content-Type") != tt.contentType {
 				t.Fatalf("status/content type = %d, %q; want %d, %q", w.Code, w.Header().Get("Content-Type"), tt.status, tt.contentType)
 			}
@@ -96,9 +101,8 @@ func TestResponses(t *testing.T) {
 func TestErrorResponseWithoutValidationErrors(t *testing.T) {
 	t.Parallel()
 	w := httptest.NewRecorder()
-	if err := httpx.SendError(w, http.StatusUnauthorized, "Session is expired or invalid", "/wallets", nil); err != nil {
-		t.Fatal(err)
-	}
+	r := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/wallets", nil)
+	httpx.SendError(w, r, http.StatusUnauthorized, "Session is expired or invalid", nil)
 	if w.Code != http.StatusUnauthorized || w.Header().Get("Content-Type") != "application/problem+json" {
 		t.Fatalf("response = %d %v", w.Code, w.Header())
 	}
@@ -114,36 +118,80 @@ func TestErrorResponseWithoutValidationErrors(t *testing.T) {
 	}
 }
 
-func TestSendSuccessMarshalFailureDoesNotWrite(t *testing.T) {
-	t.Parallel()
-	w := &responseWriter{ResponseRecorder: httptest.NewRecorder()}
-	if err := httpx.SendSuccess(w, http.StatusOK, httpx.SuccessResponse{Data: make(chan int)}); err == nil {
-		t.Fatal("expected an error")
-	}
-	if w.wrote || len(w.Header()) != 0 || w.Body.Len() != 0 {
-		t.Fatal("response was modified before returning an error")
-	}
-}
-
-func TestResponsesReturnWriterError(t *testing.T) {
+func TestResponsesFallBackOnEncodingError(t *testing.T) {
 	t.Parallel()
 	for _, tt := range []struct {
 		name string
-		send func(http.ResponseWriter) error
+		send func(http.ResponseWriter, *http.Request)
 	}{
-		{"success", func(w http.ResponseWriter) error {
-			return httpx.SendSuccess(w, http.StatusOK, httpx.SuccessResponse{})
+		{"success", func(w http.ResponseWriter, r *http.Request) {
+			httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: make(chan int)})
 		}},
-		{"error", func(w http.ResponseWriter) error {
-			return httpx.SendError(w, http.StatusBadRequest, "", "", &validator.ErrorValidation{})
+		{"error", func(w http.ResponseWriter, r *http.Request) {
+			httpx.SendError(w, r, http.StatusBadRequest, "invalid \xff detail", nil)
 		}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			want := errors.New("write failed")
-			w := &responseWriter{ResponseRecorder: httptest.NewRecorder(), err: want}
-			if err := tt.send(w); !errors.Is(err, want) {
-				t.Fatalf("error = %v, want %v", err, want)
+			var logs strings.Builder
+			ctx := logger.WithContext(t.Context(), slog.New(slog.NewTextHandler(&logs, nil)))
+			r := httptest.NewRequestWithContext(ctx, http.MethodPost, "/resources", nil)
+			w := httptest.NewRecorder()
+			w.Header().Set("Set-Cookie", "session=staged")
+			httpx.NoStoreHeader(w)
+
+			tt.send(w, r)
+
+			if w.Code != http.StatusInternalServerError || w.Header().Get("Content-Type") != "application/problem+json" {
+				t.Fatalf("response = %d %v, want status 500 and problem JSON", w.Code, w.Header())
+			}
+			if w.Header().Get("Set-Cookie") != "" || w.Header().Get("Cache-Control") != "no-store" {
+				t.Errorf("unexpected fallback headers: %v", w.Header())
+			}
+			var got httpx.ErrorResponse
+			if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil {
+				t.Fatal(err)
+			}
+			if got.Type != "about:blank" || got.Title != "Internal Server Error" || got.Status != 500 ||
+				got.Detail != "internal error" || got.Instance != "" || got.Errors != nil {
+				t.Errorf("unexpected fallback problem details: %s", w.Body.String())
+			}
+			if !strings.Contains(logs.String(), "encode JSON response") {
+				t.Errorf("encoding failure missing from request log: %s", logs.String())
+			}
+		})
+	}
+}
+
+func TestResponsesLogWriterErrorWithoutRetry(t *testing.T) {
+	t.Parallel()
+	for _, tt := range []struct {
+		name   string
+		status int
+		send   func(http.ResponseWriter, *http.Request)
+	}{
+		{"success", http.StatusOK, func(w http.ResponseWriter, r *http.Request) {
+			httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{})
+		}},
+		{"error", http.StatusBadRequest, func(w http.ResponseWriter, r *http.Request) {
+			httpx.SendError(w, r, http.StatusBadRequest, "", nil)
+		}},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			var logs strings.Builder
+			ctx := logger.WithContext(t.Context(), slog.New(slog.NewTextHandler(&logs, nil)))
+			r := httptest.NewRequestWithContext(ctx, http.MethodGet, "/resources", nil)
+			cause := errors.New("writer failed")
+			w := &failingResponseWriter{ResponseRecorder: httptest.NewRecorder(), err: cause}
+
+			tt.send(w, r)
+
+			if w.Code != tt.status || w.writes != 1 {
+				t.Errorf("status = %d, writes = %d; want %d and one write", w.Code, w.writes, tt.status)
+			}
+			if !strings.Contains(logs.String(), "write JSON response") || !strings.Contains(logs.String(), cause.Error()) {
+				t.Errorf("writer failure missing from request log: %s", logs.String())
 			}
 		})
 	}
@@ -200,21 +248,13 @@ func TestSendRequestError(t *testing.T) {
 	}
 }
 
-type responseWriter struct {
+type failingResponseWriter struct {
 	*httptest.ResponseRecorder
-	wrote bool
-	err   error
+	writes int
+	err    error
 }
 
-func (w *responseWriter) WriteHeader(status int) {
-	w.wrote = true
-	w.ResponseRecorder.WriteHeader(status)
-}
-
-func (w *responseWriter) Write(body []byte) (int, error) {
-	w.wrote = true
-	if w.err != nil {
-		return 0, w.err
-	}
-	return w.ResponseRecorder.Write(body)
+func (w *failingResponseWriter) Write([]byte) (int, error) {
+	w.writes++
+	return 0, w.err
 }

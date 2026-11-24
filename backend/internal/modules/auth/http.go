@@ -4,7 +4,6 @@ import (
 	"backend/internal/modules/session"
 	"backend/internal/modules/user"
 	"backend/internal/platform/httpx"
-	"backend/internal/platform/logger"
 	"backend/internal/platform/middleware"
 
 	"context"
@@ -48,7 +47,7 @@ func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 		h.sendError(w, r, err)
 		return
 	}
-	h.sendSuccess(w, r, http.StatusOK, u)
+	httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: u})
 }
 
 func (h *Handler) logout(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +90,7 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	// http.Cookie.MaxAge is an int and can overflow for valid lifetimes on 32-bit builds.
 	maxAge := strconv.FormatInt(int64(h.sessionLifetime/time.Second), 10)
 	w.Header().Add("Set-Cookie", cookie.String()+"; Max-Age="+maxAge)
-	h.sendSuccess(w, r, http.StatusOK, u)
+	httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: u})
 }
 
 func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
@@ -109,14 +108,7 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 		h.sendError(w, r, err)
 		return
 	}
-	h.sendSuccess(w, r, http.StatusCreated, u)
-}
-
-func (h *Handler) sendSuccess(w http.ResponseWriter, r *http.Request, status int, data any) {
-	if err := httpx.SendSuccess(w, status, httpx.SuccessResponse{Data: data}); err != nil {
-		log := logger.FromContext(r.Context())
-		log.ErrorContext(r.Context(), "write auth response", "err", err)
-	}
+	httpx.SendSuccess(w, r, http.StatusCreated, httpx.SuccessResponse{Data: u})
 }
 
 func (h *Handler) sendError(w http.ResponseWriter, r *http.Request, err error) {

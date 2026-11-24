@@ -25,35 +25,44 @@ type ErrorResponse struct {
 	validator.ErrorValidation
 }
 
-func writeJSON(w http.ResponseWriter, status int, contentType string, v any) error {
-	body, err := json.Marshal(v, json.FormatNilMapAsNull(true), json.FormatNilSliceAsNull(true))
+const problemJSON = "application/problem+json"
+
+func writeJSON(w http.ResponseWriter, r *http.Request, status int, contentType string, body any) {
+	ctx := r.Context()
+	log := logger.FromContext(ctx)
+	encoded, err := json.Marshal(body, json.FormatNilMapAsNull(true), json.FormatNilSliceAsNull(true))
 	if err != nil {
-		return err
+		log.ErrorContext(ctx, "encode JSON response", "err", err, "status", status, "method", r.Method, "path", r.URL.Path)
+		// A replacement response must not send a staged success cookie or depend on encoding again.
+		w.Header().Del("Set-Cookie")
+		status = http.StatusInternalServerError
+		contentType = problemJSON
+		encoded = []byte(`{"type":"about:blank","title":"Internal Server Error","status":500,"detail":"internal error","instance":""}`)
 	}
 
 	w.Header().Set("Content-Type", contentType)
 	w.WriteHeader(status)
-
-	_, err = w.Write(append(body, '\n'))
-	return err
+	if _, err := w.Write(append(encoded, '\n')); err != nil {
+		log.ErrorContext(ctx, "write JSON response", "err", err, "status", status, "method", r.Method, "path", r.URL.Path)
+	}
 }
 
-func SendSuccess(w http.ResponseWriter, status int, response SuccessResponse) error {
-	return writeJSON(w, status, "application/json", response)
+func SendSuccess(w http.ResponseWriter, r *http.Request, status int, response SuccessResponse) {
+	writeJSON(w, r, status, "application/json", response)
 }
 
-func SendError(w http.ResponseWriter, status int, detail, instance string, fields *validator.ErrorValidation) error {
+func SendError(w http.ResponseWriter, r *http.Request, status int, detail string, fields *validator.ErrorValidation) {
 	response := ErrorResponse{
 		Type:     "about:blank",
 		Title:    http.StatusText(status),
 		Status:   status,
 		Detail:   detail,
-		Instance: strings.ToValidUTF8(instance, "\uFFFD"), // A decoded request path can contain invalid UTF-8.
+		Instance: strings.ToValidUTF8(r.URL.Path, "\uFFFD"), // A decoded request path can contain invalid UTF-8.
 	}
 	if fields != nil {
 		response.ErrorValidation = *fields
 	}
-	return writeJSON(w, status, "application/problem+json", response)
+	writeJSON(w, r, status, problemJSON, response)
 }
 
 // SendRequestError handles transport errors before consulting mapDomain, which returns status 0 for unrecognized errors.
@@ -71,12 +80,9 @@ func SendRequestError(w http.ResponseWriter, r *http.Request, scope string, err 
 			status, detail = mappedStatus, mappedDetail
 		}
 	}
-	ctx := r.Context()
-	log := logger.FromContext(ctx)
 	if status == http.StatusInternalServerError {
-		log.ErrorContext(ctx, scope+" request failed", "err", err, "method", r.Method, "path", r.URL.Path)
+		ctx := r.Context()
+		logger.FromContext(ctx).ErrorContext(ctx, scope+" request failed", "err", err, "method", r.Method, "path", r.URL.Path)
 	}
-	if err := SendError(w, status, detail, r.URL.Path, fields); err != nil {
-		log.ErrorContext(ctx, "write "+scope+" error response", "err", err)
-	}
+	SendError(w, r, status, detail, fields)
 }

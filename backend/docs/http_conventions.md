@@ -18,7 +18,8 @@
 
 - **Transport and validation.** Use `httpx.SendRequestError` to send `application/problem+json`. It checks typed transport and validation errors with `errors.As` before the module's mapper. Keep validation details keyed by JSON field name.
 - **Domain errors.** Match sentinels with `errors.Is` and map them to a status and safe detail. Leave unexpected failures unmapped for a generic `500`; log their causes without passwords, tokens, or request bodies.
-- **Write failure.** Log the failure instead of attempting a second response.
+- **Response encoding failure.** The JSON helpers log the failure and send a generic `500` before committing headers. This fallback has an empty `instance` and drops any staged `Set-Cookie` header.
+- **Write failure.** The JSON helpers log the failure without attempting a second response.
 
 ## How to test
 

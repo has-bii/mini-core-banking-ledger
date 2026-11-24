@@ -54,7 +54,7 @@ func (tb *RateLimiter) Middleware() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !tb.allow() {
-				_ = httpx.SendError(w, http.StatusTooManyRequests, "Rate limit exceeded", r.URL.Path, nil)
+				httpx.SendError(w, r, http.StatusTooManyRequests, "Rate limit exceeded", nil)
 				return
 			}
 			next.ServeHTTP(w, r)

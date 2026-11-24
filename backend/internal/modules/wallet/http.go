@@ -2,7 +2,6 @@ package wallet
 
 import (
 	"backend/internal/platform/httpx"
-	"backend/internal/platform/logger"
 	"backend/internal/platform/middleware"
 	"context"
 	"errors"
@@ -47,7 +46,7 @@ func (h *Handler) createWallet(w http.ResponseWriter, r *http.Request) {
 		h.sendError(w, r, err)
 		return
 	}
-	h.sendSuccess(w, r, http.StatusCreated, data)
+	httpx.SendSuccess(w, r, http.StatusCreated, httpx.SuccessResponse{Data: data})
 }
 
 func (h *Handler) getWallet(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +58,7 @@ func (h *Handler) getWallet(w http.ResponseWriter, r *http.Request) {
 		h.sendError(w, r, err)
 		return
 	}
-	h.sendSuccess(w, r, http.StatusOK, data)
+	httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: data})
 }
 
 func (h *Handler) getWallets(w http.ResponseWriter, r *http.Request) {
@@ -71,14 +70,7 @@ func (h *Handler) getWallets(w http.ResponseWriter, r *http.Request) {
 		h.sendError(w, r, err)
 		return
 	}
-	h.sendSuccess(w, r, http.StatusOK, data)
-}
-
-func (h *Handler) sendSuccess(w http.ResponseWriter, r *http.Request, status int, data any) {
-	if err := httpx.SendSuccess(w, status, httpx.SuccessResponse{Data: data}); err != nil {
-		log := logger.FromContext(r.Context())
-		log.ErrorContext(r.Context(), "write wallet response", "err", err)
-	}
+	httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: data})
 }
 
 func (h *Handler) sendError(w http.ResponseWriter, r *http.Request, err error) {
