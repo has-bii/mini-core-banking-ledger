@@ -109,7 +109,9 @@ func TestLogAndRecover_BeforeCommit(t *testing.T) {
 
 	var logs bytes.Buffer
 	log := slog.New(slog.NewJSONHandler(&logs, nil))
-	handler := middleware.LogAndRecover(log)(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
+	handler := middleware.LogAndRecover(log)(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		http.SetCookie(w, &http.Cookie{Name: "session", Value: "test-session"})
+		http.SetCookie(w, &http.Cookie{Name: "preference", Value: "test-preference"})
 		panic("private panic detail")
 	}))
 	w := httptest.NewRecorder()
@@ -122,6 +124,9 @@ func TestLogAndRecover_BeforeCommit(t *testing.T) {
 	}
 	if got := response.Header.Get("Content-Type"); got != "application/problem+json" {
 		t.Errorf("Content-Type = %q, want application/problem+json", got)
+	}
+	if got := response.Header.Values("Set-Cookie"); len(got) != 0 {
+		t.Errorf("Set-Cookie = %q, want no cookies on panic recovery", got)
 	}
 	var body map[string]any
 	if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {

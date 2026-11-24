@@ -578,7 +578,10 @@ components:
           schema:
             $ref: '#/components/schemas/WalletProblem'
     WalletInternalError:
-      description: Unexpected server error. Wallet handler errors include no-store; shared middleware may omit it.
+      description: |
+        Unexpected server error. Wallet handler errors include no-store;
+        shared middleware may omit it. Panic recovery before the response
+        is committed discards any staged Set-Cookie headers.
       content:
         application/problem+json:
           schema:
@@ -656,6 +659,8 @@ components:
         logout and wallet handlers include Cache-Control: no-store.
         Shared middleware may omit this header and uses the generic detail
         "Unexpected error has occurred" instead of "internal error".
+        Panic recovery before the response is committed discards any staged
+        Set-Cookie headers.
       content:
         application/problem+json:
           schema:

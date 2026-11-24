@@ -28,5 +28,6 @@ func recoverRequest(w *responseWriter, r *http.Request, log *slog.Logger) {
 		panic(http.ErrAbortHandler)
 	}
 
+	w.Header().Del("Set-Cookie")
 	httpx.SendError(w, r, http.StatusInternalServerError, "Unexpected error has occurred", nil)
 }
