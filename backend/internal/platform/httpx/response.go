@@ -54,7 +54,20 @@ func SendSuccess(w http.ResponseWriter, r *http.Request, status int, response Su
 	writeJSON(w, r, status, "application/json", response)
 }
 
-func SendError(w http.ResponseWriter, r *http.Request, status int, detail string, fields *validator.ErrorValidation) {
+// SendError classifies an error and writes its client-facing problem response.
+func SendError(w http.ResponseWriter, r *http.Request, err error) {
+	status, detail := http.StatusInternalServerError, "internal error"
+	cause := err
+	var fields *validator.ErrorValidation
+	if httpErr, ok := errors.AsType[*HTTPError](err); ok {
+		status, detail, cause = httpErr.Status, httpErr.Message, httpErr.Unwrap()
+	} else if validationErr, ok := errors.AsType[*validator.ErrorValidation](err); ok {
+		status, detail, fields = http.StatusBadRequest, validationErr.Error(), validationErr
+	}
+	if status >= 500 && status < 600 && cause != nil {
+		ctx := r.Context()
+		logger.FromContext(ctx).ErrorContext(ctx, "request failed", "err", cause, "method", r.Method, "path", r.URL.Path)
+	}
 	response := ErrorResponse{
 		Type:     "about:blank",
 		Title:    http.StatusText(status),
@@ -66,26 +79,4 @@ func SendError(w http.ResponseWriter, r *http.Request, status int, detail string
 		response.ErrorValidation = *fields
 	}
 	writeJSON(w, r, status, problemJSON, response)
-}
-
-// SendRequestError handles transport errors before consulting mapDomain, which returns status 0 for unrecognized errors.
-func SendRequestError(w http.ResponseWriter, r *http.Request, scope string, err error, mapDomain func(error) (int, string)) {
-	status, detail := http.StatusInternalServerError, "internal error"
-	var httpErr *HTTPError
-	var fields *validator.ErrorValidation
-	switch {
-	case errors.As(err, &httpErr):
-		status, detail = httpErr.Status, httpErr.Message
-	case errors.As(err, &fields):
-		status, detail = http.StatusBadRequest, fields.Error()
-	default:
-		if mappedStatus, mappedDetail := mapDomain(err); mappedStatus != 0 {
-			status, detail = mappedStatus, mappedDetail
-		}
-	}
-	if status == http.StatusInternalServerError {
-		ctx := r.Context()
-		logger.FromContext(ctx).ErrorContext(ctx, scope+" request failed", "err", err, "method", r.Method, "path", r.URL.Path)
-	}
-	SendError(w, r, status, detail, fields)
 }

@@ -32,18 +32,18 @@ func (h *Handler) createWallet(w http.ResponseWriter, r *http.Request) {
 	httpx.NoStoreHeader(w)
 	var payload CreateWalletDTO
 	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, err)
 		return
 	}
 	if err := payload.Validate(); err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, err)
 		return
 	}
 	ctx := r.Context()
 	userID, _ := middleware.UserIDFromContext(ctx)
 	data, err := h.svc.CreateUserWallet(ctx, userID, payload)
 	if err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, mapServiceError(err))
 		return
 	}
 	httpx.SendSuccess(w, r, http.StatusCreated, httpx.SuccessResponse{Data: data})
@@ -55,7 +55,7 @@ func (h *Handler) getWallet(w http.ResponseWriter, r *http.Request) {
 	userID, _ := middleware.UserIDFromContext(ctx)
 	data, err := h.svc.GetUserWallet(ctx, r.PathValue("id"), userID)
 	if err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, mapServiceError(err))
 		return
 	}
 	httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: data})
@@ -67,25 +67,21 @@ func (h *Handler) getWallets(w http.ResponseWriter, r *http.Request) {
 	userID, _ := middleware.UserIDFromContext(ctx)
 	data, err := h.svc.GetUserWallets(ctx, userID)
 	if err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, mapServiceError(err))
 		return
 	}
 	httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: data})
 }
 
-func (h *Handler) sendError(w http.ResponseWriter, r *http.Request, err error) {
-	httpx.SendRequestError(w, r, "wallet", err, domainProblem)
-}
-
-func domainProblem(err error) (int, string) {
+func mapServiceError(err error) error {
 	switch {
 	case errors.Is(err, ErrNotFound):
-		return http.StatusNotFound, ErrNotFound.Error()
+		return httpx.WrapHTTPError(http.StatusNotFound, ErrNotFound.Error(), err)
 	case errors.Is(err, ErrInvalidWalletID):
-		return http.StatusBadRequest, ErrInvalidWalletID.Error()
+		return httpx.WrapHTTPError(http.StatusBadRequest, ErrInvalidWalletID.Error(), err)
 	case errors.Is(err, ErrInvalidUserID):
-		return http.StatusBadRequest, ErrInvalidUserID.Error()
+		return httpx.WrapHTTPError(http.StatusBadRequest, ErrInvalidUserID.Error(), err)
 	default:
-		return 0, ""
+		return err
 	}
 }

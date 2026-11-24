@@ -44,7 +44,7 @@ func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 	userID, _ := middleware.UserIDFromContext(ctx)
 	u, err := h.svc.Me(ctx, userID)
 	if err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, mapServiceError(err))
 		return
 	}
 	httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: u})
@@ -54,7 +54,7 @@ func (h *Handler) logout(w http.ResponseWriter, r *http.Request) {
 	httpx.NoStoreHeader(w)
 	if cookie, err := r.Cookie("session"); err == nil {
 		if err := h.svc.Logout(r.Context(), cookie.Value); err != nil {
-			h.sendError(w, r, err)
+			httpx.SendError(w, r, mapServiceError(err))
 			return
 		}
 	}
@@ -70,16 +70,16 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	httpx.NoStoreHeader(w)
 	var payload LoginDTO
 	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, err)
 		return
 	}
 	if err := payload.Validate(); err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, err)
 		return
 	}
 	u, created, token, err := h.svc.Login(r.Context(), payload)
 	if err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, mapServiceError(err))
 		return
 	}
 	cookie := http.Cookie{
@@ -96,34 +96,30 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 	var payload RegisterDTO
 	if err := httpx.DecodeJSON(w, r, &payload); err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, err)
 		return
 	}
 	if err := payload.Validate(); err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, err)
 		return
 	}
 	u, err := h.svc.Register(r.Context(), payload)
 	if err != nil {
-		h.sendError(w, r, err)
+		httpx.SendError(w, r, mapServiceError(err))
 		return
 	}
 	httpx.SendSuccess(w, r, http.StatusCreated, httpx.SuccessResponse{Data: u})
 }
 
-func (h *Handler) sendError(w http.ResponseWriter, r *http.Request, err error) {
-	httpx.SendRequestError(w, r, "auth", err, domainProblem)
-}
-
-func domainProblem(err error) (int, string) {
+func mapServiceError(err error) error {
 	switch {
 	case errors.Is(err, user.ErrEmailTaken):
-		return http.StatusConflict, user.ErrEmailTaken.Error()
+		return httpx.WrapHTTPError(http.StatusConflict, user.ErrEmailTaken.Error(), err)
 	case errors.Is(err, ErrInvalidCredentials):
-		return http.StatusUnauthorized, ErrInvalidCredentials.Error()
+		return httpx.WrapHTTPError(http.StatusUnauthorized, ErrInvalidCredentials.Error(), err)
 	case errors.Is(err, ErrUnauthenticated):
-		return http.StatusUnauthorized, ErrUnauthenticated.Error()
+		return httpx.WrapHTTPError(http.StatusUnauthorized, ErrUnauthenticated.Error(), err)
 	default:
-		return 0, ""
+		return err
 	}
 }

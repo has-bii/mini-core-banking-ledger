@@ -2,12 +2,15 @@ package middleware_test
 
 import (
 	"backend/internal/platform/httpx"
+	"backend/internal/platform/logger"
 	"backend/internal/platform/middleware"
 	"context"
 	"encoding/json/v2"
 	"errors"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -129,7 +132,9 @@ func TestGetUserFromSession_LookupError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			request := httptest.NewRequest(http.MethodGet, "/private", nil)
+			var logs strings.Builder
+			ctx := logger.WithContext(t.Context(), slog.New(slog.NewTextHandler(&logs, nil)))
+			request := httptest.NewRequestWithContext(ctx, http.MethodGet, "/private", nil)
 			request.AddCookie(&http.Cookie{Name: "session", Value: "session-token"})
 			recorder := httptest.NewRecorder()
 			lookupCalls, nextCalls := 0, 0
@@ -162,6 +167,9 @@ func TestGetUserFromSession_LookupError(t *testing.T) {
 			if body.Type != "about:blank" || body.Title != "Internal Server Error" || body.Status != 500 ||
 				body.Detail != "Unexpected error has occurred" || body.Instance != "/private" || body.Errors != nil {
 				t.Errorf("unexpected error response: %+v", body)
+			}
+			if !strings.Contains(logs.String(), "private database failure") || strings.Contains(logs.String(), "session-token") {
+				t.Errorf("want lookup cause without the session token in the log; got: %s", logs.String())
 			}
 		})
 	}

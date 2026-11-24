@@ -46,7 +46,7 @@ func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 }
 
 func invalidBodyError(status int, cause error) error {
-	return &HTTPError{Status: status, Message: "Invalid request body", cause: cause}
+	return WrapHTTPError(status, "Invalid request body", cause)
 }
 
 func classifyJSONError(err error) error {

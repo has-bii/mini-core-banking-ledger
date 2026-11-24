@@ -39,10 +39,10 @@ func TestResponses(t *testing.T) {
 			},
 		},
 		{
-			name: "error without fields", status: http.StatusBadRequest, contentType: "application/problem+json",
-			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/wallets"}`,
+			name: "validation error without fields", status: http.StatusBadRequest, contentType: "application/problem+json",
+			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"One or more fields are invalid. Check the field errors for details.","instance":"/wallets"}`,
 			send: func(w http.ResponseWriter, r *http.Request) {
-				httpx.SendError(w, r, http.StatusBadRequest, "invalid input", &validator.ErrorValidation{})
+				httpx.SendError(w, r, &validator.ErrorValidation{})
 			},
 		},
 		{
@@ -50,22 +50,22 @@ func TestResponses(t *testing.T) {
 			body: `{"type":"about:blank","title":"Unauthorized","status":401,"detail":"invalid session","instance":"/wallets/\ufffd"}`,
 			path: "/wallets/%FF",
 			send: func(w http.ResponseWriter, r *http.Request) {
-				httpx.SendError(w, r, http.StatusUnauthorized, "invalid session", nil)
+				httpx.SendError(w, r, httpx.NewHTTPError(http.StatusUnauthorized, "invalid session"))
 			},
 		},
 		{
 			name: "error with empty fields map", status: http.StatusBadRequest, contentType: "application/problem+json",
-			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"invalid input","instance":"/wallets","errors":{}}`,
+			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"One or more fields are invalid. Check the field errors for details.","instance":"/wallets","errors":{}}`,
 			send: func(w http.ResponseWriter, r *http.Request) {
 				empty := validator.ErrorField{}
-				httpx.SendError(w, r, http.StatusBadRequest, "invalid input", &validator.ErrorValidation{Errors: &empty})
+				httpx.SendError(w, r, &validator.ErrorValidation{Errors: &empty})
 			},
 		},
 		{
-			name: "error with fields", status: http.StatusUnprocessableEntity, contentType: "application/problem+json",
-			body: `{"type":"about:blank","title":"Unprocessable Entity","status":422,"detail":"invalid input","instance":"/wallets","errors":{"name":["required"]}}`,
+			name: "error with fields", status: http.StatusBadRequest, contentType: "application/problem+json",
+			body: `{"type":"about:blank","title":"Bad Request","status":400,"detail":"One or more fields are invalid. Check the field errors for details.","instance":"/wallets","errors":{"name":["required"]}}`,
 			send: func(w http.ResponseWriter, r *http.Request) {
-				httpx.SendError(w, r, http.StatusUnprocessableEntity, "invalid input", &validator.ErrorValidation{Errors: &fields})
+				httpx.SendError(w, r, &validator.ErrorValidation{Errors: &fields})
 			},
 		},
 	} {
@@ -102,7 +102,7 @@ func TestErrorResponseWithoutValidationErrors(t *testing.T) {
 	t.Parallel()
 	w := httptest.NewRecorder()
 	r := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/wallets", nil)
-	httpx.SendError(w, r, http.StatusUnauthorized, "Session is expired or invalid", nil)
+	httpx.SendError(w, r, httpx.NewHTTPError(http.StatusUnauthorized, "Session is expired or invalid"))
 	if w.Code != http.StatusUnauthorized || w.Header().Get("Content-Type") != "application/problem+json" {
 		t.Fatalf("response = %d %v", w.Code, w.Header())
 	}
@@ -128,7 +128,7 @@ func TestResponsesFallBackOnEncodingError(t *testing.T) {
 			httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: make(chan int)})
 		}},
 		{"error", "/resources/%22%0B%FF%FE", "/resources/\"\v\uFFFD", func(w http.ResponseWriter, r *http.Request) {
-			httpx.SendError(w, r, http.StatusBadRequest, "invalid \xff detail", nil)
+			httpx.SendError(w, r, httpx.NewHTTPError(http.StatusBadRequest, "invalid \xff detail"))
 		}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
@@ -174,7 +174,7 @@ func TestResponsesLogWriterErrorWithoutRetry(t *testing.T) {
 			httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{})
 		}},
 		{"error", http.StatusBadRequest, func(w http.ResponseWriter, r *http.Request) {
-			httpx.SendError(w, r, http.StatusBadRequest, "", nil)
+			httpx.SendError(w, r, httpx.NewHTTPError(http.StatusBadRequest, ""))
 		}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
@@ -197,22 +197,24 @@ func TestResponsesLogWriterErrorWithoutRetry(t *testing.T) {
 	}
 }
 
-func TestSendRequestError(t *testing.T) {
+func TestSendError(t *testing.T) {
 	t.Parallel()
 	fields := validator.ErrorField{"name": {"required"}}
 	validation := &validator.ErrorValidation{Errors: &fields}
-	conflict := errors.New("private conflict cause")
-	unexpected := errors.New("backend unavailable")
+	unavailable := errors.New("backend unavailable")
 	for _, tt := range []struct {
 		name, detail string
 		err          error
 		status       int
 		fields       *validator.ErrorField
+		wantLog      string
 	}{
-		{"decode takes precedence", "body too large", errors.Join(httpx.NewHTTPError(413, "body too large"), validation, conflict), 413, nil},
-		{"validation takes precedence", "One or more fields are invalid. Check the field errors for details.", errors.Join(validation, conflict), 400, &fields},
-		{"wrapped domain error", "resource already exists", fmt.Errorf("save: %w", conflict), 409, nil},
-		{"unexpected error", "internal error", unexpected, 500, nil},
+		{"transport takes precedence", "body too large", errors.Join(validation, httpx.NewHTTPError(413, "body too large")), 413, nil, ""},
+		{"wrapped validation error", "One or more fields are invalid. Check the field errors for details.", fmt.Errorf("validate: %w", validation), 400, &fields, ""},
+		{"client error with cause", "resource already exists", httpx.WrapHTTPError(409, "resource already exists", errors.New("private conflict cause")), 409, nil, ""},
+		{"unexpected error", "internal error", unavailable, 500, nil, "backend unavailable"},
+		{"explicit server error with cause", "please retry later", httpx.WrapHTTPError(503, "please retry later", unavailable), 503, nil, "backend unavailable"},
+		{"explicit server error without cause", "Unexpected error has occurred", httpx.NewHTTPError(500, "Unexpected error has occurred"), 500, nil, ""},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
@@ -221,12 +223,7 @@ func TestSendRequestError(t *testing.T) {
 			ctx := logger.WithContext(t.Context(), log)
 			r := httptest.NewRequestWithContext(ctx, http.MethodPost, "/resources?debug=true", nil)
 			w := httptest.NewRecorder()
-			httpx.SendRequestError(w, r, "test", tt.err, func(err error) (int, string) {
-				if errors.Is(err, conflict) {
-					return http.StatusConflict, "resource already exists"
-				}
-				return 0, ""
-			})
+			httpx.SendError(w, r, tt.err)
 			if w.Code != tt.status || w.Header().Get("Content-Type") != "application/problem+json" {
 				t.Fatalf("response = %d %v, want status %d and problem JSON", w.Code, w.Header(), tt.status)
 			}
@@ -237,12 +234,15 @@ func TestSendRequestError(t *testing.T) {
 			if got.Status != tt.status || got.Detail != tt.detail || got.Instance != "/resources" || !reflect.DeepEqual(got.Errors, tt.fields) {
 				t.Errorf("unexpected problem details: %s", w.Body.String())
 			}
-			if tt.status == 500 {
-				if !strings.Contains(logs.String(), unexpected.Error()) {
-					t.Errorf("internal error cause missing from log: %s", logs.String())
+			if tt.wantLog == "" {
+				if logs.Len() != 0 {
+					t.Errorf("unexpected request failure log: %s", logs.String())
 				}
-			} else if logs.Len() != 0 {
-				t.Errorf("client error was logged: %s", logs.String())
+				return
+			}
+			if strings.Count(logs.String(), "\n") != 1 || !strings.Contains(logs.String(), `msg="request failed"`) ||
+				!strings.Contains(logs.String(), tt.wantLog) || !strings.Contains(logs.String(), "method=POST path=/resources") {
+				t.Errorf("want one request failure log with cause, method, and path; got: %s", logs.String())
 			}
 		})
 	}
