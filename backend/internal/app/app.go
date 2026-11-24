@@ -53,8 +53,7 @@ func New(cfg config.Config, pool *pgxpool.Pool, redisClient *redis.Client, log *
 
 	return middleware.Chain(
 		mux,
-		middleware.Logging(log),
-		middleware.Recoverer(),
+		middleware.LogAndRecover(log),
 		cors,
 		middleware.GetUserFromSession(lookupUserID),
 		rateLimiter.Middleware(),

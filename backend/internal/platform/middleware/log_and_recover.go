@@ -10,7 +10,8 @@ import (
 	"time"
 )
 
-func Logging(log *slog.Logger) Middleware {
+// LogAndRecover correlates request and panic logs and tracks the final response status.
+func LogAndRecover(log *slog.Logger) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
@@ -38,7 +39,10 @@ func Logging(log *slog.Logger) Middleware {
 				)
 			}()
 
-			next.ServeHTTP(rw, r.WithContext(ctx))
+			request := r.WithContext(ctx)
+			// Recover first so the access log sees the recovered status.
+			defer recoverRequest(rw, request, loggerWithReqID)
+			next.ServeHTTP(rw, request)
 		})
 	}
 }
