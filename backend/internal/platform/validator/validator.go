@@ -9,6 +9,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// UseJSONName returns the JSON tag name, or the Go field name
+// if the tag name is empty or "-".
 func UseJSONName(f reflect.StructField) string {
 	name, _, _ := strings.Cut(f.Tag.Get("json"), ",")
 	if name == "" || name == "-" {
@@ -17,6 +19,12 @@ func UseJSONName(f reflect.StructField) string {
 	return name
 }
 
+// FormatErrors groups validation messages by field. It returns nil
+// unless err is or wraps a validator.ValidationErrors value.
+//
+// For example, an invalid email field can produce:
+//
+//	ErrorField{"email": {"Must be a valid email address"}}
 func FormatErrors(err error) ErrorField {
 	var ve validator.ValidationErrors
 	if !errors.As(err, &ve) {
@@ -29,6 +37,7 @@ func FormatErrors(err error) ErrorField {
 	return out
 }
 
+// messageFor returns a user-facing message for a failed validation rule.
 func messageFor(fe validator.FieldError) string {
 	switch fe.Tag() {
 	case "required":

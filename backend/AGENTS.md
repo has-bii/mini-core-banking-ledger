@@ -16,6 +16,7 @@
 
 ## Read before changing
 
+- **Go function comments** — Doc comments and return-value examples: [Go function comment conventions](docs/go_function_comment_conventions.md).
 - **HTTP** — Routes, handlers, middleware, cookies, or response contracts: [HTTP conventions](docs/http_conventions.md).
 - **DTO** — Request fields, normalization, validation, or response shapes: [DTO conventions](docs/dto_conventions.md).
 - **Service** — Workflows, permissions, dependency coordination, or domain error mapping: [service conventions](docs/service_conventions.md).
