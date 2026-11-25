@@ -10,6 +10,9 @@ import (
 	"net/http"
 )
 
+// DecodeJSON reads a single JSON object into dst, rejecting unknown struct
+// fields and trailing data. It returns a 400 HTTPError for invalid payloads
+// and a 413 HTTPError for bodies larger than 1 MiB. Other errors pass through.
 func DecodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 
@@ -49,6 +52,8 @@ func invalidBodyError(status int, cause error) error {
 	return WrapHTTPError(status, "Invalid request body", cause)
 }
 
+// classifyJSONError converts recognized payload errors to a 400 HTTPError
+// without including request data and returns other errors unchanged.
 func classifyJSONError(err error) error {
 	// Decoder errors can contain request data; retain only fixed reasons and offsets.
 	if syntaxErr, ok := errors.AsType[*jsontext.SyntacticError](err); ok {

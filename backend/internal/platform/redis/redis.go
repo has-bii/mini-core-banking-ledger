@@ -8,6 +8,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// Open creates a Redis client and verifies connectivity before returning it.
+// The caller must close the client on success.
 func Open(ctx context.Context, url string) (*redis.Client, error) {
 	cfg, err := redis.ParseURL(url)
 	if err != nil {

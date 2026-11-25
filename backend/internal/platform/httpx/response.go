@@ -28,6 +28,8 @@ type ErrorResponse struct {
 
 const problemJSON = "application/problem+json"
 
+// writeJSON encodes the body before committing headers so an encoding failure
+// can send a 500 problem response without any staged cookies.
 func writeJSON(w http.ResponseWriter, r *http.Request, status int, contentType string, body any) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)
@@ -50,11 +52,15 @@ func writeJSON(w http.ResponseWriter, r *http.Request, status int, contentType s
 	}
 }
 
+// SendSuccess writes the response as JSON with the given status. If encoding
+// fails, it writes a 500 problem response instead.
 func SendSuccess(w http.ResponseWriter, r *http.Request, status int, response SuccessResponse) {
 	writeJSON(w, r, status, "application/json", response)
 }
 
-// SendError classifies an error and writes its client-facing problem response.
+// SendError writes a client-facing problem response. It uses the status and
+// message from an HTTPError, returns 400 with field details for validation
+// errors, and returns a generic 500 for unrecognized errors.
 func SendError(w http.ResponseWriter, r *http.Request, err error) {
 	status, detail := http.StatusInternalServerError, "internal error"
 	cause := err

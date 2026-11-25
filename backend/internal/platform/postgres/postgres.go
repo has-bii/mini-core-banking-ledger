@@ -22,6 +22,8 @@ type Beginner interface {
 	Begin(ctx context.Context) (pgx.Tx, error)
 }
 
+// Open creates a PostgreSQL pool and verifies connectivity before returning it.
+// The caller must close the pool on success.
 func Open(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	cfg, err := pgxpool.ParseConfig(url)
 	if err != nil {
@@ -45,7 +47,8 @@ func Open(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	return pool, nil
 }
 
-// InTx commits if fn returns nil and rolls back otherwise.
+// InTx runs fn in a new transaction and commits if fn returns nil. It attempts
+// a rollback and returns fn's error unchanged if fn fails.
 func InTx(ctx context.Context, db Beginner, fn func(tx pgx.Tx) error) error {
 	tx, err := db.Begin(ctx)
 	if err != nil {

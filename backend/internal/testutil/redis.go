@@ -14,8 +14,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// Redis uses real Redis with a private key namespace. It never flushes a database
-// or touches application keys, even when tests run concurrently.
+// Redis returns a client scoped to a private key namespace. It fails the test
+// on setup errors and removes only keys in that namespace at cleanup.
 func Redis(t *testing.T) *redis.Client {
 	t.Helper()
 	_, values := testConfig(t)
@@ -60,8 +60,10 @@ func Redis(t *testing.T) *redis.Client {
 // commands rather than accidentally bypassing isolation.
 type redisNamespace struct{ prefix string }
 
+// DialHook leaves dialing unchanged because namespace isolation applies to commands.
 func (h redisNamespace) DialHook(next redis.DialHook) redis.DialHook { return next }
 
+// ProcessHook wraps next to scope each command to the private namespace.
 func (h redisNamespace) ProcessHook(next redis.ProcessHook) redis.ProcessHook {
 	return func(ctx context.Context, cmd redis.Cmder) error {
 		if err := h.namespace(cmd); err != nil {
@@ -71,6 +73,8 @@ func (h redisNamespace) ProcessHook(next redis.ProcessHook) redis.ProcessHook {
 	}
 }
 
+// namespace rewrites key arguments in place and rejects commands that cannot
+// be safely scoped to the private namespace.
 func (h redisNamespace) namespace(cmd redis.Cmder) error {
 	args := cmd.Args()
 	switch cmd.Name() {
@@ -104,6 +108,8 @@ func (h redisNamespace) namespace(cmd redis.Cmder) error {
 	return nil
 }
 
+// ProcessPipelineHook scopes every command and skips the entire pipeline if
+// any command cannot be safely scoped.
 func (h redisNamespace) ProcessPipelineHook(next redis.ProcessPipelineHook) redis.ProcessPipelineHook {
 	return func(ctx context.Context, cmds []redis.Cmder) error {
 		for _, cmd := range cmds {

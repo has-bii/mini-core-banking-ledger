@@ -25,6 +25,9 @@ type Config struct {
 	RatelimitCapacity, RatelimitRefillRate        float64
 }
 
+// Load reads and validates configuration from the environment, loading .env
+// if present without overriding existing variables. It returns a zero Config
+// on error and reports validation failures together.
 func Load() (Config, error) {
 	if err := godotenv.Load(); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return Config{}, fmt.Errorf("load .env: %w", err)
@@ -85,6 +88,8 @@ func Load() (Config, error) {
 	return cfg, nil
 }
 
+// getString trims nonempty environment values and uses the fallback only if
+// the raw value is unset or empty.
 func getString(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {
 		return strings.TrimSpace(value)
@@ -92,6 +97,8 @@ func getString(key, fallback string) string {
 	return fallback
 }
 
+// getDuration reads a positive duration. It returns the fallback for an empty
+// or invalid value and appends an error only for invalid values.
 func getDuration(key string, fallback time.Duration, errs *[]error) time.Duration {
 	value := os.Getenv(key)
 	if value == "" {
@@ -110,6 +117,8 @@ func getDuration(key string, fallback time.Duration, errs *[]error) time.Duratio
 	return parsedValue
 }
 
+// getFloat reads a finite positive number. It returns the fallback for an empty
+// or invalid value and appends an error only for invalid values.
 func getFloat(key string, fallback float64, errs *[]error) float64 {
 	v := os.Getenv(key)
 	if v == "" {

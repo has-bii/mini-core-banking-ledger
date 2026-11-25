@@ -26,11 +26,13 @@ type Handler struct {
 	sessionLifetime time.Duration
 }
 
-// NewHandler requires a positive, whole-second session lifetime for login cookies.
+// NewHandler returns an auth handler configured with the given service and cookie settings.
+// It requires a positive, whole-second session lifetime for login cookies.
 func NewHandler(svc authService, secureCookie bool, sessionLifetime time.Duration) *Handler {
 	return &Handler{svc: svc, secureCookie: secureCookie, sessionLifetime: sessionLifetime}
 }
 
+// Register adds the auth routes to mux and protects GET /auth/me with the auth guard.
 func (h *Handler) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/register", h.register)
 	mux.HandleFunc("POST /auth/login", h.login)
@@ -111,6 +113,7 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 	httpx.SendSuccess(w, r, http.StatusCreated, httpx.SuccessResponse{Data: u})
 }
 
+// mapServiceError attaches public HTTP statuses to known errors and leaves unexpected errors unchanged.
 func mapServiceError(err error) error {
 	switch {
 	case errors.Is(err, user.ErrEmailTaken):

@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+// New returns a stdout logger that writes text in dev and JSON otherwise.
+// An invalid level defaults to info.
 func New(env, level string) *slog.Logger {
 	var lvl slog.Level
 	if err := lvl.UnmarshalText([]byte(level)); err != nil {

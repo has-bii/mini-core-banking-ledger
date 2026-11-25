@@ -10,7 +10,10 @@ import (
 	"time"
 )
 
-// LogAndRecover correlates request and panic logs and tracks the final response status.
+// LogAndRecover returns middleware that logs requests and recovers panics.
+// It echoes the X-Request-ID header or generates a replacement if missing or
+// longer than 64 bytes. A panic produces a 500 response if no final status has
+// been sent, or aborts the response otherwise. Explicit handler aborts propagate.
 func LogAndRecover(log *slog.Logger) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

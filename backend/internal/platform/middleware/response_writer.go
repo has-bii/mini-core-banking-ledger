@@ -8,6 +8,8 @@ type responseWriter struct {
 	status    int
 }
 
+// WriteHeader forwards statuses until the first final status, which it
+// records. Informational statuses other than 101 do not commit the response.
 func (w *responseWriter) WriteHeader(status int) {
 	if w.committed {
 		return
@@ -21,6 +23,7 @@ func (w *responseWriter) WriteHeader(status int) {
 	w.ResponseWriter.WriteHeader(status)
 }
 
+// Write records an implicit 200 if no final status has been sent, then writes p.
 func (w *responseWriter) Write(p []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)
@@ -28,6 +31,7 @@ func (w *responseWriter) Write(p []byte) (int, error) {
 	return w.ResponseWriter.Write(p)
 }
 
+// Unwrap returns the underlying writer for http.ResponseController.
 func (w *responseWriter) Unwrap() http.ResponseWriter {
 	return w.ResponseWriter
 }

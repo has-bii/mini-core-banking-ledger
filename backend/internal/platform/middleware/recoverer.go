@@ -8,6 +8,8 @@ import (
 	"runtime/debug"
 )
 
+// recoverRequest must be deferred. It logs unexpected panics and sends a 500
+// before commitment or aborts an already committed response.
 func recoverRequest(w *responseWriter, r *http.Request, log *slog.Logger) {
 	v := recover()
 	if v == nil {

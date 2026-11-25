@@ -29,30 +29,9 @@ type CORSOptions struct {
 	MaxAge time.Duration
 }
 
-// CORS creates middleware that sets CORS response headers and uses
-// http.CrossOriginProtection to reject unsafe cross-origin requests from
-// untrusted origins. It answers all OPTIONS requests with 204 No Content
-// before applying that protection, but only trusted origins receive an
-// Access-Control-Allow-Origin header.
-//
-// opts must be non-nil. CORS returns an error if a trusted origin is invalid.
-// Treat opts as immutable after calling CORS.
-//
-// Example:
-//
-//	cors, err := CORS(&CORSOptions{
-//		Origin:         "https://app.example.com",
-//		AllowedHeaders: "Content-Type, Authorization",
-//		AllowedMethods: "GET, POST, OPTIONS",
-//		Credentials:    true,
-//		MaxAge:         10 * time.Minute,
-//	})
-//	if err != nil {
-//		return err
-//	}
-//	mux := http.NewServeMux()
-//	handler := cors(mux)
-//	return http.ListenAndServe(":8080", handler)
+// CORS returns middleware that sets CORS headers, answers OPTIONS with 204,
+// and blocks unsafe cross-origin requests from untrusted origins.
+// Pass non-nil opts and leave them unchanged. An invalid origin returns an error.
 func CORS(opts *CORSOptions) (Middleware, error) {
 	// Cross-origin protection: block unsafe cross-origin requests,
 	// except from the origin we explicitly allow.

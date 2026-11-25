@@ -15,9 +15,13 @@ const redisSessionPrefix = "session:"
 
 type Store struct{ redis *redis.Client }
 
+// NewStore returns a session store backed by the given Redis client.
 func NewStore(rds *redis.Client) *Store { return &Store{redis: rds} }
 
-// Create requires a service-generated token hash; it never persists raw tokens.
+// Create stores and returns a session using a service-generated token hash,
+// never the raw token. It wraps ErrInvalidUserID for an invalid UUID and
+// ErrInvalidExpiration if expiresAt is not in the future. A duplicate hash
+// wraps ErrTokenHashTaken without replacing the existing session.
 func (s *Store) Create(ctx context.Context, userID, tokenHash string, expiresAt time.Time) (Session, error) {
 	if err := uuid.Validate(userID); err != nil {
 		return Session{}, fmt.Errorf("create session: %w", ErrInvalidUserID)
@@ -60,6 +64,7 @@ func (s *Store) Create(ctx context.Context, userID, tokenHash string, expiresAt 
 }
 
 // GetByTokenHash looks up an opaque, service-generated token hash without normalizing it.
+// It returns ErrNotFound if the session is missing or expired.
 func (s *Store) GetByTokenHash(ctx context.Context, tokenHash string) (Session, error) {
 	data, err := s.redis.Get(ctx, redisSessionPrefix+tokenHash).Bytes()
 	if errors.Is(err, redis.Nil) {
@@ -82,7 +87,8 @@ func (s *Store) GetByTokenHash(ctx context.Context, tokenHash string) (Session, 
 	return session, nil
 }
 
-// DeleteByTokenHash revokes a service-generated token hash; missing keys are a success.
+// DeleteByTokenHash revokes the session for a service-generated token hash.
+// It succeeds if the key is already absent.
 func (s *Store) DeleteByTokenHash(ctx context.Context, tokenHash string) error {
 	if err := s.redis.Del(ctx, redisSessionPrefix+tokenHash).Err(); err != nil {
 		return fmt.Errorf("delete session: %w", err)

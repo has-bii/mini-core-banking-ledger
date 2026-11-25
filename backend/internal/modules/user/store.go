@@ -15,6 +15,7 @@ const uniqueViolation = "23505"
 
 type Store struct{ db postgres.DBTX }
 
+// NewStore returns a user store backed by db.
 func NewStore(db postgres.DBTX) *Store { return &Store{db: db} }
 
 type scanner interface{ Scan(dest ...any) error }
@@ -25,6 +26,8 @@ func scanUser(r scanner) (User, error) {
 	return u, err
 }
 
+// GetByID returns the user with the given ID. It returns ErrNotFound if no user
+// matches and wraps ErrInvalidUserID if userID is not a valid UUID.
 func (s *Store) GetByID(ctx context.Context, userID string) (User, error) {
 	if err := uuid.Validate(userID); err != nil {
 		return User{}, fmt.Errorf("user by id: %w", ErrInvalidUserID)
@@ -42,6 +45,8 @@ func (s *Store) GetByID(ctx context.Context, userID string) (User, error) {
 	return u, nil
 }
 
+// GetByEmail returns the user matching email without normalizing it.
+// It returns ErrNotFound if no user matches.
 func (s *Store) GetByEmail(ctx context.Context, email string) (User, error) {
 	const q = `SELECT id, name, email, password, image, created_at, updated_at FROM users WHERE email = $1`
 
@@ -55,7 +60,9 @@ func (s *Store) GetByEmail(ctx context.Context, email string) (User, error) {
 	return u, nil
 }
 
-// Create requires normalized, validated name/email values and an already-hashed password.
+// Create inserts and returns a user and provisions their main wallet.
+// It requires normalized, validated name and email values and an already-hashed
+// password. It returns ErrEmailTaken if the email is already in use.
 func (s *Store) Create(ctx context.Context, name, email, password string) (User, error) {
 	const q = `INSERT INTO users (name, email, password)
 		VALUES ($1, $2, $3)

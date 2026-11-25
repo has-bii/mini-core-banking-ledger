@@ -18,6 +18,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// New wires the API routes and middleware using the supplied dependencies.
+// It returns a nil handler and an error if the configured CORS origin is invalid.
 func New(cfg config.Config, pool *pgxpool.Pool, redisClient *redis.Client, log *slog.Logger) (http.Handler, error) {
 	cors, err := middleware.CORS(&middleware.CORSOptions{
 		Origin:         cfg.CORSOrigin,

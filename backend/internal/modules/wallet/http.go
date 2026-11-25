@@ -18,10 +18,12 @@ type Handler struct {
 	svc walletService
 }
 
+// NewHandler returns a wallet handler that delegates wallet operations to svc.
 func NewHandler(svc walletService) *Handler {
 	return &Handler{svc: svc}
 }
 
+// Register adds the wallet routes to mux and requires authentication for each route.
 func (h *Handler) Register(mux *http.ServeMux) {
 	mux.Handle("POST /wallets", middleware.AuthGuard(h.createWallet))
 	mux.Handle("GET /wallets", middleware.AuthGuard(h.getWallets))
@@ -73,6 +75,8 @@ func (h *Handler) getWallets(w http.ResponseWriter, r *http.Request) {
 	httpx.SendSuccess(w, r, http.StatusOK, httpx.SuccessResponse{Data: data})
 }
 
+// mapServiceError maps missing records to HTTP 404 and invalid IDs to HTTP 400.
+// Other errors pass through unchanged.
 func mapServiceError(err error) error {
 	switch {
 	case errors.Is(err, ErrNotFound):

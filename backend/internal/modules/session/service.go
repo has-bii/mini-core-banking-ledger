@@ -21,12 +21,18 @@ type Service struct {
 	lifetime time.Duration
 }
 
-// NewService configures the lifetime for new sessions. The lifetime must be positive.
+// NewService returns a session service configured with the given store and lifetime.
+// The lifetime must be positive.
 func NewService(store sessionStore, lifetime time.Duration) *Service {
 	return &Service{store: store, lifetime: lifetime}
 }
 
-// Create returns the raw token only to the caller; persistence receives its hash.
+// Create issues a session for userID and returns it with its raw token.
+// Persistence receives only the token's hash.
+//
+// On success, the unpadded URL-safe token has this shape:
+//
+//	"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"
 func (s *Service) Create(ctx context.Context, userID string) (Session, string, error) {
 	var random [32]byte
 	if _, err := rand.Read(random[:]); err != nil {
@@ -40,6 +46,8 @@ func (s *Service) Create(ctx context.Context, userID string) (Session, string, e
 	return session, token, nil
 }
 
+// GetByToken returns the active session for the raw token.
+// It returns ErrNotFound if the token is malformed or the session is missing or expired.
 func (s *Service) GetByToken(ctx context.Context, token string) (Session, error) {
 	if !validToken(token) {
 		return Session{}, ErrNotFound
@@ -47,6 +55,8 @@ func (s *Service) GetByToken(ctx context.Context, token string) (Session, error)
 	return s.store.GetByTokenHash(ctx, hashToken(token))
 }
 
+// Revoke deletes the session for the raw token and succeeds if a well-formed token has no stored session.
+// It returns ErrNotFound for a malformed token.
 func (s *Service) Revoke(ctx context.Context, token string) error {
 	if !validToken(token) {
 		return ErrNotFound
@@ -54,6 +64,7 @@ func (s *Service) Revoke(ctx context.Context, token string) error {
 	return s.store.DeleteByTokenHash(ctx, hashToken(token))
 }
 
+// validToken checks for the canonical unpadded URL-safe base64 encoding of a 32-byte token.
 func validToken(token string) bool {
 	if len(token) != 43 {
 		return false

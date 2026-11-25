@@ -10,6 +10,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// testConfig returns the backend root and values read directly from .env.test.
+// It fails the test if it cannot find the root or read the file.
 func testConfig(t *testing.T) (string, map[string]string) {
 	t.Helper()
 	root, err := os.Getwd()

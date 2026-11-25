@@ -18,7 +18,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Postgres migrates a private schema and removes only that schema after the test.
+// Postgres returns a pool scoped to a migrated private schema. It fails the
+// test on setup errors and closes the pool and drops the schema at cleanup.
 func Postgres(t *testing.T) *pgxpool.Pool {
 	t.Helper()
 	root, values := testConfig(t)
