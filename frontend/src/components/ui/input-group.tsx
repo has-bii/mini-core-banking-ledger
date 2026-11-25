@@ -66,13 +66,13 @@ function InputGroupAddon({
 	)
 }
 
-const inputGroupButtonVariants = cva("flex items-center gap-2 rounded-4xl text-sm shadow-none", {
+const inputGroupButtonVariants = cva("shadow-none", {
 	variants: {
 		size: {
-			xs: "h-6 gap-1 px-1.5 [&>svg:not([class*='size-'])]:size-3.5",
+			xs: "px-1.5 [&_svg:not([class*='size-'])]:size-3.5",
 			sm: "",
-			"icon-xs": "size-6 p-0 has-[>svg]:p-0",
-			"icon-sm": "size-8 p-0 has-[>svg]:p-0",
+			"icon-xs": "",
+			"icon-sm": "",
 		},
 	},
 	defaultVariants: {
@@ -94,8 +94,13 @@ function InputGroupButton({
 		<Button
 			type={type}
 			data-size={size}
+			size={size}
 			variant={variant}
-			className={cn(inputGroupButtonVariants({ size }), className)}
+			className={cn(
+				inputGroupButtonVariants({ size }),
+				variant === "ghost" && "text-foreground",
+				className,
+			)}
 			{...props}
 		/>
 	)
@@ -105,7 +110,7 @@ function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
 	return (
 		<span
 			className={cn(
-				"flex items-center gap-2 text-sm text-muted-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
+				"flex items-center gap-2 text-sm text-muted-foreground tabular-nums [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
 				className,
 			)}
 			{...props}
